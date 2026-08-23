@@ -244,7 +244,7 @@ def forge_plan(
     context = _fetch_book_context(book_id, conn)
     system_msg, user_msg = _build_prompt(intent, context, duration_days, teaching_name)
 
-    ollama_model = os.getenv("OLLAMA_MODEL", "qwen3.6:latest")
+    ollama_model = os.getenv("OLLAMA_MODEL", "qwen3.8:27b-q8_0")
     try:
         resp = ollama.chat(
             model=ollama_model,
