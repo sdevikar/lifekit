@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.venv/
+.env
+
+# SQLite databases (runtime data)
+*.db
+*.db-wal
+*.db-shm
+
+# Book files — place these in knowledge-store/books/ locally, never commit
+knowledge-store/books/*.pdf
+knowledge-store/books/*.epub
+knowledge-store/books/*.mobi
+
+# OS
+.DS_Store
+Thumbs.db

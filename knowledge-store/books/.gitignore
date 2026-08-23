@@ -1,0 +1,10 @@
+# Ignore actual PDF/EPUB/media files — track only directory structure
+*.pdf
+*.epub
+*.mobi
+*.mp4
+*.mp3
+# Keep the .gitkeep and any metadata/manifest files
+!.gitkeep
+!*.json
+!*.yaml
