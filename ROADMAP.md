@@ -30,7 +30,7 @@ Locked. Not revisited during MVP.
 | 2 | Extraction map: per-chapter Ollama call → strict Pydantic schema (Exercise, KeyIdea) | ✅ Done (2026-09-15, subset validation) | `openspec/changes/step-2-extraction-map/` |
 | 3 | Reduce/dedupe: merge chapter outputs, embedding-dedupe exercises → `exercises`, `key_ideas` tables | ✅ Done (2026-09-15) | `openspec/archives/step-3-reduce-dedupe/` |
 | 4 | Validation harness: verbatim-quote grounding check, zero-extraction flags, 10% judge sample | ✅ Done (2026-09-15) | `openspec/archives/step-4-validation-harness/` |
-| 5 | Coach MCP tools: `list_exercises`, `get_exercise`, `log_completion`, `next_exercise` | ⬜ Queued | — |
+| 5 | Coach MCP tools: `list_exercises`, `get_exercise`, `log_completion`, `next_exercise` | ✅ Done (2026-09-15) | `openspec/archives/step-5-coach-tools/` |
 | 6 | Multi-book: registry, per-book pipelines, cross-book search | ⬜ Queued | — |
 | 7 | Scheduling: FSRS-style spaced repetition over completion history | ⬜ Queued | — |
 
