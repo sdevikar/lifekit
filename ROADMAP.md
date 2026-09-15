@@ -37,6 +37,10 @@ Locked. Not revisited during MVP.
 Each step ships with its test and done-criterion written before implementation.
 Test one step at a time; don't start the next until the current one's done-criterion passes.
 
+## Deferred (not blocking)
+
+- Full-book extraction recall eval against the 20-exercise ground truth — runs on the user's local dev setup with their own model (decision 2026-09-15). Recorded as A20.
+
 ## Explicitly later (not MVP)
 
 - RAG quality upgrade (semantic/hybrid search — deferred quality question)
