@@ -119,6 +119,25 @@ CREATE TABLE IF NOT EXISTS dedupe_log (
     reason TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS validation_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id TEXT NOT NULL,
+    exercise_id INTEGER REFERENCES exercises(id),
+    check_type TEXT NOT NULL,
+    passed BOOLEAN NOT NULL,
+    detail TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS judge_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id TEXT NOT NULL,
+    exercise_id INTEGER NOT NULL REFERENCES exercises(id),
+    score INTEGER,
+    rationale TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 """
 
 
