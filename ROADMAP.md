@@ -4,6 +4,8 @@ This file is the single source of truth for where the LifeKit build stands.
 We work spec-first: each step below is one OpenSpec change under
 `openspec/changes/<step-slug>/` (proposal → tasks → implement → archive).
 Update the status column as steps move.
+Assumptions are tracked separately in `ASSUMPTIONS.md` — check there before
+challenging a design decision.
 
 ## Step 0 — Simplifying assumptions ✅ LOCKED (2026-09-14)
 
