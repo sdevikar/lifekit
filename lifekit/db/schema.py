@@ -87,6 +87,38 @@ CREATE TABLE IF NOT EXISTS sessions (
     notes TEXT,
     started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS exercises (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id TEXT NOT NULL,
+    chapter_idx INTEGER,
+    chapter_title TEXT NOT NULL,
+    title TEXT NOT NULL,
+    purpose TEXT NOT NULL,
+    steps TEXT NOT NULL,  -- JSON list
+    materials TEXT NOT NULL DEFAULT '[]',  -- JSON list
+    source_quote TEXT NOT NULL,
+    extra_quotes TEXT NOT NULL DEFAULT '[]',  -- JSON list of merged quotes
+    UNIQUE(book_id, title)
+);
+
+CREATE TABLE IF NOT EXISTS key_ideas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id TEXT NOT NULL,
+    chapter_idx INTEGER,
+    idea TEXT NOT NULL,
+    UNIQUE(book_id, chapter_idx, idea)
+);
+
+CREATE TABLE IF NOT EXISTS dedupe_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id TEXT NOT NULL,
+    kept_exercise_id INTEGER NOT NULL REFERENCES exercises(id),
+    merged_exercise_title TEXT NOT NULL,
+    merged_source_quote TEXT,
+    reason TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 """
 
 

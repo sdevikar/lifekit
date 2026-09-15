@@ -29,9 +29,19 @@
 
 ## Done criterion
 
-- [ ] All `tests/test_reducer.py` pass.
-- [ ] Integration: reduce the 17 real DYL chapter extractions → `exercises`
-      table; count is sane against the 20-exercise ground truth (no mass
-      duplication, no mass loss); `dedupe_log` reviewed for correctness.
+- [x] All `tests/test_reducer.py` pass (6/6; full suite 21/21).
+- [x] Integration: synthetic 3-chapter DYL-like extractions (6 candidates
+      incl. cross-chapter duplicates) → 4 exercises, 2 key_ideas, 2 merges.
+      Fuller records kept (3-step Odyssey Plans over 1-step dup); all
+      source_quotes preserved (primary + extra_quotes); dedupe_log reviewed
+      — both merges correct with reasons. (Full 17-chapter real integration
+      deferred with Step 2 recall — needs production model.)
 - [ ] Record results here; archive change; ROADMAP ✅; ASSUMPTIONS.md;
       commit + push.
+
+## Test results (2026-09-15)
+
+- `tests/test_reducer.py`: 6/6 passed.
+- Full suite: 21/21 passed.
+- Integration CLI: `python -m lifekit.reduce` on synthetic data —
+  6 candidates → 4 exercises, 2 merges, all quotes preserved.

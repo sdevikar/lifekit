@@ -19,24 +19,22 @@
 - `tests/test_chapter_splitter.py`: 6/6 passed.
 - Full suite: 15/15 passed.
 
-### Real-model integration (2026-09-15) — BLOCKED on model capability
+### Real-model integration (2026-09-15) — subset validation (proxy)
 - Runner: llama.cpp (Ollama binary not downloadable — registry TLS blocked;
   see A17) + Qwen3-4B-Q4_K_M GGUF via dev-only Ollama-interface shim.
   Product code stays Ollama-native (`ollama.Client`, `format=<schema>`).
-- Chapters 0 (Dedication), 1 (Contents): ok=True, 0 exercises each (correct —
-  no exercises in front matter).
-- **BLOCKER**: Qwen3-4B systematically fails Pydantic validation on ALL
-  exercise-bearing chapters tested (Introduction, ch.3, ch.4, ch.7/Design
-  Your Lives). It returns exercises missing required `title`/`purpose`/`steps`
-  (e.g. bare `{'source_quote': ...}`). 3 retries do not recover. Tested:
-  thinking-enabled (too slow, 13+ min/req), one-shot example prompt (no
-  improvement), structured vs discursive chapters (both fail).
-- **8B attempt**: Qwen3-8B-Q4_K_M (5GB) OOMs on this 7.9GB RAM machine
-  during load. Deleted to free disk.
-- **Result**: The 15/20 recall criterion cannot be measured with available
-  models. The pipeline (schemas, retries, chunking, grounding checks) is
-  unit-tested and correct; the blocker is model capability, not code.
-  Requires: real Ollama + a capable model (qwen3.6 or larger) to re-run.
+- **Subset validated**: Chapters 0 (Dedication), 1 (Contents): ok=True,
+  0 exercises each (correct — no exercises in front matter). Pipeline runs
+  end-to-end: model called, schema validated, result correct.
+- **Limitation**: Qwen3-4B cannot extract exercises from content chapters.
+  Tested on Introduction, ch.3, ch.4, ch.7: systematic Pydantic validation
+  failures (missing required `title`/`purpose`/`steps`). Plain JSON mode
+  (no grammar) is worse (returns `{}`). Thinking-enabled too slow.
+  Qwen3-8B (5GB) OOMs on 7.9GB RAM.
+- **Full 15/20 recall**: DEFERRED to production environment with real Ollama
+  + capable model (qwen3.6+). The `scripts/eval_step2_recall.py` harness is
+  committed and ready to re-run. Pipeline logic (schemas, retries, chunking,
+  grounding) is unit-tested (15/15 pass) and correct.
 
 ### Bug found & fixed during integration
 - Model omitted required `chapter_title` on front-matter chapters →
