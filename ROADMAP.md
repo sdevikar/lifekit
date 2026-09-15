@@ -27,7 +27,7 @@ Locked. Not revisited during MVP.
 |------|---------|--------|-----------------|
 | 0 | Simplifying assumptions | ✅ Locked | — |
 | 1 | Chapter splitter (TOC-first, heuristic fallback) → `chapters` table | ✅ Done (2026-09-15) | `openspec/archives/step-1-chapter-splitter/` |
-| 2 | Extraction map: per-chapter Ollama call → strict Pydantic schema (Exercise, KeyIdea) | ✅ Done (2026-09-15, subset validation) | `openspec/changes/step-2-extraction-map/` |
+| 2 | Extraction map: per-chapter Ollama call → strict Pydantic schema (Exercise, KeyIdea) | ✅ Done (2026-09-15, subset validation) | `openspec/archives/step-2-extraction-map/` |
 | 3 | Reduce/dedupe: merge chapter outputs, embedding-dedupe exercises → `exercises`, `key_ideas` tables | ✅ Done (2026-09-15) | `openspec/archives/step-3-reduce-dedupe/` |
 | 4 | Validation harness: verbatim-quote grounding check, zero-extraction flags, 10% judge sample | ✅ Done (2026-09-15) | `openspec/archives/step-4-validation-harness/` |
 | 5 | Coach MCP tools: `list_exercises`, `get_exercise`, `log_completion`, `next_exercise` | ✅ Done (2026-09-15) | `openspec/archives/step-5-coach-tools/` |
