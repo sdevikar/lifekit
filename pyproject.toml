@@ -12,6 +12,7 @@ dependencies = [
     "ollama>=0.1.0",  # for local model calls (qwen3.6:latest)
     "PyMuPDF>=1.24",  # TOC-first chapter splitting
     "chonkie>=0.1.0",  # RecursiveChunker for long-chapter sectioning
+    "fsrs>=6.0",  # open-source FSRS spaced repetition (Step 7)
 ]
 
 [tool.setuptools.packages.find]

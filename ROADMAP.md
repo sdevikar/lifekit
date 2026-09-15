@@ -32,7 +32,7 @@ Locked. Not revisited during MVP.
 | 4 | Validation harness: verbatim-quote grounding check, zero-extraction flags, 10% judge sample | ✅ Done (2026-09-15) | `openspec/archives/step-4-validation-harness/` |
 | 5 | Coach MCP tools: `list_exercises`, `get_exercise`, `log_completion`, `next_exercise` | ✅ Done (2026-09-15) | `openspec/archives/step-5-coach-tools/` |
 | 6 | Multi-book: registry, per-book pipelines, cross-book search | ✅ Done (2026-09-15) | `openspec/archives/step-6-multi-book/` |
-| 7 | Scheduling: FSRS-style spaced repetition over completion history | ⬜ Queued | — |
+| 7 | Scheduling: FSRS-style spaced repetition over completion history | ✅ Done (2026-09-15) | `openspec/archives/step-7-scheduling/` |
 
 Each step ships with its test and done-criterion written before implementation.
 Test one step at a time; don't start the next until the current one's done-criterion passes.

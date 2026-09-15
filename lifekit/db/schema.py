@@ -145,6 +145,11 @@ CREATE TABLE IF NOT EXISTS completions (
     completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     notes TEXT
 );
+
+CREATE TABLE IF NOT EXISTS fsrs_cards (
+    exercise_id INTEGER PRIMARY KEY REFERENCES exercises(id),
+    card_json TEXT NOT NULL
+);
 """
 
 
