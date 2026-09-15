@@ -31,6 +31,7 @@ def main():
 
     db_path = None if args.no_persist else (args.db_path or str(Path.home() / ".lifekit" / "lifekit.db"))
     if db_path:
+        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         init_db(db_path)
 
     try:

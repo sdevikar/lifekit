@@ -35,3 +35,11 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A14 | `chapters` table shape: `(id, book_id, idx, title, page_start, page_end, content)`. | active | If Steps 2–3 need finer/coarser units, migrate the schema. |
 | A15 | Fixed-size fallback granularity: 15 pages per section (`FALLBACK_SECTION_PAGES`). | active | If Step 2 extraction quality suffers on section-split chapters, tune granularity. |
 | A16 | `chapters.book_id` has no FK to `books` — the splitter stays decoupled from ingestion; book_id defaults to sha256(path)[:16]. | active | If referential integrity is needed later, add the FK + migration. |
+
+## Step 2 — extraction map (`openspec/changes/step-2-extraction-map/`)
+
+| ID | Assumption | Status | Revisit trigger |
+|----|------------|--------|-----------------|
+| A17 | Dev eval uses llama.cpp + Qwen3-4B-Q4_K_M GGUF via a dev-only Ollama-interface shim (Ollama binary not downloadable in this sandbox: registry TLS blocked). Product code stays Ollama-native (`ollama.Client`, `format=<json_schema>`, temp 0.1). The 4B model systematically fails schema validation on exercise-bearing chapters; Qwen3-8B-Q4_K_M (5GB) cannot fit this 7.9GB RAM machine. Full 15/20 recall criterion requires a production-capable model via real Ollama. | active | When Ollama runs with a suitable model (qwen3.6 or larger), re-run the full-book recall eval through the product path. |
+| A18 | Oversized chapters (>48k chars) split via Chonkie `RecursiveChunker` into per-section extractions, concatenated. Dev eval uses smaller thresholds (16k/12k) to fit 7GB RAM; product defaults unchanged. | active | If section-boundary exercises are missed/duplicated in recall, add overlap or raise thresholds. |
+| A19 | `extract_chapter` backfills missing `chapter_title` from the known `Chapter.title` instead of failing/retriing when the model omits it (observed on front matter). Strict Pydantic schema unchanged for model output. | active | If backfill masks real model confusion, remove it and require the field. |
