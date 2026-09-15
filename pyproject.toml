@@ -10,6 +10,7 @@ requires-python = ">=3.9"
 dependencies = [
     "pydantic>=2.0",
     "ollama>=0.1.0",  # for local model calls (qwen3.6:latest)
+    "PyMuPDF>=1.24",  # TOC-first chapter splitting
 ]
 
 [tool.setuptools.packages.find]

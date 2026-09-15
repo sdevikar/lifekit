@@ -47,6 +47,17 @@ CREATE TRIGGER IF NOT EXISTS book_chunks_ad AFTER DELETE ON book_chunks BEGIN
     INSERT INTO book_chunks_fts(book_chunks_fts, rowid, content) VALUES('delete', old.id);
 END;
 
+CREATE TABLE IF NOT EXISTS chapters (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id TEXT NOT NULL,
+    idx INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    page_start INTEGER NOT NULL,
+    page_end INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    UNIQUE(book_id, idx)
+);
+
 CREATE TABLE IF NOT EXISTS plans (
     id TEXT PRIMARY KEY,
     book_id TEXT NOT NULL REFERENCES books(id),

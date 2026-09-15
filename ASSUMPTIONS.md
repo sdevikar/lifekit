@@ -33,3 +33,5 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A12 | Image-only PDFs are refused with a clear error; no OCR in MVP. | active | If the user wants scanned books, add an OCR path. |
 | A13 | PyMuPDF is added as a dependency for this path; pypdf remains for ingest. | active | Consolidate to one parser later if maintaining two proves annoying. |
 | A14 | `chapters` table shape: `(id, book_id, idx, title, page_start, page_end, content)`. | active | If Steps 2–3 need finer/coarser units, migrate the schema. |
+| A15 | Fixed-size fallback granularity: 15 pages per section (`FALLBACK_SECTION_PAGES`). | active | If Step 2 extraction quality suffers on section-split chapters, tune granularity. |
+| A16 | `chapters.book_id` has no FK to `books` — the splitter stays decoupled from ingestion; book_id defaults to sha256(path)[:16]. | active | If referential integrity is needed later, add the FK + migration. |
