@@ -5,8 +5,8 @@
 > planned), `ASSUMPTIONS.md` (what we believe), and `BACKLOG.md` (what's
 > broken). Whoever merges a change updates this file in the same commit.
 
-**Last updated:** 2026-09-15 — D1/D2 fixed (`59073b7`); LLM provider config in
-progress; full-book eval still deferred.
+**Last updated:** 2026-09-15 — LLM provider config shipped (`d38f2c7`); suite
+70/70; full-book eval unblocked, awaiting OpenRouter key.
 
 ## Current state
 
@@ -15,8 +15,8 @@ progress; full-book eval still deferred.
 | MVP Steps 1–7 (splitter → extraction → reduce → validation → coach tools → multi-book → FSRS) | ✅ Done on `main`, 49/49 tests green |
 | D1 (unstable exercise IDs on reduce re-run) | ✅ Fixed 2026-09-15 |
 | D2 (validate without `--chapters` = 100% false failures) | ✅ Fixed 2026-09-15 |
-| LLM provider config (Ollama default + OpenRouter) | 🔄 OpenSpec change in progress |
-| Full-book extraction eval vs 20-exercise ground truth | ⏸️ Deferred (A20) — unblocks once provider config lands + API key is set |
+| LLM provider config (Ollama default + OpenRouter, `lifekit config` CLI) | ✅ Shipped 2026-09-15 — spec archived at `openspec/archives/llm-provider-config/`, suite 70/70 |
+| Full-book extraction eval vs 20-exercise ground truth | ▶️ Unblocked — awaiting OpenRouter API key; run `scripts/eval_step2_recall.py --provider openrouter --model <model>` |
 | Known issues | See `BACKLOG.md` (D3–D7, H1–H4, P1–P6 open) |
 | Coaching / momentum / interviewer / skills export | 📋 Planned, Steps 8–12 — see `workspace/self-help-exercises/lifekit-coaching-plan.md` |
 
@@ -46,3 +46,6 @@ that it *extracts*; the real-model eval is the quality gate.
   49/49.
 - **2026-09-15** — Research: tutor-mcp landscape reviewed; coaching plan
   drafted (Steps 8–12 candidates).
+- **2026-09-15** — LLM provider config shipped spec-first (proposal →
+  implement → archive, commits `d38f2c7`/`c5bc8c9`/`f2e5dad`); eval script now
+  portable (`--provider`/`--model`/`--results` flags, P1 fixed); suite 70/70.
