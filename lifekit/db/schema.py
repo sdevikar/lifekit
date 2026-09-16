@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS validation_log (
     book_id TEXT NOT NULL,
     exercise_id INTEGER REFERENCES exercises(id),
     check_type TEXT NOT NULL,
-    passed BOOLEAN NOT NULL,
+    passed BOOLEAN,  -- NULL = check skipped (e.g. no chapter text available)
     detail TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -165,8 +165,45 @@ def init_db(db_path: str | Path | None = None) -> sqlite3.Connection:
     conn = sqlite3.connect(str(db_path))
     conn.execute("PRAGMA foreign_keys = ON")
     conn.executescript(SCHEMA)
+    _migrate_validation_log_nullable_passed(conn)
     conn.commit()
     return conn
+
+
+def _migrate_validation_log_nullable_passed(conn: sqlite3.Connection) -> None:
+    """Allow NULL in validation_log.passed (NULL = check skipped).
+
+    Databases created before this change have passed BOOLEAN NOT NULL.
+    Migrate in place, preserving existing rows and ids.
+    """
+    cols = {
+        r[1]: r[3]
+        for r in conn.execute("PRAGMA table_info(validation_log)").fetchall()
+    }
+    if not cols.get("passed"):  # already nullable (or table missing)
+        return
+    fk_was_on = conn.execute("PRAGMA foreign_keys").fetchone()[0]
+    conn.execute("PRAGMA foreign_keys = OFF")
+    try:
+        conn.executescript("""
+        ALTER TABLE validation_log RENAME TO validation_log_v1;
+        CREATE TABLE validation_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            book_id TEXT NOT NULL,
+            exercise_id INTEGER REFERENCES exercises(id),
+            check_type TEXT NOT NULL,
+            passed BOOLEAN,
+            detail TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT INTO validation_log
+            (id, book_id, exercise_id, check_type, passed, detail, created_at)
+            SELECT id, book_id, exercise_id, check_type, passed, detail, created_at
+            FROM validation_log_v1;
+        DROP TABLE validation_log_v1;
+        """)
+    finally:
+        conn.execute(f"PRAGMA foreign_keys = {'ON' if fk_was_on else 'OFF'}")
 
 
 # Module-level singleton for convenience

@@ -112,3 +112,52 @@ def test_idempotent_rerun(db_path):
     reduce_extractions("b1", db_path, [ext])
     assert count(db_path, "exercises") == 1
     assert count(db_path, "key_ideas") == 1
+
+
+def test_rerun_keeps_exercise_ids_and_completions(db_path):
+    """D1 regression: re-running reduce after user data exists must not
+    raise IntegrityError and must not re-link completions to other exercises."""
+    ext = make_extraction("Ch1", [make_ex("Good Time Journal"), make_ex("Odyssey Plans")])
+    reduce_extractions("b1", db_path, [ext])
+
+    c = sqlite3.connect(db_path)
+    c.execute("PRAGMA foreign_keys = ON")
+    ids_before = dict(
+        c.execute("SELECT title, id FROM exercises WHERE book_id = 'b1'").fetchall()
+    )
+    # Log a completion against the first exercise (FK enforced).
+    c.execute(
+        "INSERT INTO completions (exercise_id, notes) VALUES (?, ?)",
+        (ids_before["Good Time Journal"], "did it"),
+    )
+    # Log an FSRS review against the second exercise.
+    c.execute(
+        "INSERT INTO fsrs_cards (exercise_id, card_json) VALUES (?, ?)",
+        (ids_before["Odyssey Plans"], '{"state": "learning"}'),
+    )
+    c.commit()
+    c.close()
+
+    # Re-run with identical extractions: must not raise.
+    reduce_extractions("b1", db_path, [ext])
+
+    c = sqlite3.connect(db_path)
+    ids_after = dict(
+        c.execute("SELECT title, id FROM exercises WHERE book_id = 'b1'").fetchall()
+    )
+    # Same ids for the same titles.
+    assert ids_after == ids_before
+
+    # Completion still points at the same exercise content.
+    comp = c.execute("SELECT exercise_id, notes FROM completions").fetchall()
+    assert len(comp) == 1
+    assert comp[0][0] == ids_before["Good Time Journal"]
+    title = c.execute(
+        "SELECT title FROM exercises WHERE id = ?", (comp[0][0],)
+    ).fetchone()[0]
+    assert title == "Good Time Journal"
+
+    # FSRS card still attached to its exercise.
+    card = c.execute("SELECT exercise_id FROM fsrs_cards").fetchone()[0]
+    assert card == ids_before["Odyssey Plans"]
+    c.close()

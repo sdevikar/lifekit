@@ -24,9 +24,19 @@ def main():
     chapters = []
     if args.chapters:
         chapters = [tuple(x) for x in json.loads(Path(args.chapters).read_text())]
+    else:
+        print(
+            "WARNING: --chapters not provided — quote checks will be recorded as "
+            "SKIPPED (validation_log.passed NULL), not failures, because there is "
+            "no chapter text to check quotes against. Pass --chapters <json> for "
+            "real verbatim-quote validation.",
+            file=sys.stderr,
+        )
 
     result = validate_book(args.db_path, args.book_id, chapters)
-    print(f"passed={result['passed']} failed={result['failed']}")
+    print(f"passed={result['passed']} failed={result['failed']} skipped={result['skipped']}")
+    if result["skipped"] and not args.chapters:
+        print(f"NOTE: {result['skipped']} quote check(s) skipped — re-run with --chapters for real validation.")
     if result["zero_flags"]:
         print(f"zero_flags: {result['zero_flags']}")
 

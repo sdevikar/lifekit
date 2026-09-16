@@ -25,7 +25,8 @@ def reduce_extractions(
     """Flatten chapter extractions, deterministic-dedupe, persist.
 
     Returns summary dict with counts.
-    Idempotent: re-running for the same book does not duplicate rows.
+    Idempotent: re-running for the same book does not duplicate rows, and
+    exercise ids are stable across re-runs (upsert on UNIQUE(book_id, title)).
     """
     db_path = str(db_path)
     # Ensure schema exists
@@ -33,12 +34,15 @@ def reduce_extractions(
     conn = sqlite3.connect(db_path)
     conn.execute("PRAGMA foreign_keys = ON")
 
-    # Clear existing rows for this book (idempotency via replace)
+    # Clear per-run logs for this book (idempotency via replace).
+    # NOTE: exercises are NOT deleted here. completions, fsrs_cards,
+    # validation_log and dedupe_log reference exercises.id, so re-runs
+    # upsert exercises in place (keyed on UNIQUE(book_id, title)) to keep
+    # ids stable. Exercises that no longer appear in the extraction output
+    # are left stale rather than deleted — deleting them would orphan
+    # downstream user data.
     conn.execute("DELETE FROM dedupe_log WHERE book_id = ?", (book_id,))
     conn.execute("DELETE FROM key_ideas WHERE book_id = ?", (book_id,))
-    # For exercises, we delete and re-insert to keep it simple and idempotent.
-    # (dedupe_log FK references exercises.id, so delete log first — done above.)
-    conn.execute("DELETE FROM exercises WHERE book_id = ?", (book_id,))
 
     # Flatten
     candidates: list[tuple[int, Exercise]] = []  # (chapter_idx, exercise)
@@ -74,7 +78,15 @@ def reduce_extractions(
             # Update in place
             merged[key] = (merged[key][0], merged[key][1], extra_quotes)
 
-    # Persist exercises
+    # Persist exercises via UPSERT keyed on UNIQUE(book_id, title), so ids
+    # stay stable across re-runs (completions / fsrs_cards / validation_log /
+    # dedupe_log all reference exercises.id).
+    #
+    # Why (book_id, title) is collision-free here: dedupe merges on
+    # normalize_title(ex.title), and normalize_title is deterministic, so two
+    # rows with identical raw titles always share one merge key and can never
+    # become two distinct rows. ON CONFLICT is belt-and-braces: in the
+    # impossible case it keeps the existing row's id and refreshes content.
     exercise_ids = {}
     for key, (ch_idx, ex, extra_quotes) in merged.items():
         # Dedupe extra_quotes, exclude the primary quote
@@ -86,7 +98,16 @@ def reduce_extractions(
             """INSERT INTO exercises
                (book_id, chapter_idx, chapter_title, title, purpose, steps,
                 materials, source_quote, extra_quotes)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(book_id, title) DO UPDATE SET
+                 chapter_idx=excluded.chapter_idx,
+                 chapter_title=excluded.chapter_title,
+                 purpose=excluded.purpose,
+                 steps=excluded.steps,
+                 materials=excluded.materials,
+                 source_quote=excluded.source_quote,
+                 extra_quotes=excluded.extra_quotes
+               RETURNING id""",
             (
                 book_id,
                 ch_idx,
@@ -99,7 +120,7 @@ def reduce_extractions(
                 json.dumps(uniq_extra),
             ),
         )
-        exercise_ids[key] = cur.lastrowid
+        exercise_ids[key] = cur.fetchone()[0]
 
     # Persist dedupe log
     for merged_ex, kept_ex, reason in dedupe_entries:

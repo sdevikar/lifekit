@@ -37,7 +37,13 @@ def validate_book(
     book_id: str,
     chapters: list[tuple[str, str]],  # [(title, text)]
 ) -> dict:
-    """Run deterministic checks over all exercises; persist to validation_log."""
+    """Run deterministic checks over all exercises; persist to validation_log.
+
+    When chapter text is unavailable for an exercise (no --chapters passed to
+    the CLI, or its chapter missing from the lookup), the quote check is
+    logged as *skipped* (validation_log.passed NULL) — never as failed.
+    Returns {"passed": n, "failed": n, "skipped": n, "zero_flags": [...]}.
+    """
     db_path = str(db_path)
     init_db(db_path)
     conn = sqlite3.connect(db_path)
@@ -52,9 +58,21 @@ def validate_book(
 
     passed = 0
     failed = 0
+    skipped = 0
     for ex_id, title, quote, extra_json, ch_title in rows:
-        text = text_by_title.get(ch_title, "")
+        text = text_by_title.get(ch_title)
         extra = json.loads(extra_json) if extra_json else []
+        if text is None:
+            # No chapter text to check against — record a skip, not a failure.
+            skipped += 1
+            conn.execute(
+                """INSERT INTO validation_log
+                   (book_id, exercise_id, check_type, passed, detail)
+                   VALUES (?, ?, ?, NULL, ?)""",
+                (book_id, ex_id, "verbatim_quote",
+                 f"skipped: no chapter text available for {ch_title!r}"),
+            )
+            continue
         result = validate_quotes(quote, extra, text)
         ok = result["ok"]
         if ok:
@@ -87,4 +105,4 @@ def validate_book(
 
     conn.commit()
     conn.close()
-    return {"passed": passed, "failed": failed, "zero_flags": flags}
+    return {"passed": passed, "failed": failed, "skipped": skipped, "zero_flags": flags}

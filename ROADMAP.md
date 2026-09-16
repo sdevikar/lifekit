@@ -41,6 +41,10 @@ Test one step at a time; don't start the next until the current one's done-crite
 
 - Full-book extraction recall eval against the 20-exercise ground truth — runs on the user's local dev setup with their own model (decision 2026-09-15). Recorded as A20.
 
+## Known issues
+
+See `BACKLOG.md` — the living log of known defects and spec-vs-reality notes (D1/D2 fixed 2026-09-15; D3–D7, H1–H4, P1–P6 open).
+
 ## Explicitly later (not MVP)
 
 - RAG quality upgrade (semantic/hybrid search — deferred quality question)
