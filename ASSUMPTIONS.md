@@ -44,3 +44,9 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A18 | Oversized chapters (>48k chars) split via Chonkie `RecursiveChunker` into per-section extractions, concatenated. Dev eval uses smaller thresholds (16k/12k) to fit 7GB RAM; product defaults unchanged. | active | If section-boundary exercises are missed/duplicated in recall, add overlap or raise thresholds. |
 | A19 | `extract_chapter` backfills missing `chapter_title` from the known `Chapter.title` instead of failing/retriing when the model omits it (observed on front matter). Strict Pydantic schema unchanged for model output. | active | If backfill masks real model confusion, remove it and require the field. |
 | A20 | Full-book extraction recall eval (20-exercise ground truth) deferred to the user's local dev setup with their own model (decision 2026-09-15). Not blocking Steps 3–7; pipeline validated via subset/proxy evals (A17). | active | When the user runs the eval locally, record results in `openspec/archives/step-2-extraction-map/tasks.md`. |
+
+## Infra — LLM provider config (`openspec/archives/llm-provider-config/`)
+
+| ID | Assumption | Status | Revisit trigger |
+|----|------------|--------|-----------------|
+| A21 | Model backend is pluggable via `lifekit.llm` (provider protocol: Ollama default, OpenRouter via `OPENROUTER_API_KEY` env only). Config resolution: CLI flags > env vars (`LIFEKIT_PROVIDER`/`LIFEKIT_MODEL`, legacy `OLLAMA_MODEL`) > `~/.lifekit/config.json` (provider/model only, never keys) > defaults (`ollama`/`qwen3.6:latest`; OpenRouter requires an explicit model). No new dependencies (OpenRouter via stdlib urllib). | active | If more providers (Anthropic, Gemini) are wanted, add them behind the same protocol. |
