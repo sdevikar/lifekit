@@ -54,6 +54,10 @@ See `BACKLOG.md` — the living log of known defects and spec-vs-reality notes (
 - EPUB / YouTube ingestion
 - Agent Skills export
 
+## Shipped infra (not numbered MVP steps)
+
+- LLM provider config (2026-09-16): pluggable model backends (`lifekit/llm/` — Ollama default, OpenRouter via `OPENROUTER_API_KEY`), layered config (CLI > env > `~/.lifekit/config.json` > defaults), `lifekit config` CLI, portable eval script. Archived spec: `openspec/archives/llm-provider-config/`.
+
 ## Already shipped (Phase 0 / v0.1.0)
 
 PDF ingestion (pypdf, sentence-boundary chunking, SQLite + FTS5) · Ollama SMART plan forge with Pydantic validation · MCP server (`get_next_task`, `complete_task`, `get_plan_status`). Archived spec: `openspec/archives/lifekit-mvp-core-loop/`.

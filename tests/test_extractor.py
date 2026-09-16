@@ -119,3 +119,29 @@ def test_oversized_chapter_splits_into_sections():
     result = extract_chapter(_chapter(text=long_text), client=client, model="m")
     assert len(client.calls) >= 2
     assert len(result.exercises) == len(client.calls)  # concatenated sections
+
+
+class StubProvider:
+    """Mimics the lifekit.llm protocol: chat_json_schema returns a content string."""
+
+    def __init__(self, payloads):
+        self.payloads = list(payloads)
+        self.calls = []
+
+    def chat_json_schema(self, *, model, messages, json_schema, temperature):
+        self.calls.append(
+            {"model": model, "messages": messages, "json_schema": json_schema,
+             "temperature": temperature}
+        )
+        payload = self.payloads.pop(0)
+        return json.dumps(payload) if isinstance(payload, dict) else payload
+
+
+def test_extract_chapter_accepts_protocol_provider():
+    provider = StubProvider([VALID_JSON])
+    result = extract_chapter(_chapter(), provider=provider, model="test-model")
+    assert isinstance(result, ChapterExtraction)
+    assert result.exercises[0].title == "Health / Work / Play / Love Dashboard"
+    assert provider.calls[0]["temperature"] == pytest.approx(0.1)
+    assert provider.calls[0]["model"] == "test-model"
+    assert isinstance(provider.calls[0]["json_schema"], dict)

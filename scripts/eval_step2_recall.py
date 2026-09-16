@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Step 2 done-criterion: full-book DYL extraction + recall vs. ground truth.
+"""Step 2 done-criterion: full-book extraction + recall vs. ground truth.
 
-Dev-only runner: llama.cpp locally behind a tiny Ollama-interface shim
-(``.chat(model, messages, format, options)``). Product code in
-``lifekit/extract/`` stays Ollama-native; the shim lives only in this script.
+The model backend goes through the ``lifekit.llm`` provider abstraction:
 
-Usage:
-    python scripts/eval_step2_recall.py [--db DB] [--book-id ID] [--model PATH]
+    python scripts/eval_step2_recall.py --provider openrouter --model <model> \\
+        --db <db> --results ./results.json
 
-Writes JSON results to /home/hatch/workspace/lifekit-dev/.eval-step2/results.json and prints a summary.
+Or keep the dev-only local llama.cpp path with ``--model-path <gguf>``
+(dev-only; product code stays provider-agnostic). ``--model`` is a provider
+model tag and is ignored when ``--model-path`` is given.
+
+Results and extractions are written next to the ``--results`` path
+(default ``./.eval-step2/results.json``); no machine-specific paths.
 """
 import argparse
 import json
@@ -22,18 +25,24 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lifekit.extract.extractor import extract_chapter
 import lifekit.extract.extractor as _ex_mod
+from lifekit.llm import get_provider, resolve_config
 from lifekit.store.chapter_splitter import Chapter
 
-# Dev-eval only: smaller chunks + ctx to fit this machine's 7GB RAM.
+# Dev-eval only: smaller chunks + ctx to fit small machines.
 # Product defaults (48k/60k chars) are unchanged in lifekit/extract/extractor.py.
 _ex_mod.MAX_CHAPTER_CHARS = 16000
 _ex_mod.SECTION_CHUNK_CHARS = 12000
 
-GROUND_TRUTH = Path("/home/hatch/workspace/self-help-exercises/designing-your-life-exercises.md")
+DEFAULT_GROUND_TRUTH = (
+    Path.home() / "workspace/self-help-exercises/designing-your-life-exercises.md"
+)
 
 
 class LlamaCppShim:
-    """Mimics ollama.Client.chat using llama.cpp with JSON-schema grammar."""
+    """Dev-only: mimics the lifekit.llm provider protocol using llama.cpp.
+
+    Kept for local evals without Ollama or a network provider. Not product code.
+    """
 
     def __init__(self, model_path: str, n_ctx: int = 8192, n_threads: int = 2):
         from llama_cpp import Llama
@@ -42,10 +51,9 @@ class LlamaCppShim:
             model_path=model_path, n_ctx=n_ctx, n_threads=n_threads, verbose=False
         )
 
-    def chat(self, model=None, messages=None, format=None, options=None):
+    def chat_json_schema(self, *, model, messages, json_schema, temperature):
         # Qwen3 "thinking" is verbose and slow on CPU; disable it for eval
-        # speed (dev-only; product prompt is unchanged). The 8B model is
-        # capable enough to follow the schema without thinking.
+        # speed (dev-only; product prompt is unchanged).
         msgs = []
         for m in messages or []:
             m = dict(m)
@@ -54,10 +62,9 @@ class LlamaCppShim:
             msgs.append(m)
         kwargs = {
             "messages": msgs,
-            "temperature": (options or {}).get("temperature", 0.1),
+            "temperature": temperature,
+            "response_format": {"type": "json_schema", "schema": json_schema},
         }
-        if format:
-            kwargs["response_format"] = {"type": "json_schema", "schema": format}
         import time as _t
 
         _t0 = _t.time()
@@ -68,7 +75,7 @@ class LlamaCppShim:
         print(f"  [shim] done in {_dt:.0f}s, usage={out.get('usage', {})}", flush=True)
         # strip Qwen3 <think> blocks if present
         content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
-        return {"message": {"content": content}}
+        return content
 
 
 def load_chapters(db_path: str, book_id: str) -> list[Chapter]:
@@ -82,9 +89,9 @@ def load_chapters(db_path: str, book_id: str) -> list[Chapter]:
             for r in rows]
 
 
-def ground_truth_titles() -> list[str]:
+def ground_truth_titles(path: Path) -> list[str]:
     titles = []
-    for line in GROUND_TRUTH.read_text().splitlines():
+    for line in path.read_text().splitlines():
         m = re.match(r"### (?:Exercise|Practice) \d+ — (.+)$", line.strip())
         if m:
             titles.append(m.group(1).strip())
@@ -108,11 +115,19 @@ def title_match(extracted: str, truth: str) -> bool:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--db", default="/home/hatch/workspace/lifekit-dev/.eval-step2/lifekit.db")
+    ap.add_argument("--db", default=str(Path.cwd() / ".eval-step2" / "lifekit.db"))
     ap.add_argument("--book-id", default=None)
-    ap.add_argument("--model", default=str(Path.home() / "workspace/models/Qwen3-4B-Q4_K_M.gguf"))
+    ap.add_argument("--provider", default=None,
+                    help="ollama | openrouter (default: resolve via config)")
+    ap.add_argument("--model", default=None,
+                    help="provider model tag (ignored with --model-path)")
+    ap.add_argument("--model-path", default=None,
+                    help="dev-only: local llama.cpp GGUF path (bypasses provider)")
     ap.add_argument("--n-ctx", type=int, default=8192)
     ap.add_argument("--chapters", default=None, help="comma-separated idxs (default: all)")
+    ap.add_argument("--results", default=str(Path.cwd() / ".eval-step2" / "results.json"),
+                    help="results JSON path (extractions written alongside)")
+    ap.add_argument("--ground-truth", default=str(DEFAULT_GROUND_TRUTH))
     args = ap.parse_args()
 
     conn = sqlite3.connect(args.db)
@@ -126,14 +141,23 @@ def main():
     if args.chapters:
         wanted = {int(x) for x in args.chapters.split(",")}
         chapters = [c for c in chapters if c.index in wanted]
-    print(f"book_id={book_id}, {len(chapters)} chapters, model={args.model}", flush=True)
 
-    client = LlamaCppShim(args.model, n_ctx=args.n_ctx)
-    truths = ground_truth_titles()
+    if args.model_path:
+        provider = LlamaCppShim(args.model_path, n_ctx=args.n_ctx)
+        model = None
+        backend = f"llama.cpp shim ({args.model_path})"
+    else:
+        config = resolve_config(cli_provider=args.provider, cli_model=args.model)
+        provider = get_provider(config)
+        model = config.model
+        backend = f"{config.provider}/{config.model}"
+
+    truths = ground_truth_titles(Path(args.ground_truth))
+    print(f"book_id={book_id}, {len(chapters)} chapters, backend={backend}", flush=True)
     print(f"ground truth: {len(truths)} exercises", flush=True)
 
-    out = Path("/home/hatch/workspace/lifekit-dev/.eval-step2/results.json")
-    ext_path = Path("/home/hatch/workspace/lifekit-dev/.eval-step2/extractions.json")
+    out = Path(args.results)
+    ext_path = out.parent / "extractions.json"
     out.parent.mkdir(parents=True, exist_ok=True)
 
     # Resumable: skip chapters already completed in a previous run.
@@ -160,7 +184,7 @@ def main():
             continue
         t0 = time.time()
         try:
-            ext = extract_chapter(ch, client=client)
+            ext = extract_chapter(ch, provider=provider, model=model)
             ok = True
             err = None
             extractions[ch.index] = ext.model_dump()
@@ -208,8 +232,6 @@ def main():
         "misses": misses,
         "quote_grounding": f"{grounded_q}/{total_q}",
     }
-    out = Path("/home/hatch/workspace/lifekit-dev/.eval-step2/results.json")
-    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(summary, indent=2))
     print(f"\nRECALL: {len(hits)}/{len(truths)}")
     print(f"QUOTE GROUNDING: {grounded_q}/{total_q}")

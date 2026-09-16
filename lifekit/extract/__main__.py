@@ -36,7 +36,9 @@ def main():
     parser.add_argument("--db-path", default=None,
                         help="SQLite path (default: ~/.lifekit/lifekit.db)")
     parser.add_argument("--book-id", required=True, help="Book id in chapters table")
-    parser.add_argument("--model", default=None, help=f"Ollama model (default: {DEFAULT_MODEL})")
+    parser.add_argument("--model", default=None, help=f"Model tag (default: {DEFAULT_MODEL})")
+    parser.add_argument("--provider", default=None,
+                        help="LLM provider: ollama (default) or openrouter; overrides config/env")
     parser.add_argument("--chapters", default=None,
                         help="Comma-separated chapter indexes to extract (default: all)")
     parser.add_argument("--out", default=None,
@@ -55,8 +57,16 @@ def main():
 
     total_ex = 0
     all_results = []
+    provider = None
+    resolved_model = args.model
+    if args.provider:
+        from lifekit.llm import get_provider, resolve_config
+
+        config = resolve_config(cli_provider=args.provider, cli_model=args.model)
+        provider = get_provider(config)
+        resolved_model = config.model
     for ch in chapters:
-        result = extract_chapter(ch, model=args.model)
+        result = extract_chapter(ch, provider=provider, model=resolved_model)
         total_ex += len(result.exercises)
         all_results.append(result.model_dump())
         print(f"[{ch.index}] {result.chapter_title}: "

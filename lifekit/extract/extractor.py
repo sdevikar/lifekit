@@ -1,8 +1,12 @@
 """lifekit.extract.extractor -- per-chapter structured extraction (map step).
 
-One schema-constrained Ollama call per chapter (``format=<Pydantic schema>``,
-low temperature, retry on validation failure). Oversized chapters are split
-with Chonkie's RecursiveChunker and extracted per section.
+One schema-constrained model call per chapter (default: Ollama
+``format=<Pydantic schema>``, low temperature, retry on validation failure).
+Oversized chapters are split with Chonkie's RecursiveChunker and extracted
+per section.
+
+The backend is pluggable via ``lifekit.llm``: ``extract_chapter(chapter)``
+resolves the configured provider (Ollama default) itself.
 
 Usage:
     from lifekit.extract.extractor import extract_chapter
@@ -17,6 +21,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
 
+from lifekit.llm import LLMProvider, get_provider, resolve_config
+from lifekit.llm.ollama_provider import OllamaProvider
 from lifekit.store.chapter_splitter import Chapter
 
 DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.6:latest")
@@ -63,15 +69,9 @@ def build_messages(chapter: Chapter) -> tuple[str, str]:
     return SYSTEM_PROMPT, user
 
 
-def _default_client() -> Any:
-    import ollama
-
-    return ollama.Client()
-
-
 def _extract_single(
     chapter: Chapter,
-    client: Any,
+    provider: LLMProvider,
     model: str,
     temperature: float,
     max_attempts: int,
@@ -80,16 +80,15 @@ def _extract_single(
     system, user = build_messages(chapter)
     last_err: ValidationError | None = None
     for _ in range(max_attempts):
-        resp = client.chat(
+        content = provider.chat_json_schema(
             model=model,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
             ],
-            format=ChapterExtraction.model_json_schema(),
-            options={"temperature": temperature},
+            json_schema=ChapterExtraction.model_json_schema(),
+            temperature=temperature,
         )
-        content = resp["message"]["content"]
         try:
             data = json.loads(content)
             # The model occasionally omits chapter_title even though the schema
@@ -120,6 +119,7 @@ def _split_sections(text: str) -> list[str]:
 def extract_chapter(
     chapter: Chapter,
     client: Any | None = None,
+    provider: LLMProvider | None = None,
     model: str | None = None,
     temperature: float = TEMPERATURE,
     max_attempts: int = MAX_ATTEMPTS,
@@ -128,18 +128,27 @@ def extract_chapter(
 
     Args:
         chapter: Chapter to extract from.
-        client: Object with ``.chat(...)`` like ``ollama.Client``; a real
-            client is created when omitted.
-        model: Ollama model tag; defaults to ``OLLAMA_MODEL`` env or
-            ``qwen3.6:latest``.
+        client: Legacy ollama-shaped object with ``.chat(...)``; wrapped in
+            an ``OllamaProvider`` for backwards compatibility with tests and
+            the dev-eval shim.
+        provider: A ``lifekit.llm`` provider; resolved from config when omitted.
+        model: Model tag; defaults resolve via ``resolve_config``
+            (CLI > env > config file > ``qwen3.6:latest``).
         temperature: Sampling temperature (default 0.1).
         max_attempts: Retries on Pydantic validation failure.
     """
-    client = client if client is not None else _default_client()
-    model = model or DEFAULT_MODEL
+    if provider is None:
+        if client is not None:
+            provider = OllamaProvider(client=client)
+        else:
+            config = resolve_config(cli_model=model)
+            provider = get_provider(config)
+            model = config.model
+    if model is None:
+        model = getattr(provider, "_model", None) or DEFAULT_MODEL
 
     if len(chapter.text) <= MAX_CHAPTER_CHARS:
-        return _extract_single(chapter, client, model, temperature, max_attempts)
+        return _extract_single(chapter, provider, model, temperature, max_attempts)
 
     merged = ChapterExtraction(chapter_title=chapter.title, key_ideas=[], exercises=[])
     for i, section in enumerate(_split_sections(chapter.text)):
@@ -150,7 +159,7 @@ def extract_chapter(
             page_start=chapter.page_start,
             page_end=chapter.page_end,
         )
-        part = _extract_single(sub, client, model, temperature, max_attempts)
+        part = _extract_single(sub, provider, model, temperature, max_attempts)
         merged.key_ideas.extend(part.key_ideas)
         merged.exercises.extend(part.exercises)
     return merged
