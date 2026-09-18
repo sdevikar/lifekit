@@ -11,6 +11,9 @@ IDs are stable — new findings append, never renumber.
 - **D2 (MEDIUM)** — validate without `--chapters` logged 100% false failures →
   fixed 2026-09-15: quote checks are logged as *skipped* (`validation_log.passed`
   NULL, schema migrated) and the CLI warns loudly (`lifekit/validate/`).
+- **P1 (MEDIUM)** — `scripts/eval_step2_recall.py` hardcoded sandbox paths →
+  fixed 2026-09-15: `--provider`/`--model`/`--results` flags added; the
+  2026-09-17 full-book eval ran portably against home Ollama.
 
 ## Open defects
 
@@ -65,9 +68,9 @@ need to link back to pages.
   adapter lands, or build the adapter in Step 8.
 - **H2 — Step 2 tasks.md checkboxes unchecked.** All 8 task boxes are `- [ ]`
   though the change is archived as done
-  (`openspec/archives/step-2-extraction-map/tasks.md`). Status: OPEN.
-  Suggested disposition: check the boxes that are done; leave 2.7 unchecked
-  (deferred per A17/A20).
+  (`openspec/archives/step-2-extraction-map/tasks.md`). Status: ✅ FIXED
+  2026-09-17 — all boxes checked; 2.7 completed with the home-Ollama
+  full-book eval results recorded in tasks.md.
 - **H3 — `validate_exercise` ignores `extra_quotes`.** The Step 4 proposal says
   it checks them; only the `validate_book` path does. The code comment admits
   it (`lifekit/validate/validator.py` line 26). Status: OPEN. Suggested
@@ -79,13 +82,33 @@ need to link back to pages.
   disposition: document "query latest per (book_id, exercise_id, check_type)"
   in USER_MANUAL if it ever confuses anyone.
 
+## Eval findings (2026-09-17 full-book eval, qwen3.8:27b-q8_0, home Ollama)
+
+- **E1 — Validator quote check false-fails on whitespace — MEDIUM — OPEN**
+  The 2026-09-17 eval: exact-substring quote grounding 16/156 (10%) vs
+  whitespace-normalized 87/156 (56%). The model quotes real book text and only
+  alters whitespace; `validate_quotes` (`lifekit/validate/validator.py`) uses
+  exact-substring comparison and would false-fail ~90% of genuine quotes as
+  written. Ref: `evals/step2-recall-qwen3.8-27b-q8_0/README.md`.
+  Suggested disposition: normalize whitespace (collapse all runs to single
+  spaces) on both sides before comparing — OpenSpec proposal at
+  `openspec/changes/step-4-quote-whitespace-normalization/`.
+- **E2 — Raw recall overstates coverage until Step 3 dedupe runs — MEDIUM — OPEN**
+  The eval's 156 records include heavy fragmentation: Good Time Journal ×4,
+  Mind Mapping ×3, Life Design Interview ×2, the five mind-set questions as
+  separate records, personal practices split into single habits. Substance
+  recall is 19/20 (95%) but record-count recall is meaningless pre-dedupe.
+  Ref: `evals/step2-recall-qwen3.8-27b-q8_0/README.md`.
+  Suggested disposition: run Step 3 reduce over the eval extractions, then
+  re-score recall — OpenSpec proposal at
+  `openspec/changes/eval-dedupe-aware-recall/`.
+
 ## Portability / hygiene
 
 - **P1 — `scripts/eval_step2_recall.py` hardcodes sandbox paths** (5 spots,
   e.g. lines 32, 111, 135–136, 211). Will break on the user's local dev setup
-  before the deferred eval (A20). Status: OPEN. Suggested disposition: add
-  `--db`, `--out`, `--ground-truth` flags (db flag exists at line 111; wire
-  the rest) before the local eval runs.
+  before the deferred eval (A20). Status: ✅ FIXED 2026-09-15 (flags added;
+  used portably in the 2026-09-17 home-Ollama eval).
 - **P2 — `test_split_dyl_pdf` hardcodes an absolute VM path**
   (`tests/test_chapter_splitter.py` line 23). Passes here, errors on any other
   machine — real-PDF coverage evaporates outside this VM. Status: OPEN.

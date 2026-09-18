@@ -27,7 +27,7 @@ Locked. Not revisited during MVP.
 |------|---------|--------|-----------------|
 | 0 | Simplifying assumptions | ✅ Locked | — |
 | 1 | Chapter splitter (TOC-first, heuristic fallback) → `chapters` table | ✅ Done (2026-09-15) | `openspec/archives/step-1-chapter-splitter/` |
-| 2 | Extraction map: per-chapter Ollama call → strict Pydantic schema (Exercise, KeyIdea) | ✅ Done (2026-09-15, subset validation) | `openspec/archives/step-2-extraction-map/` |
+| 2 | Extraction map: per-chapter Ollama call → strict Pydantic schema (Exercise, KeyIdea) | ✅ Done (2026-09-15, subset validation; full-book eval 2026-09-17 — qwen3.8:27b-q8_0, 17/17 ch, recall 19/20 (95%), conditional pass; see `evals/step2-recall-qwen3.8-27b-q8_0/`) | `openspec/archives/step-2-extraction-map/` |
 | 3 | Reduce/dedupe: merge chapter outputs, embedding-dedupe exercises → `exercises`, `key_ideas` tables | ✅ Done (2026-09-15) | `openspec/archives/step-3-reduce-dedupe/` |
 | 4 | Validation harness: verbatim-quote grounding check, zero-extraction flags, 10% judge sample | ✅ Done (2026-09-15) | `openspec/archives/step-4-validation-harness/` |
 | 5 | Coach MCP tools: `list_exercises`, `get_exercise`, `log_completion`, `next_exercise` | ✅ Done (2026-09-15) | `openspec/archives/step-5-coach-tools/` |
@@ -45,14 +45,21 @@ Test one step at a time; don't start the next until the current one's done-crite
 
 See `BACKLOG.md` — the living log of known defects and spec-vs-reality notes (D1/D2 fixed 2026-09-15; D3–D7, H1–H4, P1–P6 open).
 
-## Explicitly later (not MVP)
+## Future roadmap — proposed Steps 8–12 (charted 2026-09-17, NOT committed)
 
-- RAG quality upgrade (semantic/hybrid search — deferred quality question)
-- User interviewer
-- Momentum decay engine
-- Invite-to-coach UI
-- EPUB / YouTube ingestion
-- Agent Skills export
+Candidate steps from the coaching plan (`~/workspace/self-help-exercises/lifekit-coaching-plan.md`, based on the tutor-mcp landscape review). Each is one OpenSpec change under `openspec/changes/<step-slug>/` — proposals drafted, implementation not started. Suggested build order: **8 → 9 → 10 → 12 → 11**.
+
+| Step | Feature | Why this order | OpenSpec proposal |
+|------|---------|----------------|-------------------|
+| 8 | Coaching session model: durable sessions (planning→in_session→review→closed, server-enforced state machine), session events, Gollwitzer if-then intentions, Markdown session memory | Everything else reads/writes sessions — the foundation | `openspec/changes/step-8-coaching-sessions/` |
+| 9 | Momentum decay engine: deterministic momentum score (exponential decay over session recency, completion rate, streaks, intention honor rate), motivation-brief engine (priority-ordered brief kinds), nudge policy (quiet hours, daily cap, `get_due_nudges`) | Needs sessions + completion history; feeds every brief | `openspec/changes/step-9-momentum-decay/` |
+| 10 | User interviewer: scripted 5–7 question elicitation protocol → structured learner profile (`why_matters` feeds momentum's `value_recall` brief); book-goal linking biases exercise selection | Needs a memory profile to write into; personalizes Step 9's briefs | `openspec/changes/step-10-user-interviewer/` |
+| 12 | Agent Skills export: `lifekit export skill` generates a portable `SKILL.md` + exercise catalog + key ideas from validated extraction tables (refuses unvalidated books) | Mostly reads existing tables; high-leverage distribution; richer with 8–10 in place | `openspec/changes/step-12-agent-skills-export/` |
+| 11 | Invite-to-coach UI: static-site export (`lifekit export coach-report`) — momentum, intentions, history for an external coach; no hosted service, no auth (per Step 0) | Least validated need — build only after the coach relationship is defined (open question in coaching plan §6) | `openspec/changes/step-11-invite-to-coach/` |
+
+**Explicitly later (not in Steps 8–12):** RAG quality upgrade (semantic/hybrid search — deferred quality question), EPUB / YouTube ingestion.
+
+**Rejected (from the landscape review):** BKT/KST prerequisite graphs (exercises are practices, not prerequisites), multi-tenant SaaS/OAuth/Postgres (Step 0 locks single-user local), canned motivational text (brief engine emits signals + instructions; the LLM phrases), real-time push nudge delivery (polled `get_due_nudges` instead), knowledge-graph store, a second dedupe implementation (adopt the converged two-tier shape if dedupe is revisited).
 
 ## Shipped infra (not numbered MVP steps)
 

@@ -1,0 +1,1704 @@
+{
+  "models_used": [
+    "qwen3.8:27b-q8_0"
+  ],
+  "chapters": [
+    {
+      "idx": 0,
+      "title": "Dedication",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 43.3,
+      "key_ideas": 3,
+      "exercises": [],
+      "exercise_detail": [],
+      "grounded_exact": 0,
+      "grounded_ws": 0,
+      "total": 0
+    },
+    {
+      "idx": 1,
+      "title": "Contents",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 43.9,
+      "key_ideas": 2,
+      "exercises": [],
+      "exercise_detail": [],
+      "grounded_exact": 0,
+      "grounded_ws": 0,
+      "total": 0
+    },
+    {
+      "idx": 2,
+      "title": "Introduction: Life by Design",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 1519.0,
+      "key_ideas": 88,
+      "exercises": [
+        "Identify and Reframe a Dysfunctional Belief",
+        "Try Stuff",
+        "Form a Design Team"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Identify and Reframe a Dysfunctional Belief",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Try Stuff",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Form a Design Team",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        }
+      ],
+      "grounded_exact": 1,
+      "grounded_ws": 2,
+      "total": 3
+    },
+    {
+      "idx": 3,
+      "title": "1. Start Where You Are",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 1773.1,
+      "key_ideas": 73,
+      "exercises": [
+        "The Life Design Assessment",
+        "Health Work Play / Love Dashboard",
+        "The Life Dashboard Assessment",
+        "Your Health Gauge",
+        "Health Gauge",
+        "Work Gauge",
+        "Play Gauge",
+        "Love Gauge",
+        "Love List and Gauge",
+        "Dashboard Re-Check",
+        "Gravity Problem Check",
+        "Balance and Proportionality Review",
+        "Health Work Play / Love Dashboard"
+      ],
+      "exercise_detail": [
+        {
+          "title": "The Life Design Assessment",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Health Work Play / Love Dashboard",
+          "steps": 7,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "The Life Dashboard Assessment",
+          "steps": 5,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Your Health Gauge",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Health Gauge",
+          "steps": 3,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Work Gauge",
+          "steps": 3,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Play Gauge",
+          "steps": 3,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Love Gauge",
+          "steps": 2,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Love List and Gauge",
+          "steps": 3,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Dashboard Re-Check",
+          "steps": 6,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Gravity Problem Check",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Balance and Proportionality Review",
+          "steps": 5,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Health Work Play / Love Dashboard",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        }
+      ],
+      "grounded_exact": 1,
+      "grounded_ws": 7,
+      "total": 13
+    },
+    {
+      "idx": 4,
+      "title": "2. Building a Compass",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 1197.9,
+      "key_ideas": 39,
+      "exercises": [
+        "Writing Your Lifeview",
+        "Writing Your Workview",
+        "Workview Reflection",
+        "Workview Reflection",
+        "Lifeview Reflection",
+        "Writing Down Your Lifeview Answers",
+        "Coherency and Workview-Lifeview Integration",
+        "Compass Calibration",
+        "Workview and Lifeview Reflection"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Writing Your Lifeview",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Writing Your Workview",
+          "steps": 1,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Workview Reflection",
+          "steps": 6,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Workview Reflection",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Lifeview Reflection",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Writing Down Your Lifeview Answers",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Coherency and Workview-Lifeview Integration",
+          "steps": 6,
+          "materials": 3,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Compass Calibration",
+          "steps": 4,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Workview and Lifeview Reflection",
+          "steps": 3,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        }
+      ],
+      "grounded_exact": 0,
+      "grounded_ws": 5,
+      "total": 9
+    },
+    {
+      "idx": 5,
+      "title": "3. Wayfinding",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 1892.9,
+      "key_ideas": 60,
+      "exercises": [
+        "Good Time Journal",
+        "Capture Flow Experiences in Your Good Time Journal",
+        "Track Energy Flows",
+        "Good Time Journal \u2013 Energy Tracking and Activity Redesign",
+        "Good Time Journal",
+        "Activity Log",
+        "Good Time Journal Weekly Reflection",
+        "Zooming In on Good Time Journal Entries",
+        "Journaling to Diagnose Energy-Draining Activities",
+        "Good Time Journal Reflection on a Unifying Moment",
+        "AEIOU Observation Method",
+        "Good Time Journal with AEIOU Method",
+        "Mining the Mountaintop (Peak Experiences Reflection)",
+        "Historical Good Time Journal",
+        "Good Time Journal"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Good Time Journal",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Capture Flow Experiences in Your Good Time Journal",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Track Energy Flows",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Good Time Journal \u2013 Energy Tracking and Activity Redesign",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Good Time Journal",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Activity Log",
+          "steps": 6,
+          "materials": 4,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Good Time Journal Weekly Reflection",
+          "steps": 9,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Zooming In on Good Time Journal Entries",
+          "steps": 5,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Journaling to Diagnose Energy-Draining Activities",
+          "steps": 5,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Good Time Journal Reflection on a Unifying Moment",
+          "steps": 5,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "AEIOU Observation Method",
+          "steps": 6,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Good Time Journal with AEIOU Method",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Mining the Mountaintop (Peak Experiences Reflection)",
+          "steps": 5,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Historical Good Time Journal",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Good Time Journal",
+          "steps": 6,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        }
+      ],
+      "grounded_exact": 1,
+      "grounded_ws": 9,
+      "total": 15
+    },
+    {
+      "idx": 6,
+      "title": "4. Getting Unstuck",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 2209.9,
+      "key_ideas": 73,
+      "exercises": [
+        "Good Time Journal",
+        "Dysfunctional Belief Reframe",
+        "Dysfunctional Belief / Reframe",
+        "Ideate This",
+        "How Many Lifetimes Are in You?",
+        "Mind Mapping",
+        "Mind Mapping",
+        "Big-Paper Mind Map for Idea Generation",
+        "Reframe and Prototype to Get Unanchored",
+        "Reframe and Prototype to Get Unstuck from an Anchor Problem",
+        "Mind Mapping with Your Good Time Journal (Engagement, Energy, Flow)",
+        "Invent a Life Alternative from Your Mind Maps",
+        "Mind Mapping"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Good Time Journal",
+          "steps": 2,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Dysfunctional Belief Reframe",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Dysfunctional Belief / Reframe",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Ideate This",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "How Many Lifetimes Are in You?",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Mind Mapping",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Mind Mapping",
+          "steps": 7,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Big-Paper Mind Map for Idea Generation",
+          "steps": 8,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Reframe and Prototype to Get Unanchored",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Reframe and Prototype to Get Unstuck from an Anchor Problem",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Mind Mapping with Your Good Time Journal (Engagement, Energy, Flow)",
+          "steps": 4,
+          "materials": 3,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Invent a Life Alternative from Your Mind Maps",
+          "steps": 4,
+          "materials": 3,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Mind Mapping",
+          "steps": 5,
+          "materials": 3,
+          "grounded_exact": false,
+          "grounded_ws": true
+        }
+      ],
+      "grounded_exact": 1,
+      "grounded_ws": 8,
+      "total": 13
+    },
+    {
+      "idx": 7,
+      "title": "5. Design Your Lives",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 1363.2,
+      "key_ideas": 50,
+      "exercises": [
+        "Odyssey Plans",
+        "Develop Three Odyssey Plans",
+        "Create Three Very Different Five-Year Life Plans",
+        "The Three Lives Exercise",
+        "Odyssey Planning 101",
+        "Create Three Odyssey Plans (Alternative Five-Year Lives)",
+        "Mind Map of Design Considerations",
+        "Odyssey Plan Exercise",
+        "Sharing the Three Versions of You",
+        "Self-Observation and Jotting",
+        "Odyssey Plan"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Odyssey Plans",
+          "steps": 3,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Develop Three Odyssey Plans",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Create Three Very Different Five-Year Life Plans",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "The Three Lives Exercise",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Odyssey Planning 101",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Create Three Odyssey Plans (Alternative Five-Year Lives)",
+          "steps": 9,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Mind Map of Design Considerations",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Odyssey Plan Exercise",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Sharing the Three Versions of You",
+          "steps": 5,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Self-Observation and Jotting",
+          "steps": 3,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Odyssey Plan",
+          "steps": 4,
+          "materials": 3,
+          "grounded_exact": false,
+          "grounded_ws": true
+        }
+      ],
+      "grounded_exact": 0,
+      "grounded_ws": 6,
+      "total": 11
+    },
+    {
+      "idx": 8,
+      "title": "6. Prototyping",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 2463.2,
+      "key_ideas": 79,
+      "exercises": [
+        "Prototyping: Test-Drive a Possibility in Low-Commitment Water",
+        "Dysfunctional Belief / Reframe",
+        "Design a Prototype to Ask a Question",
+        "Low-Resolution Prototyping Practice",
+        "Life Design Interview",
+        "Life Design Interview",
+        "Prototype Experiences (Shadowing / Hands-On Exploration)",
+        "Design Brainstorming for Prototype Experiences",
+        "Odyssey Plans Prototyping Questions",
+        "Life Design Brainstorming Session",
+        "Framing a Brainstorming Question",
+        "Warming Up (Step 2 of the Four-Step Brainstorming Method)",
+        "Play-Doh Brainstorming Warm-Up",
+        "Facilitated Brainstorming Session",
+        "Brainstorm, Categorize, and Vote on Prototype Ideas",
+        "Try Stuff: Prototyping",
+        "Combine Odyssey Plan Presentation with Prototype Brainstorm",
+        "Build Prototypes Through Life Design Interviews and Experiences"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Prototyping: Test-Drive a Possibility in Low-Commitment Water",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Dysfunctional Belief / Reframe",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Design a Prototype to Ask a Question",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Low-Resolution Prototyping Practice",
+          "steps": 7,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Life Design Interview",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Life Design Interview",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Prototype Experiences (Shadowing / Hands-On Exploration)",
+          "steps": 7,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Design Brainstorming for Prototype Experiences",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Odyssey Plans Prototyping Questions",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Life Design Brainstorming Session",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Framing a Brainstorming Question",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Warming Up (Step 2 of the Four-Step Brainstorming Method)",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Play-Doh Brainstorming Warm-Up",
+          "steps": 2,
+          "materials": 1,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Facilitated Brainstorming Session",
+          "steps": 9,
+          "materials": 3,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Brainstorm, Categorize, and Vote on Prototype Ideas",
+          "steps": 9,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Try Stuff: Prototyping",
+          "steps": 4,
+          "materials": 3,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Combine Odyssey Plan Presentation with Prototype Brainstorm",
+          "steps": 3,
+          "materials": 3,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Build Prototypes Through Life Design Interviews and Experiences",
+          "steps": 1,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        }
+      ],
+      "grounded_exact": 4,
+      "grounded_ws": 11,
+      "total": 18
+    },
+    {
+      "idx": 9,
+      "title": "7. How Not to Get a Job",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 1297.3,
+      "key_ideas": 52,
+      "exercises": [
+        "Tailor Your R\u00e9sum\u00e9 to the Job Description Keywords",
+        "Rewrite Your R\u00e9sum\u00e9 Using Job Posting Keywords",
+        "Match Specific Skills to Posting Language",
+        "Focus Your R\u00e9sum\u00e9 on the Job as Described",
+        "Bring a Fresh Printed R\u00e9sum\u00e9 to the Interview",
+        "Research the Job Posting Timeline",
+        "Find Out How Many Candidates Have Been Interviewed",
+        "Check Job Description Churn Rate for Phantom Listings",
+        "The Hiring-Manager Reframe"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Tailor Your R\u00e9sum\u00e9 to the Job Description Keywords",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Rewrite Your R\u00e9sum\u00e9 Using Job Posting Keywords",
+          "steps": 4,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Match Specific Skills to Posting Language",
+          "steps": 3,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Focus Your R\u00e9sum\u00e9 on the Job as Described",
+          "steps": 6,
+          "materials": 2,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Bring a Fresh Printed R\u00e9sum\u00e9 to the Interview",
+          "steps": 2,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Research the Job Posting Timeline",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Find Out How Many Candidates Have Been Interviewed",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Check Job Description Churn Rate for Phantom Listings",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "The Hiring-Manager Reframe",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        }
+      ],
+      "grounded_exact": 2,
+      "grounded_ws": 4,
+      "total": 9
+    },
+    {
+      "idx": 10,
+      "title": "8. Designing Your Dream Job",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 1326.7,
+      "key_ideas": 42,
+      "exercises": [
+        "Life Design Interviews (Prototyping for the Hidden Job Market)",
+        "Life Design Interview (Prototype Conversation)",
+        "The 'What Steps Would Be Involved' Question",
+        "Networking Reframe",
+        "Networking Outreach for Prototyping Conversations",
+        "Ask for Directions (Request Referrals)",
+        "Use the Internet to Find and Reach Out to People",
+        "Reframe: From Job-Seeker to Offer-Pursuer",
+        "The 20 Percent / 10 Percent Chance Question"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Life Design Interviews (Prototyping for the Hidden Job Market)",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Life Design Interview (Prototype Conversation)",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "The 'What Steps Would Be Involved' Question",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Networking Reframe",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Networking Outreach for Prototyping Conversations",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Ask for Directions (Request Referrals)",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Use the Internet to Find and Reach Out to People",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Reframe: From Job-Seeker to Offer-Pursuer",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "The 20 Percent / 10 Percent Chance Question",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        }
+      ],
+      "grounded_exact": 1,
+      "grounded_ws": 4,
+      "total": 9
+    },
+    {
+      "idx": 11,
+      "title": "9. Choosing Happiness",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 2262.0,
+      "key_ideas": 73,
+      "exercises": [
+        "Dysfunctional Belief Reframe",
+        "The Life Design Choosing Process",
+        "Write Your Workview and Lifeview",
+        "Create Mind Maps",
+        "Three Odyssey Plan Alternatives",
+        "Prototype Conversations and Experiences",
+        "Narrow Your Options List",
+        "Burn the Rejected List and Take a Break",
+        "Form and Maintain a Set of Personal Practices for Emotional and Spiritual Maturity",
+        "Grokking a Choice",
+        "Cull, Choose, and Build Forward",
+        "The Letting-Go Step (Managing Decision Regret)",
+        "Dysfunctional Belief Reframe: Happiness",
+        "The Blue Horse Let-Go Demonstration",
+        "The Blue Horse Attention Test",
+        "Move Into, Not Away From (Reframing Practice)"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Dysfunctional Belief Reframe",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "The Life Design Choosing Process",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Write Your Workview and Lifeview",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Create Mind Maps",
+          "steps": 1,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Three Odyssey Plan Alternatives",
+          "steps": 1,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Prototype Conversations and Experiences",
+          "steps": 1,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Narrow Your Options List",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Burn the Rejected List and Take a Break",
+          "steps": 5,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Form and Maintain a Set of Personal Practices for Emotional and Spiritual Maturity",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Grokking a Choice",
+          "steps": 7,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Cull, Choose, and Build Forward",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "The Letting-Go Step (Managing Decision Regret)",
+          "steps": 5,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Dysfunctional Belief Reframe: Happiness",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "The Blue Horse Let-Go Demonstration",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "The Blue Horse Attention Test",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Move Into, Not Away From (Reframing Practice)",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        }
+      ],
+      "grounded_exact": 2,
+      "grounded_ws": 10,
+      "total": 16
+    },
+    {
+      "idx": 12,
+      "title": "10. Failure Immunity",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 1515.8,
+      "key_ideas": 61,
+      "exercises": [
+        "Reframe: Life Is a Process, Not an Outcome",
+        "Prototype Conversations",
+        "The Campaign Approach to a Major Challenge",
+        "Failure Reframe Exercise",
+        "Failure Log Reframe: Jot Down the Insight",
+        "Reframing Failure",
+        "Converting Failures to Growth (Monthly Practice)"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Reframe: Life Is a Process, Not an Outcome",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        },
+        {
+          "title": "Prototype Conversations",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "The Campaign Approach to a Major Challenge",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Failure Reframe Exercise",
+          "steps": 3,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Failure Log Reframe: Jot Down the Insight",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Reframing Failure",
+          "steps": 3,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Converting Failures to Growth (Monthly Practice)",
+          "steps": 1,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        }
+      ],
+      "grounded_exact": 1,
+      "grounded_ws": 2,
+      "total": 7
+    },
+    {
+      "idx": 13,
+      "title": "11. Building a Team",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 2490.6,
+      "key_ideas": 111,
+      "exercises": [
+        "Identifying Your Team",
+        "Apply the Four Team Rules",
+        "Find Mentors for Your Life Design Effort",
+        "Investigating the Adviser's Perspective",
+        "Extracting a Mentor Contribution",
+        "Building a Stable of Mentors",
+        "Community as an Ongoing Practice",
+        "Play Dead / Eulogy Reflection",
+        "Commentators vs. Participants Reflection",
+        "Building a Team"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Identifying Your Team",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Apply the Four Team Rules",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Find Mentors for Your Life Design Effort",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Investigating the Adviser's Perspective",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Extracting a Mentor Contribution",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Building a Stable of Mentors",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Community as an Ongoing Practice",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Play Dead / Eulogy Reflection",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Commentators vs. Participants Reflection",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Building a Team",
+          "steps": 3,
+          "materials": 1,
+          "grounded_exact": true,
+          "grounded_ws": true
+        }
+      ],
+      "grounded_exact": 1,
+      "grounded_ws": 4,
+      "total": 10
+    },
+    {
+      "idx": 14,
+      "title": "Conclusion: A Well-Designed Life",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 2198.0,
+      "key_ideas": 47,
+      "exercises": [
+        "Imagining Your Perfect Pie",
+        "Assessing Your Actual Pie",
+        "Dysfunctional Belief Reframe: Finishing Life Design",
+        "Designing Your Way Forward",
+        "Be Curious",
+        "Try Stuff",
+        "Reframe Problems",
+        "Know It's a Process",
+        "Ask for Help",
+        "Call Your Mother",
+        "Revisit and Recalibrate Your Compass Annually",
+        "Commit to Personal Practices",
+        "Morning Meditation and Daily Affirmation (Bill's Routine)",
+        "Weekly Painting and Drawing Practice",
+        "Weekly Complex or Gourmet Meal",
+        "Daily Silent Meditation (Centering Prayer)",
+        "Weekly Poetry Reading in the Body",
+        "Weekly Slow Walk in the Hills",
+        "Build and Prototype Your Own Set of Practices",
+        "Life Design Interviewing",
+        "Journaling to Discover Your Inner Voice",
+        "Work on Your Compass",
+        "Reframe Complaints with Curiosity"
+      ],
+      "exercise_detail": [
+        {
+          "title": "Imagining Your Perfect Pie",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Assessing Your Actual Pie",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Dysfunctional Belief Reframe: Finishing Life Design",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Designing Your Way Forward",
+          "steps": 4,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Be Curious",
+          "steps": 9,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Try Stuff",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Reframe Problems",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Know It's a Process",
+          "steps": 9,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Ask for Help",
+          "steps": 10,
+          "materials": 1,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Call Your Mother",
+          "steps": 1,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Revisit and Recalibrate Your Compass Annually",
+          "steps": 6,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Commit to Personal Practices",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Morning Meditation and Daily Affirmation (Bill's Routine)",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Weekly Painting and Drawing Practice",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Weekly Complex or Gourmet Meal",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Daily Silent Meditation (Centering Prayer)",
+          "steps": 2,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": false
+        },
+        {
+          "title": "Weekly Poetry Reading in the Body",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Weekly Slow Walk in the Hills",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Build and Prototype Your Own Set of Practices",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Life Design Interviewing",
+          "steps": 5,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Journaling to Discover Your Inner Voice",
+          "steps": 4,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Work on Your Compass",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": false,
+          "grounded_ws": true
+        },
+        {
+          "title": "Reframe Complaints with Curiosity",
+          "steps": 3,
+          "materials": 0,
+          "grounded_exact": true,
+          "grounded_ws": true
+        }
+      ],
+      "grounded_exact": 1,
+      "grounded_ws": 15,
+      "total": 23
+    },
+    {
+      "idx": 15,
+      "title": "Acknowledgments",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 199.4,
+      "key_ideas": 10,
+      "exercises": [],
+      "exercise_detail": [],
+      "grounded_exact": 0,
+      "grounded_ws": 0,
+      "total": 0
+    },
+    {
+      "idx": 16,
+      "title": "Notes",
+      "model": "qwen3.8:27b-q8_0",
+      "ok": true,
+      "error": null,
+      "seconds": 141.3,
+      "key_ideas": 12,
+      "exercises": [],
+      "exercise_detail": [],
+      "grounded_exact": 0,
+      "grounded_ws": 0,
+      "total": 0
+    }
+  ],
+  "extracted_titles": [
+    "Identify and Reframe a Dysfunctional Belief",
+    "Try Stuff",
+    "Form a Design Team",
+    "The Life Design Assessment",
+    "Health Work Play / Love Dashboard",
+    "The Life Dashboard Assessment",
+    "Your Health Gauge",
+    "Health Gauge",
+    "Work Gauge",
+    "Play Gauge",
+    "Love Gauge",
+    "Love List and Gauge",
+    "Dashboard Re-Check",
+    "Gravity Problem Check",
+    "Balance and Proportionality Review",
+    "Health Work Play / Love Dashboard",
+    "Writing Your Lifeview",
+    "Writing Your Workview",
+    "Workview Reflection",
+    "Workview Reflection",
+    "Lifeview Reflection",
+    "Writing Down Your Lifeview Answers",
+    "Coherency and Workview-Lifeview Integration",
+    "Compass Calibration",
+    "Workview and Lifeview Reflection",
+    "Good Time Journal",
+    "Capture Flow Experiences in Your Good Time Journal",
+    "Track Energy Flows",
+    "Good Time Journal \u2013 Energy Tracking and Activity Redesign",
+    "Good Time Journal",
+    "Activity Log",
+    "Good Time Journal Weekly Reflection",
+    "Zooming In on Good Time Journal Entries",
+    "Journaling to Diagnose Energy-Draining Activities",
+    "Good Time Journal Reflection on a Unifying Moment",
+    "AEIOU Observation Method",
+    "Good Time Journal with AEIOU Method",
+    "Mining the Mountaintop (Peak Experiences Reflection)",
+    "Historical Good Time Journal",
+    "Good Time Journal",
+    "Good Time Journal",
+    "Dysfunctional Belief Reframe",
+    "Dysfunctional Belief / Reframe",
+    "Ideate This",
+    "How Many Lifetimes Are in You?",
+    "Mind Mapping",
+    "Mind Mapping",
+    "Big-Paper Mind Map for Idea Generation",
+    "Reframe and Prototype to Get Unanchored",
+    "Reframe and Prototype to Get Unstuck from an Anchor Problem",
+    "Mind Mapping with Your Good Time Journal (Engagement, Energy, Flow)",
+    "Invent a Life Alternative from Your Mind Maps",
+    "Mind Mapping",
+    "Odyssey Plans",
+    "Develop Three Odyssey Plans",
+    "Create Three Very Different Five-Year Life Plans",
+    "The Three Lives Exercise",
+    "Odyssey Planning 101",
+    "Create Three Odyssey Plans (Alternative Five-Year Lives)",
+    "Mind Map of Design Considerations",
+    "Odyssey Plan Exercise",
+    "Sharing the Three Versions of You",
+    "Self-Observation and Jotting",
+    "Odyssey Plan",
+    "Prototyping: Test-Drive a Possibility in Low-Commitment Water",
+    "Dysfunctional Belief / Reframe",
+    "Design a Prototype to Ask a Question",
+    "Low-Resolution Prototyping Practice",
+    "Life Design Interview",
+    "Life Design Interview",
+    "Prototype Experiences (Shadowing / Hands-On Exploration)",
+    "Design Brainstorming for Prototype Experiences",
+    "Odyssey Plans Prototyping Questions",
+    "Life Design Brainstorming Session",
+    "Framing a Brainstorming Question",
+    "Warming Up (Step 2 of the Four-Step Brainstorming Method)",
+    "Play-Doh Brainstorming Warm-Up",
+    "Facilitated Brainstorming Session",
+    "Brainstorm, Categorize, and Vote on Prototype Ideas",
+    "Try Stuff: Prototyping",
+    "Combine Odyssey Plan Presentation with Prototype Brainstorm",
+    "Build Prototypes Through Life Design Interviews and Experiences",
+    "Tailor Your R\u00e9sum\u00e9 to the Job Description Keywords",
+    "Rewrite Your R\u00e9sum\u00e9 Using Job Posting Keywords",
+    "Match Specific Skills to Posting Language",
+    "Focus Your R\u00e9sum\u00e9 on the Job as Described",
+    "Bring a Fresh Printed R\u00e9sum\u00e9 to the Interview",
+    "Research the Job Posting Timeline",
+    "Find Out How Many Candidates Have Been Interviewed",
+    "Check Job Description Churn Rate for Phantom Listings",
+    "The Hiring-Manager Reframe",
+    "Life Design Interviews (Prototyping for the Hidden Job Market)",
+    "Life Design Interview (Prototype Conversation)",
+    "The 'What Steps Would Be Involved' Question",
+    "Networking Reframe",
+    "Networking Outreach for Prototyping Conversations",
+    "Ask for Directions (Request Referrals)",
+    "Use the Internet to Find and Reach Out to People",
+    "Reframe: From Job-Seeker to Offer-Pursuer",
+    "The 20 Percent / 10 Percent Chance Question",
+    "Dysfunctional Belief Reframe",
+    "The Life Design Choosing Process",
+    "Write Your Workview and Lifeview",
+    "Create Mind Maps",
+    "Three Odyssey Plan Alternatives",
+    "Prototype Conversations and Experiences",
+    "Narrow Your Options List",
+    "Burn the Rejected List and Take a Break",
+    "Form and Maintain a Set of Personal Practices for Emotional and Spiritual Maturity",
+    "Grokking a Choice",
+    "Cull, Choose, and Build Forward",
+    "The Letting-Go Step (Managing Decision Regret)",
+    "Dysfunctional Belief Reframe: Happiness",
+    "The Blue Horse Let-Go Demonstration",
+    "The Blue Horse Attention Test",
+    "Move Into, Not Away From (Reframing Practice)",
+    "Reframe: Life Is a Process, Not an Outcome",
+    "Prototype Conversations",
+    "The Campaign Approach to a Major Challenge",
+    "Failure Reframe Exercise",
+    "Failure Log Reframe: Jot Down the Insight",
+    "Reframing Failure",
+    "Converting Failures to Growth (Monthly Practice)",
+    "Identifying Your Team",
+    "Apply the Four Team Rules",
+    "Find Mentors for Your Life Design Effort",
+    "Investigating the Adviser's Perspective",
+    "Extracting a Mentor Contribution",
+    "Building a Stable of Mentors",
+    "Community as an Ongoing Practice",
+    "Play Dead / Eulogy Reflection",
+    "Commentators vs. Participants Reflection",
+    "Building a Team",
+    "Imagining Your Perfect Pie",
+    "Assessing Your Actual Pie",
+    "Dysfunctional Belief Reframe: Finishing Life Design",
+    "Designing Your Way Forward",
+    "Be Curious",
+    "Try Stuff",
+    "Reframe Problems",
+    "Know It's a Process",
+    "Ask for Help",
+    "Call Your Mother",
+    "Revisit and Recalibrate Your Compass Annually",
+    "Commit to Personal Practices",
+    "Morning Meditation and Daily Affirmation (Bill's Routine)",
+    "Weekly Painting and Drawing Practice",
+    "Weekly Complex or Gourmet Meal",
+    "Daily Silent Meditation (Centering Prayer)",
+    "Weekly Poetry Reading in the Body",
+    "Weekly Slow Walk in the Hills",
+    "Build and Prototype Your Own Set of Practices",
+    "Life Design Interviewing",
+    "Journaling to Discover Your Inner Voice",
+    "Work on Your Compass",
+    "Reframe Complaints with Curiosity"
+  ],
+  "recall": "15/20",
+  "hits": [
+    "Health / Work / Play / Love Dashboard (\"Try Stuff\")",
+    "Workview and Lifeview, with Integration (\"Try Stuff: Workview and Lifeview\")",
+    "Good Time Journal",
+    "Mining the Mountaintop (Peak-Experience Journal)",
+    "Mind Mapping (with Your Good Time Journal)",
+    "Odyssey Plans (\"Try Stuff\")",
+    "Build Prototypes for Your Odyssey Questions (\"Try Stuff: Prototyping\")",
+    "Life Design Interview (Prototype Conversation)",
+    "Cracking the Hidden Job Market",
+    "The Life Design Choosing Process (4 Steps)",
+    "Grokking a Choice",
+    "Personal Practices for Discernment (Ongoing)",
+    "Failure Reframe (\"Try Stuff: Reframing Failure\")",
+    "Build Your Life Design Team (\"Try Stuff\")",
+    "Designing Your Way Forward (Unsticking with the Mind-Sets)"
+  ],
+  "misses": [
+    "Brainstorming Prototype Experiences (4-Step Facilitated Session)",
+    "Internet Job Search Tips (Only If You Insist on Using Listings)",
+    "Find and Use Mentors (Be a Good Mentee)",
+    "The Five Mind-Sets as Daily Questions",
+    "Ask-for-Help Journal"
+  ],
+  "quote_grounding_exact": "16/156",
+  "quote_grounding_ws": "87/156"
+}
