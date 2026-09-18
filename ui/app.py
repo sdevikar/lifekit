@@ -1,6 +1,6 @@
 """LifeKit dogfood UI — throwaway Streamlit app for the DYL MVP.
 
-Run:  streamlit run ui/app.py
+Run:  uv run streamlit run ui/app.py   (after `uv sync`)
 Reads the product DB (~/.lifekit/lifekit.db, override with LIFEKIT_DB).
 
 MVP vision: "Every day, LifeKit gives you one exercise to do and one idea

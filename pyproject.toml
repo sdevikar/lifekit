@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
+requires = ["setuptools>=70.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "lifekit"
 version = "0.1.0"
 description = "An active AI thought partner that bridges consuming knowledge and living it."
-requires-python = ">=3.9"
+requires-python = ">=3.10"  # fsrs>=6.0 needs 3.10+
 dependencies = [
     "pydantic>=2.0",
     "ollama>=0.1.0",  # for local model calls (qwen3.6:latest)
@@ -15,6 +15,7 @@ dependencies = [
     "fsrs>=6.0",  # open-source FSRS spaced repetition (Step 7)
     "mcp<2",  # real MCP stdio server (FastMCP) for the coach tools
     "streamlit>=1.30",  # throwaway dogfood UI (ui/app.py)
+    "pypdf>=6.0",  # PDF text extraction fallback in lifekit/store/pdf_ingester.py
 ]
 
 [tool.setuptools.packages.find]
