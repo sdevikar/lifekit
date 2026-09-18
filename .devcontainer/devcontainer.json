@@ -10,6 +10,6 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "pip install -e . && bash .devcontainer/fetch-db.sh",
+  "postCreateCommand": "pip install -e . && mkdir -p ~/.lifekit && cp dogfood/lifekit.db ~/.lifekit/lifekit.db && ls -la ~/.lifekit/lifekit.db",
   "postStartCommand": "nohup env PYTHONPATH=/workspaces/lifekit streamlit run /workspaces/lifekit/ui/app.py --server.headless true --server.port 8501 --server.address 0.0.0.0 > /tmp/lifekit-streamlit.log 2>&1 &"
 }
