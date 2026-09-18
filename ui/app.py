@@ -2,14 +2,17 @@
 
 Run:  streamlit run ui/app.py
 Reads the product DB (~/.lifekit/lifekit.db, override with LIFEKIT_DB).
-Covers the three MVP user stories:
-  1. browse book -> chapter -> exercise, do it, mark complete (FSRS scheduled)
-  2. search box: "i want to do the mindmapping exercise" -> jump to it
-  3. due-today view + progress
+
+MVP vision: "Every day, LifeKit gives you one exercise to do and one idea
+to remember." Structure by default (Today), flexibility on demand (Chat),
+browsing as a distant third (Library).
 """
+import hashlib
 import json
 import os
+import re
 import sqlite3
+from datetime import date
 from pathlib import Path
 
 import streamlit as st
@@ -21,7 +24,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from lifekit.coach.tools import (  # noqa: E402
     get_exercise as _get_exercise,
-    list_exercises as _list_exercises,
+    next_exercise as _next_exercise,
     search_exercises as _search_exercises,
 )
 from lifekit.schedule.scheduler import (  # noqa: E402
@@ -36,15 +39,16 @@ def conn():
     return c
 
 
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=60)
 def get_book():
     c = conn()
-    r = c.execute("SELECT title, author FROM books WHERE id = ?", (BOOK_ID,)).fetchone()
+    r = c.execute("SELECT title, author FROM books WHERE id = ?",
+                  (BOOK_ID,)).fetchone()
     c.close()
     return dict(r) if r else None
 
 
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=60)
 def get_chapters():
     c = conn()
     rows = c.execute(
@@ -52,6 +56,16 @@ def get_chapters():
         (BOOK_ID,)).fetchall()
     c.close()
     return [dict(r) for r in rows]
+
+
+@st.cache_data(ttl=60)
+def all_ideas():
+    c = conn()
+    rows = c.execute(
+        "SELECT idea FROM key_ideas WHERE book_id = ? ORDER BY id",
+        (BOOK_ID,)).fetchall()
+    c.close()
+    return [r[0] for r in rows]
 
 
 def get_exercises(chapter_idx=None):
@@ -70,47 +84,62 @@ def get_exercises(chapter_idx=None):
 
 
 def get_exercise(ex_id):
-    c = conn()
-    r = c.execute("SELECT * FROM exercises WHERE id = ?", (ex_id,)).fetchone()
-    c.close()
-    if not r:
-        return None
-    d = dict(r)
-    d["steps"] = json.loads(d["steps"])
-    d["materials"] = json.loads(d["materials"])
-    return d
+    return _get_exercise(DB, ex_id)
 
 
-def get_ideas(chapter_idx=None):
+def get_ideas(chapter_idx=None, limit=60):
     c = conn()
     if chapter_idx is None:
         rows = c.execute(
-            "SELECT idea FROM key_ideas WHERE book_id = ? ORDER BY id LIMIT 200",
-            (BOOK_ID,)).fetchall()
+            "SELECT idea FROM key_ideas WHERE book_id = ? ORDER BY id LIMIT ?",
+            (BOOK_ID, limit)).fetchall()
     else:
         rows = c.execute(
             "SELECT idea FROM key_ideas WHERE book_id = ? AND chapter_idx = ? "
-            "ORDER BY id", (BOOK_ID, chapter_idx)).fetchall()
+            "ORDER BY id LIMIT ?", (BOOK_ID, chapter_idx, limit)).fetchall()
     c.close()
     return [r[0] for r in rows]
-
-
-def search_exercises(query):
-    return _search_exercises(DB, query, BOOK_ID)
 
 
 def progress():
     c = conn()
     total = c.execute(
         "SELECT COUNT(*) FROM exercises WHERE book_id = ?", (BOOK_ID,)).fetchone()[0]
-    done = c.execute(
-        "SELECT COUNT(DISTINCT exercise_id) FROM completions").fetchone()[0]
-    last = c.execute(
-        "SELECT e.title, c.completed_at FROM completions c "
-        "JOIN exercises e ON e.id = c.exercise_id "
-        "ORDER BY c.completed_at DESC LIMIT 5").fetchall()
+    done = c.execute("SELECT COUNT(DISTINCT exercise_id) FROM completions"
+                     ).fetchone()[0]
     c.close()
-    return total, done, [dict(r) for r in last]
+    return total, done
+
+
+def today_idea(offset=0):
+    ideas = all_ideas()
+    if not ideas:
+        return None
+    day = int(hashlib.md5(date.today().isoformat().encode()).hexdigest(), 16)
+    return ideas[(day + offset) % len(ideas)]
+
+
+def chapter_idx_for_number(n):
+    for ch in get_chapters():
+        if ch["title"].startswith(f"{n}."):
+            return ch["idx"]
+    return None
+
+
+def route_query(q):
+    """Rule-based router for the chat box. Returns (kind, payload)."""
+    ql = q.lower()
+    if re.search(r"\b(due|today|up next|what should i do)\b", ql):
+        return ("due", _due_exercises(DB, BOOK_ID, limit=5))
+    m = re.search(r"chapter\s+(\d+)", ql)
+    if m or re.search(r"\b(lesson|about|remind me|recap|idea)\b", ql):
+        idx = chapter_idx_for_number(m.group(1)) if m else None
+        ideas = get_ideas(idx)
+        label = next((c["title"] for c in get_chapters() if c["idx"] == idx),
+                     "the book") if idx is not None else "the book"
+        return ("ideas", (label, ideas))
+    hits = _search_exercises(DB, q, BOOK_ID)
+    return ("exercises", hits)
 
 
 def show_exercise(ex_id):
@@ -133,75 +162,118 @@ def show_exercise(ex_id):
     st.divider()
     col1, col2 = st.columns(2)
     with col1:
-        rating = st.selectbox("How did it go?",
-                              ["good", "easy", "hard", "again"],
+        rating = st.selectbox("How did it go?", ["good", "easy", "hard", "again"],
                               key=f"rating-{ex_id}")
     with col2:
         notes = st.text_input("Notes (optional)", key=f"notes-{ex_id}")
     if st.button("Mark complete", key=f"done-{ex_id}", type="primary"):
-        res = review_exercise(DB, ex_id, rating=rating, notes=notes or None)
+        res = _review_exercise(DB, ex_id, rating=rating, notes=notes or None)
         if res["ok"]:
-            st.success(f"Logged. Next review due: {res['due'][:10]}")
+            st.success(f"Logged. Next review: {res['due'][:10]}")
             st.cache_data.clear()
         else:
             st.error(res.get("error", "failed"))
 
 
+def exercise_buttons(exercises, prefix):
+    for ex in exercises:
+        mark = "✓ " if ex.get("done") else ""
+        if st.button(f"{mark}{ex['title']}", key=f"{prefix}-{ex['id']}"):
+            st.session_state["open_ex"] = ex["id"]
+
+
 # ---------- layout ----------
-st.set_page_config(page_title="LifeKit (dogfood)", layout="wide")
+st.set_page_config(page_title="LifeKit", layout="wide")
 book = get_book()
 if not book:
     st.error(f"No book '{BOOK_ID}' in {DB}. Run scripts/ingest_eval_book.py first.")
     st.stop()
-st.title(f"LifeKit — {book['title']}")
-st.caption(f"by {book['author']} · dogfood build, unpolished on purpose")
 
-view = st.sidebar.radio("Go to", ["Due today", "Exercises", "Key ideas"], key="view")
-q = st.sidebar.text_input("Find an exercise",
-                          placeholder="i want to do the mindmapping exercise")
+st.title("LifeKit")
+st.caption(f"{book['title']} · by {book['author']}")
 
-if q:
-    hits = search_exercises(q)
-    st.subheader(f"Results for {q!r}")
-    if not hits:
-        st.write("No matches. Try fewer words.")
-    for ex in hits:
-        mark = "✓ " if ex["done"] else ""
-        if st.button(f"{mark}{ex['title']}", key=f"hit-{ex['id']}"):
-            st.session_state["open_ex"] = ex["id"]
-            st.session_state["view"] = "Exercises"
-elif view == "Due today":
-    st.subheader("Due today")
-    due = due_exercises(DB, BOOK_ID, limit=20)
-    total, done, last = progress()
-    st.write(f"Progress: **{done}/{total}** exercises completed at least once")
-    if not due:
-        st.write("Nothing due. Pick something from Exercises.")
-    for ex in due:
-        if st.button(f"{ex['title']}  ·  {ex['chapter_title']}",
-                     key=f"due-{ex['id']}"):
-            st.session_state["open_ex"] = ex["id"]
-    if last:
-        st.subheader("Recently completed")
-        for r in last:
-            st.caption(f"{r['title']} — {r['completed_at'][:10]}")
-elif view == "Exercises":
+tab_today, tab_chat, tab_library = st.tabs(["Today", "Chat", "Library"])
+
+with tab_today:
+    total, done = progress()
+    st.write(f"**{done}/{total}** exercises completed")
+    st.subheader("Up next")
+    due = _due_exercises(DB, BOOK_ID, limit=1)
+    up_next = due[0] if due else _next_exercise(DB, "dyl")
+    if up_next:
+        st.markdown(f"### {up_next['title']}")
+        st.caption(up_next["chapter_title"])
+        if st.button("Start", type="primary", key="start-upnext"):
+            st.session_state["open_ex"] = up_next["id"]
+    else:
+        st.write("All caught up. The book is fully practiced.")
+    st.subheader("One idea")
+    idea = today_idea(st.session_state.get("idea_offset", 0))
+    if idea:
+        st.info(idea)
+        if st.button("Another idea", key="another-idea"):
+            st.session_state["idea_offset"] = \
+                st.session_state.get("idea_offset", 0) + 1
+            st.rerun()
+    st.subheader("Try")
+    for chip in ["I want to do the mindmapping exercise",
+                 "What was chapter 3 about?",
+                 "What's due today?"]:
+        if st.button(chip, key=f"chip-{chip[:12]}"):
+            st.session_state["today_results"] = route_query(chip)
+    if st.session_state.get("today_results"):
+        kind, payload = st.session_state["today_results"]
+        if kind == "exercises":
+            exercise_buttons(payload, "chip-ex")
+        elif kind == "due":
+            exercise_buttons(payload, "chip-due")
+        elif kind == "ideas":
+            label, ideas = payload
+            st.caption(f"Key ideas — {label}")
+            for i in ideas[:15]:
+                st.markdown(f"- {i}")
+    if st.session_state.get("open_ex"):
+        st.divider()
+        show_exercise(st.session_state["open_ex"])
+
+with tab_chat:
+    q = st.text_input("What do you want to work on?",
+                      placeholder="e.g. i want to do the mindmapping exercise",
+                      key="chat-q")
+    if st.button("Send", key="chat-send") and q:
+        st.session_state.setdefault("chat_history", []).insert(
+            0, (q, route_query(q)))
+    for q, (kind, payload) in st.session_state.get("chat_history", []):
+        st.markdown(f"**You:** {q}")
+        if kind == "exercises":
+            if payload:
+                exercise_buttons(payload, f"chat-{abs(hash(q)) % 9999}")
+            else:
+                st.write("No matches. Try fewer words.")
+        elif kind == "due":
+            if payload:
+                exercise_buttons(payload, f"chatd-{abs(hash(q)) % 9999}")
+            else:
+                st.write("Nothing due right now.")
+        elif kind == "ideas":
+            label, ideas = payload
+            st.caption(f"Key ideas — {label}")
+            for i in ideas[:15]:
+                st.markdown(f"- {i}")
+        st.divider()
+
+with tab_library:
     chapters = get_chapters()
-    ch = st.selectbox("Chapter", ["All"] + [c["title"] for c in chapters])
-    idx = None if ch == "All" else next(
-        c["idx"] for c in chapters if c["title"] == ch)
-    for ex in get_exercises(idx):
-        mark = "✓ " if ex["done"] else ""
-        if st.button(f"{mark}{ex['title']}", key=f"ex-{ex['id']}"):
-            st.session_state["open_ex"] = ex["id"]
-elif view == "Key ideas":
-    chapters = get_chapters()
-    ch = st.selectbox("Chapter", ["All"] + [c["title"] for c in chapters])
-    idx = None if ch == "All" else next(
-        c["idx"] for c in chapters if c["title"] == ch)
-    for idea in get_ideas(idx):
-        st.markdown(f"- {idea}")
-
-if st.session_state.get("open_ex"):
-    st.divider()
-    show_exercise(st.session_state["open_ex"])
+    by_title = {c["title"]: c["idx"] for c in chapters}
+    sec = st.radio("Browse", ["Exercises", "Key ideas"], horizontal=True,
+                   key="lib-sec")
+    ch = st.selectbox("Chapter", ["All"] + list(by_title), key="lib-ch")
+    idx = None if ch == "All" else by_title.get(ch)
+    if sec == "Exercises":
+        exercise_buttons(get_exercises(idx), "lib-ex")
+    else:
+        for idea in get_ideas(idx):
+            st.markdown(f"- {idea}")
+    if st.session_state.get("open_ex"):
+        st.divider()
+        show_exercise(st.session_state["open_ex"])

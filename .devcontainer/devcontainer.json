@@ -1,0 +1,15 @@
+{
+  "forwardPorts": [
+    8501
+  ],
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "name": "lifekit",
+  "portsAttributes": {
+    "8501": {
+      "label": "LifeKit",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "pip install -e . && bash .devcontainer/fetch-db.sh",
+  "postStartCommand": "nohup env PYTHONPATH=/workspaces/lifekit streamlit run /workspaces/lifekit/ui/app.py --server.headless true --server.port 8501 --server.address 0.0.0.0 > /tmp/lifekit-streamlit.log 2>&1 &"
+}

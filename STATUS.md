@@ -5,9 +5,11 @@
 > planned), `ASSUMPTIONS.md` (what we believe), and `BACKLOG.md` (what's
 > broken). Whoever merges a change updates this file in the same commit.
 
-**Last updated:** 2026-09-18 — Dogfood MVP shipped: Streamlit UI (`ui/app.py`)
-+ real MCP server (7 coach tools, BACKLOG H1 fixed); suite 82/82. DYL ingested
-at `~/.lifekit/lifekit.db` (book `dyl`): 144 exercises, 142/144 grounded.
+**Last updated:** 2026-09-18 — Dogfood UI reshaped Today-first (Up next / One
+idea / chat / library) per the finalized MVP vision; `.devcontainer/` added so
+a GitHub Codespace serves the phone UI (this sandbox accepts no inbound
+connections). Suite 82/82. DYL at `~/.lifekit/lifekit.db` (book `dyl`): 144
+exercises, 142/144 grounded.
 
 ## Current state
 
@@ -19,7 +21,8 @@ at `~/.lifekit/lifekit.db` (book `dyl`): 144 exercises, 142/144 grounded.
 | LLM provider config (Ollama default + OpenRouter, `lifekit config` CLI) | ✅ Shipped 2026-09-15 — spec archived at `openspec/archives/llm-provider-config/`, suite 77/77 |
 | Full-book extraction eval vs 20-exercise ground truth | ✅ Done 2026-09-17 — `qwen3.8:27b-q8_0` on home Ollama (Tailscale), 17/17 chapters, 156 records, recall 19/20 (95%) — **conditional pass**: needs Step 3 dedupe + validator whitespace fix before coach-ready. Results in `evals/step2-recall-qwen3.8-27b-q8_0/`. Both fixed 2026-09-18 (specs archived: `openspec/archives/step-4-quote-whitespace-normalization/`, `openspec/archives/eval-dedupe-aware-recall/`). |
 | DYL product ingest (dogfood data) | ✅ Done 2026-09-18 — `scripts/ingest_eval_book.py` → `~/.lifekit/lifekit.db` (book `dyl`): 144 exercises, 875 key ideas, validation 142/144 grounded, 0 hallucinations. |
-| Dogfood UI (Streamlit) | ✅ Done 2026-09-18 — `ui/app.py`: Due-today view, exercise browser, key-ideas browser, natural-language exercise search, mark-complete with FSRS rating. Throwaway per amended A8; run with `streamlit run ui/app.py`. |
+| Dogfood UI (Streamlit) | ✅ Done 2026-09-18 — `ui/app.py` reshaped Today-first per the MVP vision ("one exercise to do, one idea to remember"): Today tab (Up next card, One idea, suggested prompt chips), Chat tab (rule-based router: due / chapter recap / exercise search), Library tab (browse). Throwaway per amended A8. |
+| Phone access (Codespace) | ✅ Done 2026-09-18 — `.devcontainer/devcontainer.json`: forwards 8501, installs package, fetches the dogfood DB snapshot from the private release tag `dogfood-db-v1` (`fetch-db.sh`), starts Streamlit on boot. This sandbox is Tailscale client-only and accepts no inbound connections, so the phone UI is served from a GitHub Codespace instead. |
 | MCP coach tools (H1) | ✅ Done 2026-09-18 — `lifekit/mcp/server.py` rewritten as real MCP stdio server (FastMCP): `list_exercises`, `search_exercises`, `get_exercise`, `complete_exercise`, `due_exercises`, `list_key_ideas`, `book_progress`. Handshake + tool call verified against the product DB. |
 | Known issues | See `BACKLOG.md` (D3–D7, H2–H4, P1–P6 open; E1–E2, H1 fixed) |
 | Coaching / momentum / interviewer / skills export | 📋 Planned, Steps 8–12 — see `workspace/self-help-exercises/lifekit-coaching-plan.md` |
@@ -49,6 +52,9 @@ OpenRouter call succeeds.
 
 ## Recent history
 
+- **2026-09-18** — MVP vision finalized ("one exercise to do, one idea to
+  remember"); UI reshaped Today-first; `.devcontainer/` added for Codespace
+  phone access (sandbox accepts no inbound connections).
 - **2026-09-15** — Steps 1–7 implemented spec-first (OpenSpec), pushed to `main`.
 - **2026-09-15** — Independent code review: 45/45 green; found D1–D7; Step 2
   real-model criteria honestly deferred (A17/A20).
