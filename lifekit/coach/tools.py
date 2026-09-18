@@ -73,3 +73,39 @@ def next_exercise(db_path, book_id) -> dict | None:
     ).fetchone()
     c.close()
     return dict(r) if r else None
+
+
+_SEARCH_STOPWORDS = frozenset(
+    "i want to do the a an me my please show start begin with exercise "
+    "practice give".split()
+)
+
+
+def search_exercises(db_path, query: str, book_id: str = "dyl", limit: int = 10) -> list[dict]:
+    """Keyword search over exercise titles.
+
+    Handles natural prompts like "i want to do the mindmapping exercise":
+    stopwords are dropped and spaces ignored ("mindmapping" matches
+    "Mind Mapping").
+    """
+    words = [
+        w for w in "".join(ch if ch.isalnum() else " " for ch in query.lower()).split()
+        if w not in _SEARCH_STOPWORDS and len(w) > 2
+    ]
+    if not words:
+        return []
+    c = _conn(db_path)
+    rows = c.execute(
+        "SELECT id, title, chapter_title FROM exercises WHERE book_id = ?",
+        (book_id,),
+    ).fetchall()
+    done = {r[0] for r in c.execute("SELECT DISTINCT exercise_id FROM completions")}
+    c.close()
+    scored = []
+    for r in rows:
+        flat = "".join(r["title"].lower().split())
+        hits = sum(1 for w in words if w in flat)
+        if hits:
+            scored.append((hits, dict(r) | {"done": r["id"] in done}))
+    scored.sort(key=lambda x: (-x[0], x[1]["title"]))
+    return [ex for _, ex in scored[:limit]]

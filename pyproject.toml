@@ -13,6 +13,8 @@ dependencies = [
     "PyMuPDF>=1.24",  # TOC-first chapter splitting
     "chonkie>=0.1.0",  # RecursiveChunker for long-chapter sectioning
     "fsrs>=6.0",  # open-source FSRS spaced repetition (Step 7)
+    "mcp<2",  # real MCP stdio server (FastMCP) for the coach tools
+    "streamlit>=1.30",  # throwaway dogfood UI (ui/app.py)
 ]
 
 [tool.setuptools.packages.find]

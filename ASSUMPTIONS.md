@@ -21,7 +21,7 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A5 | Single user, local machine, Ollama running (`qwen3.6:latest` or configured model). | locked |
 | A6 | Books are chapter-detectable; fixed-size sections as fallback. | locked |
 | A7 | Extraction need not be perfect — misses fine; systemic failures flagged, not silently shipped. | locked |
-| A8 | No frontend (CLI + MCP tools only); no auth, no cloud, no sync. | locked |
+| A8 | No frontend (CLI + MCP tools only); no auth, no cloud, no sync. | amended 2026-09-18: dogfood UI allowed as explicitly-throwaway Streamlit app (`ui/app.py`); product interface remains CLI + MCP. No auth/cloud/sync still holds. |
 
 ## Step 1 — chapter splitter (`openspec/changes/step-1-chapter-splitter/`)
 

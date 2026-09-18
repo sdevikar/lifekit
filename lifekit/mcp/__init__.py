@@ -1,5 +1,5 @@
-"""lifekit.mcp — MCP server with JSON-RPC stdio transport."""
+"""lifekit.mcp — MCP server (stdio) exposing the Step 5 coach tools."""
 
-from lifekit.mcp.server import get_connection, handle_message
+from lifekit.mcp.server import mcp
 
-__all__ = ["handle_message", "get_connection"]
+__all__ = ["mcp"]

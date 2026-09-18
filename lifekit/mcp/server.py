@@ -1,190 +1,134 @@
-"""Lifekit MCP server — JSON-RPC over stdio transport.
+"""LifeKit MCP server — real MCP (stdio) exposing the Step 5 coach tools.
 
-Usage as a service (MCP client integration):
-    python -m lifekit.mcp.server   # blocks, waiting for MCP client input on stdin/stdout
+Usage:
+    python -m lifekit.mcp.server        # stdio transport for an MCP client
+    LIFEKIT_DB=/path/to.db python -m lifekit.mcp.server
+
+Tools: list_exercises, search_exercises, get_exercise, complete_exercise,
+due_exercises, list_key_ideas, book_progress.
 """
 import json
-import sys
+import os
 import sqlite3
 from pathlib import Path
-from typing import Any
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # Add project root to path
-from lifekit.db.schema import get_connection
+from mcp.server.fastmcp import FastMCP
 
+from lifekit.coach.tools import (
+    get_exercise as coach_get_exercise,
+    list_exercises as coach_list_exercises,
+    search_exercises as coach_search_exercises,
+)
+from lifekit.schedule.scheduler import (
+    due_exercises as sched_due_exercises,
+    review_exercise as sched_review_exercise,
+)
 
-def _send_result(id: int | None, result: dict[str, Any]) -> None:
-    """Send JSON-RPC success response back to client via stdout."""
-    resp = {
-        "jsonrpc": "2.0",
-        "id": id,
-        "result": result,
-    }
-    sys.stdout.write(json.dumps(resp) + chr(10))   # newline separator
-    sys.stdout.flush()
+DB_PATH = os.environ.get("LIFEKIT_DB", str(Path.home() / ".lifekit" / "lifekit.db"))
 
-
-def _send_error(id: int | None, code: int, message: str) -> None:
-    """Send JSON-RPC error response back to client."""
-    resp = {
-        "jsonrpc": "2.0",
-        "id": id,
-        "error": {"code": code, "message": message},
-    }
-    sys.stdout.write(json.dumps(resp) + chr(10))
-    sys.stdout.flush()
+mcp = FastMCP("lifekit")
 
 
-def handle_get_next_task(params: dict[str, Any] | None = None, id: int | None = None) -> None:
-    """Get the next pending task across all plans (or specified plan)."""
-    db_path = Path.home() / ".lifekit" / "lifekit.db"
-    if not db_path.exists():
-        _send_error(id, -32000, "Database not found. Run 'make bootstrap' first.")
-        return
-    conn = sqlite3.connect(str(db_path))
-    try:
-        cur = conn.execute(
-            """SELECT t.id, t.day_number, t.title, t.description, 
-                      t.estimated_minutes, t.exercise_type, t.context_source
-              FROM tasks t
-              JOIN plans p ON p.id = t.plan_id
-              WHERE t.status = 'pending'
-                AND (p.duration_weeks * 7) >= t.day_number
-              ORDER BY t.day_number ASC, t.id ASC
-              LIMIT 1"""
-        )
-        row = cur.fetchone()
-        if row is None:
-            _send_result(id, {"ok": False, "error": "No pending tasks found."})
-            return
-        result = {
-            "task_id": row[0],
-            "day_number": row[1],
-            "title": row[2],
-            "description": row[3],
-            "estimated_minutes": row[4],
-            "exercise_type": row[5],
-            "context_source": row[6],
-        }
-        _send_result(id, result)
-    except sqlite3.Error as e:
-        _send_error(id, -32001, f"Database error: {e!s}")
+def _done_ids() -> set[int]:
+    c = sqlite3.connect(DB_PATH)
+    ids = {r[0] for r in c.execute("SELECT DISTINCT exercise_id FROM completions")}
+    c.close()
+    return ids
 
 
-def handle_complete_task(params: dict[str, Any] | None = None, id: int | None = None) -> None:
-    """Mark task as complete and log session."""
-    if not params or "task_id" not in params:
-        _send_error(id, -32602, "Missing 'task_id' parameter")
-        return
-    task_id = params["task_id"]
-    notes = params.get("notes", "")
-    db_path = Path.home() / ".lifekit" / "lifekit.db"
-    conn = sqlite3.connect(str(db_path))
-    try:
-        task_row = conn.execute(
-            "SELECT id, status FROM tasks WHERE id = ?", (task_id,)
-        ).fetchone()
-        if task_row is None:
-            _send_result(id, {"ok": False, "error": "task_not_found"})
-            return
-        if task_row[1] == "complete":
-            _send_result(id, {"ok": False, "error": "task_already_completed"})
-            return
-        conn.execute(
-            "UPDATE tasks SET status = 'complete', completed_at = datetime('now') WHERE id = ?",
-            (task_id,),
-        )
-        conn.execute(
-            "INSERT INTO sessions (task_id, notes) VALUES (?, ?)",
-            (task_id, notes),
-        )
-        conn.commit()
-        _send_result(id, {"ok": True, "message": f"Task {task_id} marked as complete."})
-    except sqlite3.Error as e:
-        _send_error(id, -32001, f"Database error: {e!s}")
+@mcp.tool()
+def list_exercises(book_id: str = "dyl", chapter: str | None = None,
+                   limit: int = 20, offset: int = 0) -> list[dict]:
+    """List exercises in a book, optionally filtered by chapter title
+    (substring match). Each entry has id, title, chapter_title, done."""
+    done = _done_ids()
+    if chapter:
+        c = sqlite3.connect(DB_PATH)
+        c.row_factory = sqlite3.Row
+        rows = c.execute(
+            """SELECT id, title, chapter_title FROM exercises
+               WHERE book_id = ? AND chapter_title LIKE ?
+               ORDER BY chapter_idx, id LIMIT ? OFFSET ?""",
+            (book_id, f"%{chapter}%", limit, offset),
+        ).fetchall()
+        c.close()
+        return [dict(r) | {"done": r["id"] in done} for r in rows]
+    return [dict(e) | {"done": e["id"] in done}
+            for e in coach_list_exercises(DB_PATH, book_id, limit, offset)]
 
 
-def handle_get_plan_status(params: dict[str, Any] | None = None, id: int | None = None) -> None:
-    """Get aggregated plan status."""
-    db_path = Path.home() / ".lifekit" / "lifekit.db"
-    conn = sqlite3.connect(str(db_path))
-    try:
-        if not params or "plan_id" not in params:
-            # Use most recent plan
-            row = conn.execute(
-                """SELECT p.id, b.title, p.user_intent, p.teaching_method,
-                          COUNT(t2.id) as total_tasks,
-                          SUM(CASE WHEN t2.status='complete' THEN 1 ELSE 0 END) as complete_count
-                   FROM plans p
-                   JOIN books b ON p.book_id = b.id
-                   LEFT JOIN tasks t2 ON t2.plan_id = p.id
-                   GROUP BY p.id
-                   ORDER BY p.created_at DESC
-                   LIMIT 1"""
-            ).fetchone()
-            if row is None:
-                _send_result(id, {"ok": False, "error": "no_plan_found"})
-                return
-        else:
-            plan_id = params["plan_id"]
-            row = conn.execute(
-                """SELECT p.id, b.title, p.user_intent, p.teaching_method,
-                          COUNT(t2.id) as total_tasks,
-                          SUM(CASE WHEN t2.status='complete' THEN 1 ELSE 0 END) as complete_count
-                   FROM plans p
-                   JOIN books b ON p.book_id = b.id
-                   LEFT JOIN tasks t2 ON t2.plan_id = p.id
-                   WHERE p.id = ?
-                   GROUP BY p.id""",
-                (plan_id,),
-            ).fetchone()
-            if row is None:
-                _send_result(id, {"ok": False, "error": "no_plan_found"})
-                return
-
-        plan_id, book_title, user_intent, teaching_method, total_tasks, complete_count = row
-        pending = max(0, total_tasks - complete_count)
-        pct = round((complete_count / total_tasks * 100), 1) if total_tasks > 0 else 0
-        _send_result(id, {
-            "plan_id": plan_id,
-            "book_title": book_title,
-            "user_intent": user_intent,
-            "teaching_method": teaching_method,
-            "total_tasks": total_tasks,
-            "complete_count": complete_count or 0,
-            "pending_tasks": pending,
-            "completion_percentage": pct,
-        })
-    except sqlite3.Error as e:
-        _send_error(id, -32001, f"Database error: {e!s}")
+@mcp.tool()
+def search_exercises(query: str, book_id: str = "dyl") -> list[dict]:
+    """Find exercises by natural-language query, e.g.
+    "i want to do the mindmapping exercise". Returns id/title/chapter/done."""
+    return coach_search_exercises(DB_PATH, query, book_id)
 
 
-def handle_message(msg: dict[str, Any]) -> None:
-    """Route an incoming MCP request to the appropriate handler."""
-    method = msg.get("method")
-    params = msg.get("params")
-    req_id = msg.get("id", 1)
-    
-    handlers = {
-        "get_next_task": handle_get_next_task,
-        "complete_task": handle_complete_task, 
-        "get_plan_status": handle_get_plan_status,
-    }
-    handler = handlers.get(method, lambda **kw: _send_error(req_id, -32601, f"Unknown method: {method}"))
-    handler(params=params, id=req_id)
+@mcp.tool()
+def get_exercise(exercise_id: int) -> dict:
+    """Full details of one exercise: purpose, steps, materials, source quote."""
+    ex = coach_get_exercise(DB_PATH, exercise_id)
+    if ex is None:
+        return {"ok": False, "error": "exercise not found"}
+    return {"ok": True, "exercise": ex}
+
+
+@mcp.tool()
+def complete_exercise(exercise_id: int, rating: str = "good",
+                      notes: str | None = None) -> dict:
+    """Log a completed exercise. Rating: again | hard | good | easy.
+    Schedules the next FSRS review. Returns the next due date."""
+    return sched_review_exercise(DB_PATH, exercise_id, rating=rating, notes=notes)
+
+
+@mcp.tool()
+def due_exercises(book_id: str = "dyl", limit: int = 10) -> list[dict]:
+    """Exercises due for review now per the FSRS schedule, ordered by due date."""
+    return sched_due_exercises(DB_PATH, book_id, limit)
+
+
+@mcp.tool()
+def list_key_ideas(book_id: str = "dyl", chapter: str | None = None,
+                   limit: int = 50) -> list[str]:
+    """Key ideas ("lessons") from the book, optionally filtered by chapter
+    title (substring match)."""
+    c = sqlite3.connect(DB_PATH)
+    if chapter:
+        rows = c.execute(
+            """SELECT k.idea FROM key_ideas k JOIN chapters c
+               ON c.book_id = k.book_id AND c.idx = k.chapter_idx
+               WHERE k.book_id = ? AND c.title LIKE ? ORDER BY k.id LIMIT ?""",
+            (book_id, f"%{chapter}%", limit),
+        ).fetchall()
+    else:
+        rows = c.execute(
+            "SELECT idea FROM key_ideas WHERE book_id = ? ORDER BY id LIMIT ?",
+            (book_id, limit),
+        ).fetchall()
+    c.close()
+    return [r[0] for r in rows]
+
+
+@mcp.tool()
+def book_progress(book_id: str = "dyl") -> dict:
+    """Overall progress: total exercises, completed count, recent completions."""
+    c = sqlite3.connect(DB_PATH)
+    c.row_factory = sqlite3.Row
+    total = c.execute(
+        "SELECT COUNT(*) FROM exercises WHERE book_id = ?", (book_id,)).fetchone()[0]
+    done = c.execute(
+        """SELECT COUNT(DISTINCT c.exercise_id) FROM completions c
+           JOIN exercises e ON e.id = c.exercise_id WHERE e.book_id = ?""",
+        (book_id,)).fetchone()[0]
+    recent = c.execute(
+        """SELECT e.title, c.completed_at FROM completions c
+           JOIN exercises e ON e.id = c.exercise_id
+           WHERE e.book_id = ? ORDER BY c.completed_at DESC LIMIT 5""",
+        (book_id,)).fetchall()
+    c.close()
+    return {"book_id": book_id, "total": total, "completed": done,
+            "recent": [dict(r) for r in recent]}
 
 
 if __name__ == "__main__":
-    """Main loop — read JSON-RPC messages from stdin until EOF."""
-    sys.stderr.write("[LifeKit MCP server ready.\n")  # startup message to stderr
-    
-    for line in sys.stdin:
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            msg = json.loads(line)
-            handle_message(msg)
-        except json.JSONDecodeError:
-            _send_error(None, -32700, "Invalid JSON")
-
+    mcp.run()

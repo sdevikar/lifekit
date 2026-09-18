@@ -60,12 +60,14 @@ need to link back to pages.
 
 ## Spec-vs-reality notes (honesty, not defects)
 
-- **H1 — Step 5 "Coach MCP tools" overpromises.** The Step 5 proposal itself
-  says "MCP adapter is deferred" (`openspec/archives/step-5-coach-tools/
-  proposal.md` lines 11–12); nothing is wired into `lifekit/mcp/server.py`
-  (still the legacy Phase-0 plans/tasks API). Status: OPEN. Suggested
-  disposition: rename the roadmap entry to "Coach tools (logic)" until the
-  adapter lands, or build the adapter in Step 8.
+- **H1 — Step 5 "Coach MCP tools" overpromises — FIXED 2026-09-18.**
+  `lifekit/mcp/server.py` rewritten as a real MCP stdio server (FastMCP,
+  `mcp<2`) exposing 7 tools: `list_exercises`, `search_exercises`
+  (natural-language, e.g. "i want to do the mindmapping exercise"),
+  `get_exercise`, `complete_exercise` (FSRS review + completion log),
+  `due_exercises`, `list_key_ideas`, `book_progress`. Verified with a real
+  MCP initialize/tools-list/tools-call handshake against the product DB.
+  `tests/test_mcp_server.py` (5 tests); suite 82/82.
 - **H2 — Step 2 tasks.md checkboxes unchecked.** All 8 task boxes are `- [ ]`
   though the change is archived as done
   (`openspec/archives/step-2-extraction-map/tasks.md`). Status: ✅ FIXED
