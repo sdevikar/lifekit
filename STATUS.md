@@ -5,9 +5,10 @@
 > planned), `ASSUMPTIONS.md` (what we believe), and `BACKLOG.md` (what's
 > broken). Whoever merges a change updates this file in the same commit.
 
-**Last updated:** 2026-09-17 — full-book Step-2 extraction eval completed on the
-user's home Ollama (`qwen3.8:27b-q8_0`): 17/17 chapters, recall 19/20 (95%),
-**conditional pass**; suite 70/70; results in `evals/step2-recall-qwen3.8-27b-q8_0/`.
+**Last updated:** 2026-09-18 — DYL ingested into the product DB
+(`~/.lifekit/lifekit.db`, book id `dyl`): 17 chapters, 144 deduped exercises,
+875 key ideas, 142/144 quotes grounded (2 false failures are PDF-text
+corruptions); suite 77/77. Book is coach-ready — dogfood MVP unblocked.
 
 ## Current state
 
@@ -16,14 +17,15 @@ user's home Ollama (`qwen3.8:27b-q8_0`): 17/17 chapters, recall 19/20 (95%),
 | MVP Steps 1–7 (splitter → extraction → reduce → validation → coach tools → multi-book → FSRS) | ✅ Done on `main`, 49/49 tests green |
 | D1 (unstable exercise IDs on reduce re-run) | ✅ Fixed 2026-09-15 |
 | D2 (validate without `--chapters` = 100% false failures) | ✅ Fixed 2026-09-15 |
-| LLM provider config (Ollama default + OpenRouter, `lifekit config` CLI) | ✅ Shipped 2026-09-15 — spec archived at `openspec/archives/llm-provider-config/`, suite 70/70 |
-| Full-book extraction eval vs 20-exercise ground truth | ✅ Done 2026-09-17 — `qwen3.8:27b-q8_0` on home Ollama (Tailscale), 17/17 chapters, 156 records, recall 19/20 (95%) — **conditional pass**: needs Step 3 dedupe + validator whitespace fix before coach-ready. Results in `evals/step2-recall-qwen3.8-27b-q8_0/`. Proposals: `openspec/changes/step-4-quote-whitespace-normalization/`, `openspec/changes/eval-dedupe-aware-recall/`. |
-| Known issues | See `BACKLOG.md` (D3–D7, H1–H4, P1–P6 open) |
+| LLM provider config (Ollama default + OpenRouter, `lifekit config` CLI) | ✅ Shipped 2026-09-15 — spec archived at `openspec/archives/llm-provider-config/`, suite 77/77 |
+| Full-book extraction eval vs 20-exercise ground truth | ✅ Done 2026-09-17 — `qwen3.8:27b-q8_0` on home Ollama (Tailscale), 17/17 chapters, 156 records, recall 19/20 (95%) — **conditional pass**: needs Step 3 dedupe + validator whitespace fix before coach-ready. Results in `evals/step2-recall-qwen3.8-27b-q8_0/`. Both fixed 2026-09-18 (specs archived: `openspec/archives/step-4-quote-whitespace-normalization/`, `openspec/archives/eval-dedupe-aware-recall/`). |
+| DYL product ingest (dogfood data) | ✅ Done 2026-09-18 — `scripts/ingest_eval_book.py` → `~/.lifekit/lifekit.db` (book `dyl`): 144 exercises, 875 key ideas, validation 142/144 grounded, 0 hallucinations. |
+| Known issues | See `BACKLOG.md` (D3–D7, H1–H4, P1–P6 open; E1–E2 fixed) |
 | Coaching / momentum / interviewer / skills export | 📋 Planned, Steps 8–12 — see `workspace/self-help-exercises/lifekit-coaching-plan.md` |
 
 ## Test inventory — what the tests actually cover
 
-Suite: **70 passed** (2026-09-17). Every model call is stubbed/mocked — **zero
+Suite: **77 passed** (2026-09-18). Every model call is stubbed/mocked — **zero
 tests exercise a real LLM**. The suite proves the pipeline is *plumbed*, not
 that it *extracts*; the real-model eval (`evals/step2-recall-qwen3.8-27b-q8_0/`,
 conditional pass) is the quality gate. Provider tests use a mocked transport —
@@ -63,3 +65,13 @@ OpenRouter call succeeds.
   **conditional pass** (Step 3 dedupe + validator whitespace fix still needed).
   Results committed at `evals/step2-recall-qwen3.8-27b-q8_0/`; watchdog cron
   retired. Standing rule: long-running evals use home Ollama.
+- **2026-09-18** — Both eval fixes implemented and proven: validator
+  `normalize_ws` now folds typographic punctuation (NFKC) before whitespace
+  collapse (BACKLOG E1 fixed; also: extra_quotes ground against full book
+  text, source_quote still requires its own chapter); `scripts/eval_dedupe_recall.py`
+  ran Step 3 reduce over the eval output — 156 → 144 exercises, dedupe-aware
+  recall 19/20 (E2 fixed). DYL ingested into the product DB via
+  `scripts/ingest_eval_book.py` → `~/.lifekit/lifekit.db` (book `dyl`):
+  17 chapters, 144 exercises, 875 key ideas, validation 142/144 grounded
+  (2 false failures are PDF-text corruptions), 0 hallucinations. Specs
+  archived; suite 77/77.

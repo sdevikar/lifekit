@@ -44,6 +44,14 @@
 
 **Conditional pass.** Substance recall is 95% with zero hallucinations found and every record having steps — the pipeline finds the exercises. But raw output is not coach-ready: heavy fragmentation means Step 3 dedupe must run before recall means anything, and the Step 4 validator's quote check must be fixed to normalize whitespace. Fix those two, run Step 3 over these extractions, and re-score — then the gate is proven.
 
+## Post-eval follow-up (2026-09-18)
+
+Both fixes landed; the gate is now proven for *Designing Your Life*:
+
+- **Dedupe-aware recall (BACKLOG E2):** `scripts/eval_dedupe_recall.py` ran Step 3 `reduce_extractions` over these outputs: 156 raw → **144 exercises** (12 merges), **875 key ideas**. Dedupe-aware recall **19/20 (95%)** — same single miss (Ask-for-Help Journal). Deterministic dedupe only merges identical normalized titles, so fragmentation survives: Good Time Journal ×4, Mind Mapping ×3, five mind-set questions as separate records, Dysfunctional Belief Reframe ×3. Near-duplicate title merging is a future Step 3 refinement, not required for MVP.
+- **Validator fix (BACKLOG E1):** `normalize_ws` now does NFKC + typographic-punctuation folding (curly quotes, em/en dashes, NBSP) before whitespace collapse — still strict substring matching, no fuzzy. Ingest validation (`scripts/ingest_eval_book.py`, product DB `~/.lifekit/lifekit.db`, book id `dyl`): **142/144 exercises grounded**. The 2 failures are PDF-text corruptions in the chapter text itself ("welldesigned", "designi ngyour.life") where the model quoted correctly. Extra_quotes now ground against full book text (dedupe merges records across chapters); source_quote still requires its own chapter.
+- **Bottom line: 0 hallucinations in 144 exercises.** The book is ingested and coach-ready at `~/.lifekit/lifekit.db` (17 chapters, 144 exercises, 875 key ideas, validation_log).
+
 ## Files
 
 - `results_qwen3.8-27b-q8_0.json` — per-chapter records with `ok`, timing, exercise titles, and per-exercise `grounded_exact` / `grounded_ws` flags.

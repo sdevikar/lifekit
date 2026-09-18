@@ -1,7 +1,8 @@
-"""Step 4: deterministic validation — verbatim quote grounding, zero flags."""
+"""Step 4: deterministic validation — quote grounding, zero flags."""
 
 import json
 import sqlite3
+import unicodedata
 from pathlib import Path
 
 from lifekit.db.schema import init_db
@@ -9,14 +10,42 @@ from lifekit.extract.extractor import Exercise
 
 ZERO_FLAG_MIN_CHARS = 5000
 
+# Deterministic character folding: the model quotes real book text but the
+# PDF pipeline and the model disagree on typographic punctuation (curly vs
+# straight quotes, em/en dashes, non-breaking spaces). NFKC + this table
+# canonicalizes both sides before the strict substring check. Still no fuzzy
+# or semantic matching — just a fixed, auditable character map.
+_FOLD_TABLE = {
+    "\u2018": "'", "\u2019": "'", "\u201a": "'",
+    "\u201c": '"', "\u201d": '"', "\u201e": '"',
+    "\u2013": "-", "\u2014": "-", "\u2212": "-",
+    "\u2026": "...", "\u00a0": " ", "\u2009": " ", "\u200a": " ",
+}
+
+
+def normalize_ws(s: str) -> str:
+    """Canonicalize a string for strict quote grounding.
+
+    Unicode NFKC + typographic-punctuation folding, then collapse every run
+    of whitespace to a single space. See BACKLOG E1 / evals/step2-recall
+    (10% exact vs 56% ws-normalized; char folding closes all but 2/144,
+    both of which are PDF-extraction corruptions in the chapter text, not
+    model hallucinations).
+    """
+    s = unicodedata.normalize("NFKC", s)
+    for src, dst in _FOLD_TABLE.items():
+        s = s.replace(src, dst)
+    return " ".join(s.split())
+
 
 def validate_quotes(source_quote: str, extra_quotes: list[str], chapter_text: str) -> dict:
-    """Check all quotes are exact substrings of chapter_text."""
+    """Check all quotes are substrings of chapter_text (whitespace-insensitive)."""
     failures = []
-    if source_quote not in chapter_text:
+    norm_text = normalize_ws(chapter_text)
+    if normalize_ws(source_quote) not in norm_text:
         failures.append(f"source_quote not verbatim: {source_quote[:80]!r}")
     for q in extra_quotes or []:
-        if q not in chapter_text:
+        if normalize_ws(q) not in norm_text:
             failures.append(f"extra_quote not verbatim: {q[:80]!r}")
     return {"ok": not failures, "failures": failures}
 
@@ -59,6 +88,7 @@ def validate_book(
     passed = 0
     failed = 0
     skipped = 0
+    full_text = "\n".join(text for _, text in chapters)  # for extra_quotes
     for ex_id, title, quote, extra_json, ch_title in rows:
         text = text_by_title.get(ch_title)
         extra = json.loads(extra_json) if extra_json else []
@@ -73,8 +103,17 @@ def validate_book(
                  f"skipped: no chapter text available for {ch_title!r}"),
             )
             continue
-        result = validate_quotes(quote, extra, text)
-        ok = result["ok"]
+        # source_quote must ground in its own chapter; extra_quotes are
+        # merged from deduped records that may come from other chapters,
+        # so they ground against the full book text. Both strict.
+        failures = []
+        if normalize_ws(quote) not in normalize_ws(text):
+            failures.append(f"source_quote not verbatim: {quote[:80]!r}")
+        norm_full = normalize_ws(full_text)
+        for q in extra:
+            if normalize_ws(q) not in norm_full:
+                failures.append(f"extra_quote not verbatim: {q[:80]!r}")
+        ok = not failures
         if ok:
             passed += 1
         else:
@@ -83,7 +122,7 @@ def validate_book(
             """INSERT INTO validation_log
                (book_id, exercise_id, check_type, passed, detail)
                VALUES (?, ?, ?, ?, ?)""",
-            (book_id, ex_id, "verbatim_quote", ok, "; ".join(result["failures"])),
+            (book_id, ex_id, "verbatim_quote", ok, "; ".join(failures)),
         )
 
     # Zero-extraction flags (per chapter)

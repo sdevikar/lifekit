@@ -40,6 +40,46 @@ def test_nonverbatim_quote_fails():
     assert "source_quote" in result["failures"][0]
 
 
+def test_whitespace_only_difference_passes():
+    # E1: the model quotes real text but alters whitespace — must pass.
+    ex = make_ex(quote="exact  quote\nhere")
+    result = validate_exercise(ex, "some text exact quote\n\nhere more text")
+    assert result["ok"] is True
+    assert result["failures"] == []
+
+
+def test_whitespace_difference_with_changed_word_fails():
+    # Strictness preserved: a changed word still fails.
+    ex = make_ex(quote="exact quote\nhere")
+    result = validate_exercise(ex, "some text exact quote there more text")
+    assert result["ok"] is False
+
+
+def test_curly_quotes_and_dashes_fold():
+    # E1 extension: typographic punctuation is canonicalized, still strict.
+    ex = make_ex(quote='It\u2019s the "AEIOU" method\u2014really')
+    result = validate_exercise(ex, "text It\u2019s the \"AEIOU\" method-really here")
+    assert result["ok"] is True
+
+
+def test_folding_does_not_forgive_changed_words():
+    ex = make_ex(quote="It\u2019s the AEIOU method")
+    result = validate_exercise(ex, "text It\u2019s the AEIOU system here")
+    assert result["ok"] is False
+
+
+def test_extra_quotes_whitespace_normalized():
+    from lifekit.validate.validator import validate_quotes
+    result = validate_quotes(
+        "exact quote here",
+        ["good\nextra", "bad extra not in text"],
+        "text with exact quote here and good extra",
+    )
+    assert result["ok"] is False
+    assert len(result["failures"]) == 1
+    assert "bad extra" in result["failures"][0]
+
+
 def test_extra_quotes_checked():
     ex = make_ex(quote="exact quote here")
     # Manually set extra_quotes (not in Exercise schema, so test via dict)
@@ -136,6 +176,44 @@ def test_validate_book_with_chapters_still_fails_nonverbatim(tmp_path):
     ).fetchone()[0]
     c.close()
     assert passed == 0
+
+
+def test_validate_book_extra_quote_grounds_in_other_chapter(tmp_path):
+    """Merged extra_quotes may come from other chapters: they ground against
+    the full book text, while source_quote still requires its own chapter."""
+    import json
+    db = str(tmp_path / "v.db")
+    init_db(db)
+    _insert_exercise(db, ch_title="Ch1", quote="own chapter quote here")
+    c = sqlite3.connect(db)
+    c.execute(
+        "UPDATE exercises SET extra_quotes = ? WHERE book_id = 'b1'",
+        (json.dumps(["other chapter quote here"]),),
+    )
+    c.commit()
+    c.close()
+
+    result = validate_book(
+        db, "b1",
+        chapters=[("Ch1", "text with own chapter quote here"),
+                  ("Ch2", "text with other chapter quote here")],
+    )
+    assert result["failed"] == 0
+    assert result["passed"] == 1
+
+
+def test_validate_book_source_quote_still_requires_own_chapter(tmp_path):
+    """Strictness: a source_quote that only appears in ANOTHER chapter fails."""
+    db = str(tmp_path / "v.db")
+    init_db(db)
+    _insert_exercise(db, ch_title="Ch1", quote="other chapter quote here")
+
+    result = validate_book(
+        db, "b1",
+        chapters=[("Ch1", "text with own chapter quote here"),
+                  ("Ch2", "text with other chapter quote here")],
+    )
+    assert result["failed"] == 1
 
 
 def test_migrate_old_validation_log_notnull_passed(tmp_path):

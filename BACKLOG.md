@@ -84,20 +84,22 @@ need to link back to pages.
 
 ## Eval findings (2026-09-17 full-book eval, qwen3.8:27b-q8_0, home Ollama)
 
-- **E1 — Validator quote check false-fails on whitespace — MEDIUM — OPEN**
-  The 2026-09-17 eval: exact-substring quote grounding 16/156 (10%) vs
-  whitespace-normalized 87/156 (56%). The model quotes real book text and only
-  alters whitespace; `validate_quotes` (`lifekit/validate/validator.py`) uses
-  exact-substring comparison and would false-fail ~90% of genuine quotes as
-  written. Ref: `evals/step2-recall-qwen3.8-27b-q8_0/README.md`.
-  Suggested disposition: normalize whitespace (collapse all runs to single
-  spaces) on both sides before comparing — OpenSpec proposal at
-  `openspec/changes/step-4-quote-whitespace-normalization/`.
-- **E2 — Raw recall overstates coverage until Step 3 dedupe runs — MEDIUM — OPEN**
-  The eval's 156 records include heavy fragmentation: Good Time Journal ×4,
-  Mind Mapping ×3, Life Design Interview ×2, the five mind-set questions as
-  separate records, personal practices split into single habits. Substance
-  recall is 19/20 (95%) but record-count recall is meaningless pre-dedupe.
+- **E1 — Validator quote check false-fails on whitespace — MEDIUM — FIXED 2026-09-18**
+  Fixed in `lifekit/validate/validator.py::normalize_ws`: NFKC + typographic
+  punctuation folding (curly quotes, em/en dashes, NBSP) then whitespace
+  collapse, still strict substring matching. Post-fix validation of the DYL
+  ingest: 142/144 exercises grounded; the 2 failures are PDF-extraction
+  corruptions in chapter text ("welldesigned", "designi ngyour.life") where
+  the model quoted correctly. Also fixed: extra_quotes now ground against
+  full book text (merged records come from other chapters); source_quote
+  still requires its own chapter. 7 new tests.
+- **E2 — Raw recall overstates coverage until Step 3 dedupe runs — MEDIUM — FIXED 2026-09-18**
+  `scripts/eval_dedupe_recall.py` ran Step 3 reduce over the eval output:
+  156 raw -> 144 exercises (12 merges), dedupe-aware recall 19/20 (95%),
+  same single miss (Ask-for-Help Journal). Dedupe only merges identical
+  normalized titles, so fragmentation survives (Good Time Journal ×4,
+  Mind Mapping ×3, five mind-set questions separate). Near-dupe title
+  merging is a future improvement, not required for MVP.
   Ref: `evals/step2-recall-qwen3.8-27b-q8_0/README.md`.
   Suggested disposition: run Step 3 reduce over the eval extractions, then
   re-score recall — OpenSpec proposal at
