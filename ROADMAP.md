@@ -56,7 +56,7 @@ Candidate steps from the coaching plan (`~/workspace/self-help-exercises/lifekit
 | 10 | User interviewer: scripted 5–7 question elicitation protocol → structured learner profile (`why_matters` feeds momentum's `value_recall` brief); book-goal linking biases exercise selection | Needs a memory profile to write into; personalizes Step 9's briefs | `openspec/changes/step-10-user-interviewer/` |
 | 11 | Invite-to-coach UI: static-site export (`lifekit export coach-report`) — momentum, intentions, history for an external coach; no hosted service, no auth (per Step 0) | Least validated need — build only after the coach relationship is defined (open question in coaching plan §6) | `openspec/changes/step-11-invite-to-coach/` |
 
-**Explicitly later (not in Steps 8–12):** RAG quality upgrade (semantic/hybrid search — deferred quality question), EPUB / YouTube ingestion.
+**Explicitly later (not in Steps 8–12):** RAG quality upgrade — concrete plan in BACKLOG F9 (hybrid dense+sparse → rerank → answer); F10–F11 chunking upgrades; EPUB / YouTube ingestion.
 
 **Rejected (from the landscape review):** BKT/KST prerequisite graphs (exercises are practices, not prerequisites), multi-tenant SaaS/OAuth/Postgres (Step 0 locks single-user local), canned motivational text (brief engine emits signals + instructions; the LLM phrases), real-time push nudge delivery (polled `get_due_nudges` instead), knowledge-graph store, a second dedupe implementation (adopt the converged two-tier shape if dedupe is revisited), agent-skills export (product direction 2026-09-19: LifeKit is an off-the-shelf app, not an agent skill/harness add-on — borrow backend/UX/how-to ideas only).
 

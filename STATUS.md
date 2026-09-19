@@ -52,6 +52,10 @@ OpenRouter call succeeds.
 
 ## Recent history
 
+- **2026-09-19** — BACKLOG.md gained F9–F15 (retrieval roadmap from
+  Tencent/WeKnora review: hybrid search + rerank, parent-child chunking,
+  adaptive chunking, FAQ-shaped rule storage, chat citations, auto-tagging,
+  interlinked Library pages). RAG upgrade roadmap line now points at F9.
 - **2026-09-19** — Product direction locked: off-the-shelf app, not an agent
   skill/harness add-on (Step 12 agent-skills export moved to Rejected).
   BACKLOG.md gained F1–F8: decision-rule + anti-pattern extraction, per-book

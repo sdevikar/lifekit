@@ -176,3 +176,42 @@ borrow backend, UX, and how-to-content ideas only, never vision-changing ones.
   image-only PDFs and stop immediately with a helpful message (what to
   install, or "run OCR first") instead of grinding through to produce garbage.
   Overlaps the open corrupt-PDF concerns (E1's extraction corruptions).
+
+## Retrieval roadmap (from Tencent/WeKnora review, 2026-09-19)
+
+WeKnora is Tencent's open-source RAG platform (hybrid retrieval + rerank,
+ReAct agent mode, auto-generated wiki). Borrowed items below are the retrieval
+core only — knowledge graph (already rejected in the landscape review),
+multi-workspace RBAC (Step 0: single-user local), agent sandboxes/skill
+catalog, IM channels, and Langfuse observability were deliberately excluded.
+
+- **F9 — Hybrid search + rerank pipeline.** Chat retrieval today is SQLite
+  FTS5 keyword-only. The proven shape (WeKnora and the broader RAG
+  literature): dense + sparse retrieval → rerank → answer, with passage
+  cleaning before the rerank step. This is the concrete design for the
+  explicitly-later "RAG quality upgrade (semantic/hybrid search)" roadmap
+  item — upgrade that line from a deferred question to this plan when the
+  time comes.
+- **F10 — Parent-child chunking.** Retrieve small chunks, expand to the parent
+  section for answer context. Strictly better than today's contiguous Chonkie
+  sections, and the natural fix for D4 (no overlap; exercises spanning a
+  boundary get split or missed).
+- **F11 — Adaptive chunking granularity.** Different chunking per content type
+  (WeKnora's 3-tier adaptive chunking) instead of one chunker setting per
+  book. Pairs with F6 per-book content profiles: a "rules" book chunks
+  differently than a narrative one.
+- **F12 — FAQ-shaped storage for rules/anti-patterns.** WeKnora keeps FAQ KBs
+  alongside document KBs. F1 decision rules ("when X → do Y") and F2
+  anti-patterns are FAQ-shaped; store them as such rather than forcing them
+  into the exercise/key-idea schema.
+- **F13 — Citation popovers in Chat.** Surface the existing quote grounding in
+  the Chat UI: every answer shows which exercise/chapter it came from, tap to
+  inspect the source. (WeKnora's v0.6.3 chat overhaul: citation popovers, RAG
+  pipeline progress.)
+- **F14 — Auto-tag extracted items by theme.** WeKnora auto-tags documents on
+  ingest; tag exercises/ideas/rules by theme to give the Library filters and
+  feed F6 content profiles.
+- **F15 — Interlinked concept pages for the Library.** Auto-generated,
+  interlinked pages per concept/exercise/term (WeKnora's Wiki mode *minus*
+  the knowledge graph, which stays rejected) to make the Library vertical
+  genuinely browsable post-dogfood.
