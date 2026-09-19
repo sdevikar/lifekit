@@ -131,3 +131,48 @@ need to link back to pages.
 - **P6 — LIKE wildcards unescaped** in `lifekit/books/search.py` lines 26, 35:
   a query containing `%`/`_` matches more than intended. Status: OPEN.
   Suggested disposition: escape wildcards in the query before binding.
+
+## Content & extraction roadmap (post-dogfood)
+
+Feature ideas for the extraction pipeline and content model, to be built only
+after the core Today loop proves itself in dogfooding. Informed by a
+2026-09-19 review of `virgiliojr94/book-to-skill`, filtered to the product
+vision: LifeKit is an off-the-shelf app, not an agent skill/harness add-on —
+borrow backend, UX, and how-to-content ideas only, never vision-changing ones.
+
+- **F1 — Decision-rule extraction.** New extraction type: conditional guidance
+  ("when *situation*, do *action*"), e.g. DYL's "when stuck → mind-map, talk
+  to people, or prototype" or "when it's a gravity problem → accept or
+  reframe". More situational than a key idea, lighter than an exercise; feeds
+  the daily "one idea to remember" slot and situational chat answers
+  ("I'm stuck on X" → matching rule).
+- **F2 — Anti-patterns as first-class extraction.** Named mistakes with why to
+  avoid them, e.g. DYL's dysfunctional beliefs ("my degree determines my
+  career" → reframe). Guardrails complementing exercises; strong "one idea to
+  remember" candidates and a natural chat answer type ("am I doing X wrong?").
+- **F3 — Per-book glossary with chapter refs.** Named vocabulary per book
+  (DYL: Grok, AEIOU, Odyssey Planning, failure immunity...). Powers the chat
+  ("what does X mean?") and the revisit-lessons vertical.
+- **F4 — "Preserve the author's precision" in Step 3 dedupe.** Explicit rule +
+  test: never merge distinct named frameworks on normalized titles
+  ("The 5 Whys" ≠ "ask why repeatedly"). Current dedupe merges only identical
+  normalized titles, but the rule should be stated and locked before any
+  near-dupe merging is attempted (see E2).
+- **F5 — Analyze-only mode + pre-flight cost estimate.** Before a long eval
+  extraction, run analysis only and report what was found plus estimated
+  token/time cost, then ask to proceed. Would have saved real pain on the
+  multi-hour Ollama evals.
+- **F6 — Per-book content-type profile.** What to extract depends on the book:
+  DYL yields exercises + dysfunctional beliefs, Atomic Habits would yield laws
+  + habit stacks, Deep Work rules + rituals. An analyze pass detects which
+  content types a book actually contains (from a small catalog); extraction
+  runs only the relevant extractors; everything is stored with a `kind` field
+  so Today/Chat/Library surface all kinds uniformly. (Subsumes F5's analyze
+  pass — one analyze step serves both cost estimation and extraction config.)
+- **F7 — Update/fold-in for companion sources.** Merge a related source (e.g.
+  the DYL workbook) into an existing book record instead of treating every
+  ingest as a fresh book.
+- **F8 — Fail-fast PDF probing.** Check the PDF up front: detect scanned /
+  image-only PDFs and stop immediately with a helpful message (what to
+  install, or "run OCR first") instead of grinding through to produce garbage.
+  Overlaps the open corrupt-PDF concerns (E1's extraction corruptions).

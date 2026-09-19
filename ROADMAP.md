@@ -47,19 +47,18 @@ See `BACKLOG.md` — the living log of known defects and spec-vs-reality notes (
 
 ## Future roadmap — proposed Steps 8–12 (charted 2026-09-17, NOT committed)
 
-Candidate steps from the coaching plan (`~/workspace/self-help-exercises/lifekit-coaching-plan.md`, based on the tutor-mcp landscape review). Each is one OpenSpec change under `openspec/changes/<step-slug>/` — proposals drafted, implementation not started. Suggested build order: **8 → 9 → 10 → 12 → 11**.
+Candidate steps from the coaching plan (`~/workspace/self-help-exercises/lifekit-coaching-plan.md`, based on the tutor-mcp landscape review). Each is one OpenSpec change under `openspec/changes/<step-slug>/` — proposals drafted, implementation not started. Suggested build order: **8 → 9 → 10 → 11**.
 
 | Step | Feature | Why this order | OpenSpec proposal |
 |------|---------|----------------|-------------------|
 | 8 | Coaching session model: durable sessions (planning→in_session→review→closed, server-enforced state machine), session events, Gollwitzer if-then intentions, Markdown session memory | Everything else reads/writes sessions — the foundation | `openspec/changes/step-8-coaching-sessions/` |
 | 9 | Momentum decay engine: deterministic momentum score (exponential decay over session recency, completion rate, streaks, intention honor rate), motivation-brief engine (priority-ordered brief kinds), nudge policy (quiet hours, daily cap, `get_due_nudges`) | Needs sessions + completion history; feeds every brief | `openspec/changes/step-9-momentum-decay/` |
 | 10 | User interviewer: scripted 5–7 question elicitation protocol → structured learner profile (`why_matters` feeds momentum's `value_recall` brief); book-goal linking biases exercise selection | Needs a memory profile to write into; personalizes Step 9's briefs | `openspec/changes/step-10-user-interviewer/` |
-| 12 | Agent Skills export: `lifekit export skill` generates a portable `SKILL.md` + exercise catalog + key ideas from validated extraction tables (refuses unvalidated books) | Mostly reads existing tables; high-leverage distribution; richer with 8–10 in place | `openspec/changes/step-12-agent-skills-export/` |
 | 11 | Invite-to-coach UI: static-site export (`lifekit export coach-report`) — momentum, intentions, history for an external coach; no hosted service, no auth (per Step 0) | Least validated need — build only after the coach relationship is defined (open question in coaching plan §6) | `openspec/changes/step-11-invite-to-coach/` |
 
 **Explicitly later (not in Steps 8–12):** RAG quality upgrade (semantic/hybrid search — deferred quality question), EPUB / YouTube ingestion.
 
-**Rejected (from the landscape review):** BKT/KST prerequisite graphs (exercises are practices, not prerequisites), multi-tenant SaaS/OAuth/Postgres (Step 0 locks single-user local), canned motivational text (brief engine emits signals + instructions; the LLM phrases), real-time push nudge delivery (polled `get_due_nudges` instead), knowledge-graph store, a second dedupe implementation (adopt the converged two-tier shape if dedupe is revisited).
+**Rejected (from the landscape review):** BKT/KST prerequisite graphs (exercises are practices, not prerequisites), multi-tenant SaaS/OAuth/Postgres (Step 0 locks single-user local), canned motivational text (brief engine emits signals + instructions; the LLM phrases), real-time push nudge delivery (polled `get_due_nudges` instead), knowledge-graph store, a second dedupe implementation (adopt the converged two-tier shape if dedupe is revisited), agent-skills export (product direction 2026-09-19: LifeKit is an off-the-shelf app, not an agent skill/harness add-on — borrow backend/UX/how-to ideas only).
 
 ## Shipped infra (not numbered MVP steps)
 

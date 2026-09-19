@@ -52,6 +52,11 @@ OpenRouter call succeeds.
 
 ## Recent history
 
+- **2026-09-19** — Product direction locked: off-the-shelf app, not an agent
+  skill/harness add-on (Step 12 agent-skills export moved to Rejected).
+  BACKLOG.md gained F1–F8: decision-rule + anti-pattern extraction, per-book
+  glossary, per-book content-type profiles, analyze-only pre-flight, fold-in,
+  fail-fast PDF probing (from book-to-skill review).
 - **2026-09-18** — Deployment switched to uv: `uv.lock` committed (70
   packages), `requires-python` 3.9 → 3.10, build backend
   `setuptools.build_meta`; devcontainer + docs updated.
