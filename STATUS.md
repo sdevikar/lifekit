@@ -52,6 +52,11 @@ OpenRouter call succeeds.
 
 ## Recent history
 
+- **2026-09-20** — New `PHILOSOPHY.md` (draft): corrected three pillars —
+  deep book model + deliberately shallow user model, venue-not-menu (UI
+  design is first-class), algorithmic coaching via a deterministic learning
+  runtime in the tutor-mcp shape. Tech-stack draft + borrow/build/reject
+  table (tutor-mcp, srs-mcp, Mem0, Feynman projects surveyed).
 - **2026-09-19** — Fixed `StreamlitDuplicateElementKey` crash: every tab block
   executes on every rerun, so the exercise detail rendered twice with
   identical widget keys. `show_exercise` now takes a per-call-site
