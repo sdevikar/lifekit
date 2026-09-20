@@ -52,6 +52,12 @@ OpenRouter call succeeds.
 
 ## Recent history
 
+- **2026-09-19** — Fixed `StreamlitDuplicateElementKey` crash: every tab block
+  executes on every rerun, so the exercise detail rendered twice with
+  identical widget keys. `show_exercise` now takes a per-call-site
+  `key_prefix`; chat history buttons keyed by message index instead of
+  `hash(q)`. Verified with headless AppTest (original reproduces the exact
+  reported traceback, fixed runs clean); suite 82/82.
 - **2026-09-19** — BACKLOG.md gained F9–F15 (retrieval roadmap from
   Tencent/WeKnora review: hybrid search + rerank, parent-child chunking,
   adaptive chunking, FAQ-shaped rule storage, chat citations, auto-tagging,

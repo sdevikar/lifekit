@@ -142,7 +142,10 @@ def route_query(q):
     return ("exercises", hits)
 
 
-def show_exercise(ex_id):
+def show_exercise(ex_id, key_prefix):
+    # key_prefix must be unique per call site: every tab block executes on
+    # every script run, so two show_exercise calls for the same exercise
+    # would otherwise register duplicate widget keys.
     ex = get_exercise(ex_id)
     if not ex:
         st.error("Exercise not found.")
@@ -163,10 +166,12 @@ def show_exercise(ex_id):
     col1, col2 = st.columns(2)
     with col1:
         rating = st.selectbox("How did it go?", ["good", "easy", "hard", "again"],
-                              key=f"rating-{ex_id}")
+                              key=f"{key_prefix}-rating-{ex_id}")
     with col2:
-        notes = st.text_input("Notes (optional)", key=f"notes-{ex_id}")
-    if st.button("Mark complete", key=f"done-{ex_id}", type="primary"):
+        notes = st.text_input("Notes (optional)",
+                              key=f"{key_prefix}-notes-{ex_id}")
+    if st.button("Mark complete", key=f"{key_prefix}-done-{ex_id}",
+                 type="primary"):
         res = _review_exercise(DB, ex_id, rating=rating, notes=notes or None)
         if res["ok"]:
             st.success(f"Logged. Next review: {res['due'][:10]}")
@@ -234,7 +239,7 @@ with tab_today:
                 st.markdown(f"- {i}")
     if st.session_state.get("open_ex"):
         st.divider()
-        show_exercise(st.session_state["open_ex"])
+        show_exercise(st.session_state["open_ex"], "today")
 
 with tab_chat:
     q = st.text_input("What do you want to work on?",
@@ -243,16 +248,17 @@ with tab_chat:
     if st.button("Send", key="chat-send") and q:
         st.session_state.setdefault("chat_history", []).insert(
             0, (q, route_query(q)))
-    for q, (kind, payload) in st.session_state.get("chat_history", []):
+    for i, (q, (kind, payload)) in \
+            enumerate(st.session_state.get("chat_history", [])):
         st.markdown(f"**You:** {q}")
         if kind == "exercises":
             if payload:
-                exercise_buttons(payload, f"chat-{abs(hash(q)) % 9999}")
+                exercise_buttons(payload, f"chat-{i}")
             else:
                 st.write("No matches. Try fewer words.")
         elif kind == "due":
             if payload:
-                exercise_buttons(payload, f"chatd-{abs(hash(q)) % 9999}")
+                exercise_buttons(payload, f"chatd-{i}")
             else:
                 st.write("Nothing due right now.")
         elif kind == "ideas":
@@ -276,4 +282,4 @@ with tab_library:
             st.markdown(f"- {idea}")
     if st.session_state.get("open_ex"):
         st.divider()
-        show_exercise(st.session_state["open_ex"])
+        show_exercise(st.session_state["open_ex"], "lib")
