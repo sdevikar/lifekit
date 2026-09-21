@@ -96,6 +96,15 @@ that surfaces the right thing at the right time.
 - **Streamlit is scaffolding.** The venue UI framework is undecided — do not
   invest in a new framework without a decision recorded here.
 
+## Per-change intents
+
+Product-level changes are captured as proto-specs in `intent/<slug>.md`
+(template: `intent/_template.md`): problem, proposed outcome, affected
+users/systems, constraints, open questions. Each is reviewed by the product
+owner and approved by the human before it enters Design — no spec without an
+approved intent, no code without a spec. This file is the standing contract
+those intents are checked against.
+
 ## Changing this file
 
 - This file changes **only on the human's explicit approval**. Propose the

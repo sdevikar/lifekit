@@ -4,34 +4,48 @@ These instructions are for the coding agent (OpenCode). The product owner is
 Atlas; the human (Swapnil) writes the code with you and makes all product
 decisions.
 
-## intent.md is the contract
+## Intent: two artifacts, one workflow
 
-- `intent.md` at the repo root is the **standing product/SDLC contract**.
-  `PHILOSOPHY.md` is the rationale; on any conflict, `intent.md` wins.
-- At the start of every task or session: read `intent.md` first, then
-  `STATUS.md` for current project state.
+LifeKit runs the AI-native SDLC intent practice (Claude Academy "Capture as
+`intent.md`"). OpenCode has no native support for it, so these rules stand in
+for it — follow them exactly.
 
-## Managing intent.md (OpenCode does not support it natively)
+There are two intent artifacts:
 
-Because OpenCode has no native intent-file support, these rules stand in for
-it — follow them exactly:
+1. **`intent.md` (repo root)** — the *standing product intent*: mission,
+   non-negotiable rules, never-build list, gates. Derived from
+   `PHILOSOPHY.md`; on any conflict, `intent.md` wins. Every change is
+   checked against it.
+2. **`intent/<slug>.md`** — the *per-change proto-spec*: problem, proposed
+   outcome, affected users/systems, constraints, open questions. Template:
+   `intent/_template.md`.
 
-1. **Check before coding.** Before writing any code, check the task against
-   `intent.md`: the three product rules, the "never build" list, the SDLC
-   contract, and the gates. If the task conflicts with any of them, STOP and
-   ask the human. Do not reinterpret the contract to fit the task.
-2. **Never edit intent.md on your own.** If the human's request implies an
-   intent change, propose the exact diff and wait for explicit approval
-   before touching the file.
-3. **Surface contradictions.** If the human says something in conversation
-   that contradicts `intent.md`, surface the conflict before doing anything
-   else — do not code past it.
-4. **Flag drift.** If work reveals that `intent.md` is stale or inaccurate,
-   flag it and propose an update. Do not silently drift from it.
-5. **Gates are hard.** The dogfood exit criterion gate and the venue-UI
-   framework gate are product decisions. Do not start gated work (F-items,
-   learning-runtime work, new UI framework) without a recorded decision in
-   `intent.md`.
+### The workflow (this is what keeps the SDLC in check)
+
+1. **Every change starts as an intent.** No spec without an approved intent;
+   no code without a spec. When the human describes a change in chat, draft
+   it as `intent/<slug>.md` from the template — brainstorm first (scope,
+   users, constraints, what success looks like) until it is concrete.
+2. **PO review before commit.** Atlas (product owner) reviews and corrects
+   the draft; the verdict goes in the intent's PO-review section.
+3. **Human approval is the gate.** Accept = the intent enters Design
+   (becomes an OpenSpec proposal). Reject = closed, no further work. The
+   human alone approves; the agent never self-approves.
+4. **Check against standing intent.** Every per-change intent must be
+   consistent with root `intent.md` (rules, never-build list, gates). A
+   gated item (F-items, learning-runtime work, new UI framework) needs its
+   gate resolved first — surface it, don't code past it.
+5. **Intent is stable once spec'd.** Changes to an intent after its spec is
+   written are a smell — flag them to the human instead of silently
+   absorbing them.
+6. **Standing `intent.md` changes only on human approval.** Propose the
+   exact diff and wait for explicit approval; never amend it unilaterally.
+   If the human says something contradicting it, surface the conflict
+   before doing anything else. If work reveals it is stale, flag it and
+   propose an update — do not silently drift.
+
+At the start of every task or session: read `intent.md` first, then
+`STATUS.md` for current project state.
 
 ## Working agreements
 
