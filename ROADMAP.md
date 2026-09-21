@@ -33,6 +33,7 @@ Locked. Not revisited during MVP.
 | 5 | Coach MCP tools: `list_exercises`, `get_exercise`, `log_completion`, `next_exercise` | ✅ Done (2026-09-15) | `openspec/archives/step-5-coach-tools/` |
 | 6 | Multi-book: registry, per-book pipelines, cross-book search | ✅ Done (2026-09-15) | `openspec/archives/step-6-multi-book/` |
 | 7 | Scheduling: FSRS-style spaced repetition over completion history | ✅ Done (2026-09-15) | `openspec/archives/step-7-scheduling/` |
+| 13 | UI: feed + conversations web UI — daily briefing cards (one exercise, one resurfaced idea, fading list), per-card "Talk about this", master composer, conversation view with back-to-feed; builds on Steps 5 & 7, independent of proposed Steps 8–12 | ⬜ Queued — intent in draft | `intent/ui-feed-and-conversations.md` → `openspec/changes/step-13-ui-feed-conversations/` (proposal after intent approval) |
 
 Each step ships with its test and done-criterion written before implementation.
 Test one step at a time; don't start the next until the current one's done-criterion passes.
