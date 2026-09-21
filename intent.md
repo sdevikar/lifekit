@@ -1,7 +1,7 @@
 # LifeKit Intent
 
 **Status:** Standing product contract — 2026-09-20
-**Read this before every task.** `PHILOSOPHY.md` is the rationale; this file
+**Read this before every task.** `docs/product/PHILOSOPHY.md` is the rationale; this file
 is the binding contract. When they conflict, this file wins until the human
 updates it.
 
@@ -29,7 +29,7 @@ that surfaces the right thing at the right time.
 - The book model: structure tree (parts → chapters → sections) + typed
   actionable items (exercises, decision rules, anti-patterns, key ideas) +
   relations between items. Think code index: module tree, symbols, call
-  graph. See `BOOK_MODEL.md`.
+  graph. See `docs/backend/BOOK_MODEL.md`.
 - The user model is **important facts only**: goals, constraints,
   preferences, what has been tried. NEVER build psychological profiling,
   inferred personas, or deep personalization. This is a hard boundary, not a
@@ -84,8 +84,8 @@ that surfaces the right thing at the right time.
    Ollama, never on this VM. Free OpenRouter models only, if separately
    authorized. Never restart workstation Ollama unilaterally.
 5. **Never commit secrets.** Never expose credentials.
-6. **Keep the docs true.** `STATUS.md`, `ROADMAP.md`, `ASSUMPTIONS.md`,
-   `BACKLOG.md` stay accurate with every change.
+6. **Keep the docs true.** `docs/product/STATUS.md`, `docs/product/ROADMAP.md`, `docs/product/ASSUMPTIONS.md`,
+   `docs/product/BACKLOG.md` stay accurate with every change.
 7. **Push discipline.** Fetch `origin/main` first; one consolidated commit;
    verify the remote tree and spot-check contents after pushing.
 

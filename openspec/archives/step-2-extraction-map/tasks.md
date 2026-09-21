@@ -1,7 +1,7 @@
 # Step 2: Extraction map — tasks
 
 - [x] 2.1 Write `tests/test_extractor.py`: schema validation, retry-on-`ValidationError` with stubbed client, grounding-instruction prompt check
-- [x] 2.2 Implement `lifekit/extract/extractor.py`: `Exercise` / `ChapterExtraction` schemas + `extract_chapter()` via Ollama `format=<schema>` at temperature 0.1
+- [x] 2.2 Implement `../../../lifekit/extract/extractor.py`: `Exercise` / `ChapterExtraction` schemas + `extract_chapter()` via Ollama `format=<schema>` at temperature 0.1
 - [x] 2.3 Retry up to 3 attempts on Pydantic `ValidationError`
 - [x] 2.4 Oversized-chapter path: Chonkie `RecursiveChunker` split → per-section extraction → concatenate
 - [x] 2.5 CLI `python -m lifekit.extract --db-path DB --book-id ID` (map over a book's chapters, print summary)
@@ -32,7 +32,7 @@
   (no grammar) is worse (returns `{}`). Thinking-enabled too slow.
   Qwen3-8B (5GB) OOMs on 7.9GB RAM.
 - **Full 15/20 recall**: DEFERRED to production environment with real Ollama
-  + capable model (qwen3.6+). The `scripts/eval_step2_recall.py` harness is
+  + capable model (qwen3.6+). The `../../../scripts/eval_step2_recall.py` harness is
   committed and ready to re-run. Pipeline logic (schemas, retries, chunking,
   grounding) is unit-tested (15/15 pass) and correct.
 
@@ -40,7 +40,7 @@
 - Model omitted required `chapter_title` on front-matter chapters →
   `extract_chapter` now backfills it from the known `Chapter.title`
   (new unit test). Strict schema unchanged for the model.
-- `lifekit/store/split.py`: auto-create nested DB parent dirs (new CLI test).
+- `../../../lifekit/store/split.py`: auto-create nested DB parent dirs (new CLI test).
 
 ### Dependency
 - Chonkie added to `pyproject.toml` (was installed but undeclared).
@@ -65,7 +65,7 @@
 - **Quote grounding: exact 16/156 (10%), whitespace-normalized 87/156 (56%).**
   The model quotes real text and only alters whitespace — the Step 4
   validator's exact-substring check would false-fail ~90% of genuine quotes
-  (E1; fix proposal: `openspec/changes/step-4-quote-whitespace-normalization/`).
+  (E1; fix proposal: `../../changes/step-4-quote-whitespace-normalization/`).
 - **Zero-step records: 0; hallucinations: none found** in spot checks (all
   suspicious records are real book content — over-extraction of anecdotes).
-- Full results: `evals/step2-recall-qwen3.8-27b-q8_0/` (README + raw JSONs).
+- Full results: `../../../evals/step2-recall-qwen3.8-27b-q8_0/` (README + raw JSONs).

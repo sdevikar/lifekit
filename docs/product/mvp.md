@@ -1,6 +1,6 @@
 # LifeKit MVP: What We're Building
 
-**MVP Scope:** Book ingestion → Ollama-powered SMART plan generation → SQLite persistence → MCP tools for task management. Everything beyond this is explicitly deferred with phase tags in [design.md](openspec/changes/lifekit-mvp-core-loop/design.md).
+**MVP Scope:** Book ingestion → Ollama-powered SMART plan generation → SQLite persistence → MCP tools for task management. Everything beyond this is explicitly deferred with phase tags in [design.md](../../openspec/changes/lifekit-mvp-core-loop/design.md).
 
 ---
 
@@ -17,7 +17,7 @@ LifeKit MVP takes a local PDF book, slices it into chunks, generates a SMART lea
 ### 1. Project Scaffold
 - `pyproject.toml` with Poetry, Python ≥ 3.11
 - Dependencies: `fastmcp`, `pypdf2`, `ollama`, `pydantic`, `python-dotenv`
-- `lifekit/` package root with sub-packages: `db/`, `store/`, `plan_forge/`, `mcp/`
+- `../../lifekit/` package root with sub-packages: `db/`, `store/`, `plan_forge/`, `mcp/`
 - `.env.example` documenting all env vars (defaults to qwen3.6:latest)
 - `Makefile` targets: `bootstrap`, `ingest`, `forge`, `serve`, `test`
 - `__main__.py` in `store/` and `plan_forge/` for CLI dispatch
@@ -39,7 +39,7 @@ LifeKit MVP takes a local PDF book, slices it into chunks, generates a SMART lea
 - Duplicate file_path check uses `BEGIN IMMEDIATE` to prevent TOCTOU races.
 - Schema migrates cleanly to PostgreSQL later (no SQLite-specific types).
 
-### 3. PDF Ingestion (`lifekit/store/pdf_ingester.py`)
+### 3. PDF Ingestion (`../../lifekit/store/pdf_ingester.py`)
 **What it does:**
 1. Opens a local PDF via PyPDF2
 2. Extracts text page by page
@@ -51,7 +51,7 @@ LifeKit MVP takes a local PDF book, slices it into chunks, generates a SMART lea
 - `ValueError` on empty PDF (zero text extracted)
 - `FileExistsError` on duplicate file_path (with BEGIN IMMEDIATE lock)
 
-### 4. Plan Forge (`lifekit/plan_forge/forge_plan.py`)
+### 4. Plan Forge (`../../lifekit/plan_forge/forge_plan.py`)
 **What it does:**
 1. Pulls first 10 chunks from the book for the given book_id
 2. Builds prompt: book title + author + excerpt + user intent + JSON schema instruction
@@ -64,7 +64,7 @@ LifeKit MVP takes a local PDF book, slices it into chunks, generates a SMART lea
 - Ollama connection failure → RuntimeError with instructional message
 - Existing pending plan for book → PlanExistsError
 
-### 5. MCP Server (`lifekit/mcp/server.py`)
+### 5. MCP Server (`../../lifekit/mcp/server.py`)
 **Three tools via FastMCP stdio transport:**
 
 | Tool | Arguments | Returns | Error Cases |
@@ -124,7 +124,7 @@ knowledge-store/books/         ← Drop PDFs here (gitignored)
 ├── my_book.pdf
 └── ...
 
-lifekit/                       ← Python package
+../../lifekit/                       ← Python package
 ├── __init__.py
 ├── db/
 │   ├── schema.py              ← init_db() + idempotent migrations

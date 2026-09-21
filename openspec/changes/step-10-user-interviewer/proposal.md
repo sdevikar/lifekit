@@ -37,7 +37,7 @@ is LifeKit-novel.
 
 ## Impact
 
-- New package `lifekit/interview/`; `profiles`, `profile_goals` tables;
+- New package `../../../lifekit/interview/`; `profiles`, `profile_goals` tables;
   `next_coached_exercise` gains a goal-relevance boost. Depends on Step 8
   sessions.
 

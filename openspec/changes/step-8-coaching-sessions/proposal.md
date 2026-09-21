@@ -42,7 +42,7 @@ affect, and closes with a recap plus an optional Gollwitzer if-then intention.
 
 ## Impact
 
-- New package `lifekit/sessions/`; new tables; new MCP tools (server wiring
+- New package `../../../lifekit/sessions/`; new tables; new MCP tools (server wiring
   per BACKLOG H1 — this step lands the coach tools on the MCP server for real).
 - CLI: `lifekit session start/end` for manual use.
 

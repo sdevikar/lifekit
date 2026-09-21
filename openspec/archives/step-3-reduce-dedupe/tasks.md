@@ -18,8 +18,8 @@
 ## Implementation
 
 - [ ] Schema: `exercises`, `key_ideas`, `dedupe_log` tables in
-      `lifekit/db/schema.py`.
-- [ ] `lifekit/reduce/reducer.py`: `reduce_extractions(book_id, chapters,
+      `../../../lifekit/db/schema.py`.
+- [ ] `../../../lifekit/reduce/reducer.py`: `reduce_extractions(book_id, chapters,
       extractions, db_path)` — deterministic normalize → merge → persist
       in one transaction.
 - [ ] CLI: `python -m lifekit.reduce --db-path DB --book-id ID
@@ -36,7 +36,7 @@
       source_quotes preserved (primary + extra_quotes); dedupe_log reviewed
       — both merges correct with reasons. (Full 17-chapter real integration
       deferred with Step 2 recall — needs production model.)
-- [ ] Record results here; archive change; ROADMAP ✅; ASSUMPTIONS.md;
+- [ ] Record results here; archive change; ROADMAP ✅; ../../../docs/product/ASSUMPTIONS.md;
       commit + push.
 
 ## Test results (2026-09-15)

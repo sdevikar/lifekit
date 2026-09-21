@@ -9,7 +9,7 @@
 Per-change proto-spec (Claude Academy "Capture as intent.md" practice).
 Every change starts here: no spec without an approved intent, no code
 without a spec. Brainstorm until concrete, then fill this in.
-Checked against the standing contract in /intent.md before approval.
+Checked against the standing contract in ../intent.md before approval.
 -->
 
 ## Problem
@@ -27,7 +27,7 @@ Who feels this change; which parts of the product and codebase it touches.
 
 ## Constraints
 
-Standing constraints from `/intent.md` that bound this change, plus
+Standing constraints from `../intent.md` that bound this change, plus
 change-specific ones (local-first, minimal code, home Ollama for evals, no
 secrets, docs stay true).
 

@@ -10,7 +10,7 @@ quality.
 
 ## What Changes
 
-- **New**: `lifekit/extract/extractor.py` — `extract_chapter(chapter, ...) -> ChapterExtraction`.
+- **New**: `../../../lifekit/extract/extractor.py` — `extract_chapter(chapter, ...) -> ChapterExtraction`.
 - **Schema** (Pydantic):
   - `Exercise`: `title, purpose, steps[list[str]], materials[list[str]], source_quote, chapter`
   - `ChapterExtraction`: `chapter_title, key_ideas[list[str]], exercises[list[Exercise]]`
@@ -20,7 +20,7 @@ quality.
   distinct exercise, practice, prompt, routine, challenge, or worksheet; empty
   exercise lists allowed; every exercise carries a verbatim `source_quote`.
 - **Model**: `OLLAMA_MODEL` env var (repo default `qwen3.6:latest`); dev/test
-  override documented in ASSUMPTIONS.md.
+  override documented in ../../../docs/product/ASSUMPTIONS.md.
 - **Oversized chapters**: chapters over `MAX_CHAPTER_CHARS` (48k) are split with
   Chonkie `RecursiveChunker` into overlapping sections, extracted per section,
   and concatenated (dedupe is Step 3's job).
@@ -40,7 +40,7 @@ quality.
 
 ## Impact
 
-- New package `lifekit/extract/` (`extractor.py`, `__main__.py`, `__init__.py`).
+- New package `../../../lifekit/extract/` (`extractor.py`, `__main__.py`, `__init__.py`).
 - New dep: `chonkie` (only used on the oversized-chapter path).
 - No schema changes.
 

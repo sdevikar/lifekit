@@ -77,7 +77,7 @@ For one book, the plan forge sends: book title + author + a 1000-token excerpt f
 
 ### Decision 6: File layout follows the roadmap module names
 ```
-lifekit/
+../../../lifekit/
   db/          schema.py, migrations.py
   store/       pdf_ingester.py
   plan_forge/  forge_plan.py

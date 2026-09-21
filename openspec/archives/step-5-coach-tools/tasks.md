@@ -13,7 +13,7 @@
 ## Implementation
 
 - [ ] Schema: `completions` table.
-- [ ] `lifekit/coach/tools.py`: 4 functions.
+- [ ] `../../../lifekit/coach/tools.py`: 4 functions.
 - [ ] CLI: `python -m lifekit.coach`.
 
 ## Done criterion

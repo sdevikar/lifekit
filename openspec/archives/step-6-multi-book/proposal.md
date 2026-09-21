@@ -10,7 +10,7 @@ and cross-book search.
 
 - **Books table** already exists (`books`: id, title, author, file_path).
   Add `register_book(db_path, file_path, title, author) -> book_id` in
-  `lifekit/books/registry.py`. Book ID: sha256(file_path)[:16] (matches
+  `../../../lifekit/books/registry.py`. Book ID: sha256(file_path)[:16] (matches
   Step 1 default).
 - **Isolation**: All queries in Steps 3–5 already filter by `book_id`.
   Add test verifying exercises from book A don't appear in book B's list.
@@ -33,7 +33,7 @@ and cross-book search.
 
 ## Impact
 
-- New package `lifekit/books/` (`registry.py`, `search.py`, `__main__.py`).
+- New package `../../../lifekit/books/` (`registry.py`, `search.py`, `__main__.py`).
 - No schema changes (books table exists).
 - Uses existing `exercises` table with `book_id` filter.
 

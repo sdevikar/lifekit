@@ -10,7 +10,7 @@ exercises, using the established FSRS algorithm (not custom math).
 
 - **Dependency**: `fsrs>=6.0` (PyPI) — the open-source FSRS implementation.
   No custom scheduling math.
-- **New**: `lifekit/schedule/scheduler.py`:
+- **New**: `../../../lifekit/schedule/scheduler.py`:
   - `get_card(db_path, exercise_id) -> Card`: load or create FSRS Card
     for an exercise. Persist card state in new `fsrs_cards` table:
     `(exercise_id PRIMARY KEY, stability, difficulty, due, reps, lapses,
@@ -33,7 +33,7 @@ exercises, using the established FSRS algorithm (not custom math).
 
 ## Impact
 
-- New package `lifekit/schedule/` (`scheduler.py`, `__main__.py`).
+- New package `../../../lifekit/schedule/` (`scheduler.py`, `__main__.py`).
 - Schema: `fsrs_cards` table.
 - New dependency: `fsrs` (PyPI).
 

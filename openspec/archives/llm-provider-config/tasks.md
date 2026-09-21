@@ -15,13 +15,13 @@ next task until the current one's tests pass.
 - [x] 2.3 `OpenRouterProvider` without a key raises before any HTTP
 - [x] 2.4 `get_provider` factory returns the right class per resolved config
 - [x] 3.1 `tests/test_extractor.py`: `extract_chapter` works unchanged with a stub protocol provider; legacy ollama-shaped `client=` kwarg still accepted (existing tests unmodified)
-- [x] 3.2 Refactor `lifekit/extract/extractor.py` internals to the provider protocol; default path (no args) resolves config itself and stays byte-identical (ollama, temp 0.1, 3-attempt retry)
-- [x] 3.3 `lifekit/extract/__main__.py` gains `--provider` passed through to `extract_chapter`
-- [x] 4.1 `lifekit/config/__main__.py`: `view` prints resolved provider/model + source of each, shows only whether `OPENROUTER_API_KEY` is set; `set`/`unset` round-trip through `~/.lifekit/config.json`; `set` refuses key-like names (key/api_key/token/secret)
-- [x] 5.1 `scripts/eval_step2_recall.py`: `--provider`/`--model` flags route through the provider abstraction; `--results` defaults to `./.eval-step2/results.json` (no hardcoded `/home/hatch` path — fixes backlog P1); `--ground-truth` overridable; llama.cpp shim kept behind `--model-path`, adapted to the provider protocol
-- [x] 6.1 `ASSUMPTIONS.md`: add A21 (active) documenting provider config; `ROADMAP.md`: shipped-infra note (not a numbered MVP step)
+- [x] 3.2 Refactor `../../../lifekit/extract/extractor.py` internals to the provider protocol; default path (no args) resolves config itself and stays byte-identical (ollama, temp 0.1, 3-attempt retry)
+- [x] 3.3 `../../../lifekit/extract/__main__.py` gains `--provider` passed through to `extract_chapter`
+- [x] 4.1 `../../../lifekit/config/__main__.py`: `view` prints resolved provider/model + source of each, shows only whether `OPENROUTER_API_KEY` is set; `set`/`unset` round-trip through `~/.lifekit/config.json`; `set` refuses key-like names (key/api_key/token/secret)
+- [x] 5.1 `../../../scripts/eval_step2_recall.py`: `--provider`/`--model` flags route through the provider abstraction; `--results` defaults to `./.eval-step2/results.json` (no hardcoded `/home/hatch` path — fixes backlog P1); `--ground-truth` overridable; llama.cpp shim kept behind `--model-path`, adapted to the provider protocol
+- [x] 6.1 `../../../docs/product/ASSUMPTIONS.md`: add A21 (active) documenting provider config; `../../../docs/product/ROADMAP.md`: shipped-infra note (not a numbered MVP step)
 - [x] 6.2 Full `pytest` run green; `py_compile` clean on all new/changed files
-- [x] 6.3 Archive `openspec/changes/llm-provider-config/` → `openspec/archives/llm-provider-config/`; record test results below
+- [x] 6.3 Archive `../../changes/llm-provider-config/` → `../../archives/llm-provider-config/`; record test results below
 
 ## Test results (2026-09-16)
 
@@ -33,10 +33,10 @@ next task until the current one's tests pass.
 - `tests/test_extractor.py` (+1): `extract_chapter` accepts a protocol provider; all 8 pre-existing tests (legacy ollama-shaped `client=` stub) unmodified and passing — default behavior byte-identical.
 - `py_compile` clean on all new/changed files. `python -m lifekit.config view/set/unset` smoke-tested manually.
 
-New files: `lifekit/llm/{__init__,base,config,ollama_provider,openrouter_provider}.py`,
-`lifekit/config/{__init__,__main__}.py`,
+New files: `../../../lifekit/llm/{__init__,base,config,ollama_provider,openrouter_provider}.py`,
+`../../../lifekit/config/{__init__,__main__}.py`,
 `tests/test_llm_config.py`, `tests/test_llm_providers.py`, `tests/test_config_cli.py`.
-Changed: `lifekit/extract/extractor.py` (internals only; legacy `client=` kwarg still accepted),
-`lifekit/extract/__main__.py` (`--provider`), `scripts/eval_step2_recall.py`
+Changed: `../../../lifekit/extract/extractor.py` (internals only; legacy `client=` kwarg still accepted),
+`../../../lifekit/extract/__main__.py` (`--provider`), `../../../scripts/eval_step2_recall.py`
 (provider flags, `--results`/`--ground-truth` portable paths — closes backlog P1),
-`ASSUMPTIONS.md` (+A21), `ROADMAP.md` (shipped-infra note).
+`../../../docs/product/ASSUMPTIONS.md` (+A21), `../../../docs/product/ROADMAP.md` (shipped-infra note).

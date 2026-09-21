@@ -6,14 +6,14 @@ The 2026-09-17 full-book eval (`qwen3.8:27b-q8_0`, home Ollama, 156 records)
 measured quote grounding at **16/156 (10%) exact-substring vs 87/156 (56%)
 whitespace-normalized**. The model quotes real book text and only alters
 whitespace (e.g. `\n` → `\n\n`, line-wrap differences from PDF text
-extraction). `validate_quotes` (`lifekit/validate/validator.py`) uses
+extraction). `validate_quotes` (`../../../lifekit/validate/validator.py`) uses
 exact-substring comparison, so as written it would false-fail ~90% of genuine
 quotes. The validator is supposed to catch fabricated quotes, not typographic
 whitespace drift.
 
 ## What Changes
 
-- **Change**: `lifekit/validate/validator.py` — add a `normalize_ws()` helper
+- **Change**: `../../../lifekit/validate/validator.py` — add a `normalize_ws()` helper
   that collapses every run of whitespace (spaces, tabs, newlines) to a single
   space, then strips. `validate_quotes` compares the normalized quote against
   the normalized chapter text. The failure message keeps the original
@@ -31,7 +31,7 @@ whitespace drift.
 
 ## Impact
 
-- `lifekit/validate/validator.py` only. No schema changes, no new tables.
+- `../../../lifekit/validate/validator.py` only. No schema changes, no new tables.
 - `tests/test_validator.py`: add tests — quote differing only in whitespace
   passes; quote with altered words still fails; extra_quotes normalized too.
 

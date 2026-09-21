@@ -14,7 +14,7 @@
 
 - [ ] Dependency: `fsrs` in `pyproject.toml`.
 - [ ] Schema: `fsrs_cards` table.
-- [ ] `lifekit/schedule/scheduler.py`.
+- [ ] `../../../lifekit/schedule/scheduler.py`.
 - [ ] CLI: `python -m lifekit.schedule`.
 
 ## Done criterion

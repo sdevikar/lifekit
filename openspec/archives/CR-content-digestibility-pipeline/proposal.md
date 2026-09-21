@@ -6,7 +6,7 @@ We know chapter splitting is solvable via `~/workspace/projects/chapter-splitter
 
 ## What Changes
 
-- **New**: `lifekit/store/content_processor.py` — post-ingest pipeline step that runs on an already-ingested book and annotates chunks with detected chapter boundaries
+- **New**: `../../../lifekit/store/content_processor.py` — post-ingest pipeline step that runs on an already-ingested book and annotates chunks with detected chapter boundaries
 - **New**: `chapter_id` and `chapter_title` columns added to `book_chunks` table (nullable, populated by the processor)
 - **New**: `chapters` table storing detected chapter metadata (title, start_chunk, end_chunk, page_estimate)
 - **Modified**: `pdf-ingest` spec — ingestion now optionally triggers the content processor after chunk storage (off by default, opt-in via `--process` flag)
@@ -25,9 +25,9 @@ We know chapter splitting is solvable via `~/workspace/projects/chapter-splitter
 
 ## Impact
 
-- **`lifekit/store/content_processor.py`**: New module, no external deps beyond `re` and `sqlite3`
-- **`lifekit/db/schema.py`**: `book_chunks` gains two nullable columns; new `chapters` table — migrations must be idempotent
-- **`lifekit/store/pdf_ingester.py`**: Optional `--process / process: bool` param added to `ingest_pdf()`
+- **`../../../lifekit/store/content_processor.py`**: New module, no external deps beyond `re` and `sqlite3`
+- **`../../../lifekit/db/schema.py`**: `book_chunks` gains two nullable columns; new `chapters` table — migrations must be idempotent
+- **`../../../lifekit/store/pdf_ingester.py`**: Optional `--process / process: bool` param added to `ingest_pdf()`
 - **`Makefile`**: `make ingest PDF=... PROCESS=1` passes flag through
 - **No external API calls**: heuristic detection is pure Python regex over chunk text
 - **chapter-splitter integration**: Documented as a future path for DOI-registered books; not wired in MVP

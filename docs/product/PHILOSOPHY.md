@@ -99,7 +99,7 @@ proven with real use.
   episodic-memory pattern). No Mem0 until dedup/conflict resolution is a real
   problem.
 - **Learning runtime** — new Python MCP server (FastMCP, evolving the
-  existing `lifekit/mcp/server.py` or beside it — open question), mirroring
+  existing `../../lifekit/mcp/server.py` or beside it — open question), mirroring
   the tutor-mcp split.
 
 ## Tech stack (draft)
@@ -142,7 +142,7 @@ and that compound is not replicable by ChatGPT + a PDF.
 
 1. Venue UI framework: what replaces Streamlit, and when? (Design investment
    is pillar 2 — needs a real decision, not drift.)
-2. Learning runtime: evolve `lifekit/mcp/server.py` in place, or a second
+2. Learning runtime: evolve `../../lifekit/mcp/server.py` in place, or a second
    server beside it?
 3. Teach-back grading: LLM judge against the book model — which model, and
    what rubric keeps it honest (no grade inflation)?

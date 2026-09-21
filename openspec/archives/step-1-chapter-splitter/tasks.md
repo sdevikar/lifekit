@@ -5,7 +5,7 @@
 - [x] 1.3 Implement heading-heuristic fallback (font-size detection) for PDFs with missing/empty TOC
 - [x] 1.4 Implement fixed-size section fallback when neither TOC nor headings are usable
 - [x] 1.5 Refuse image-only PDFs with a clear error (`EmptyPDFError`)
-- [x] 1.6 Add `chapters` table migration to `lifekit/db/schema.py` (idempotent)
+- [x] 1.6 Add `chapters` table migration to `../../../lifekit/db/schema.py` (idempotent)
 - [x] 1.7 Add CLI `python -m lifekit.store.split --pdf <path>` printing detected chapters
 - [x] 1.8 py_compile clean on all new/changed files
 - [x] 1.9 Done-criterion test: run on 2–3 real self-help PDFs, record boundary accuracy vs. actual TOCs (incl. one heuristic-fallback case + one image-only refusal) below
@@ -21,5 +21,5 @@
 - **Image-only PDF:** refused with `EmptyPDFError`. ✅
 - **DB persistence:** `chapters` rows written and re-readable. ✅
 
-New files: `lifekit/store/chapter_splitter.py`, `lifekit/store/split.py`, `tests/test_chapter_splitter.py`.
-Changed: `lifekit/db/schema.py` (+`chapters` table), `pyproject.toml` (+PyMuPDF).
+New files: `../../../lifekit/store/chapter_splitter.py`, `../../../lifekit/store/split.py`, `tests/test_chapter_splitter.py`.
+Changed: `../../../lifekit/db/schema.py` (+`chapters` table), `pyproject.toml` (+PyMuPDF).

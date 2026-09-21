@@ -9,13 +9,13 @@ are merged, and everything is persisted to queryable tables for coaching.
 
 ## What Changes
 
-- **New tables** (migration in `lifekit/db/schema.py`):
+- **New tables** (migration in `../../../lifekit/db/schema.py`):
   - `exercises`: `(id, book_id, chapter_idx, chapter_title, title, purpose,
     steps JSON, materials JSON, source_quote, page_start, page_end)`
   - `key_ideas`: `(id, book_id, chapter_idx, idea)`
   - `dedupe_log`: `(id, book_id, kept_exercise_id, merged_exercise_title,
     merged_source_quote, reason, created_at)` — audit trail of every merge.
-- **New**: `lifekit/reduce/reducer.py` — `reduce_extractions(book_id, chapters,
+- **New**: `../../../lifekit/reduce/reducer.py` — `reduce_extractions(book_id, chapters,
   extractions, db_path)`:
   1. Flatten all chapter extractions into candidate exercises.
   2. Deterministic dedupe: normalize titles (lowercase, strip punctuation/
@@ -39,7 +39,7 @@ are merged, and everything is persisted to queryable tables for coaching.
 
 ## Impact
 
-- New package `lifekit/reduce/` (`reducer.py`, `__main__.py`, `__init__.py`).
+- New package `../../../lifekit/reduce/` (`reducer.py`, `__main__.py`, `__init__.py`).
 - Schema migration: `exercises`, `key_ideas`, `dedupe_log` tables.
 - No new model dependencies (deterministic first).
 

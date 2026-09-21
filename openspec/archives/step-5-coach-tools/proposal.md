@@ -8,7 +8,7 @@ log completions, and get the next recommended exercise.
 
 ## What Changes
 
-- **New**: `lifekit/coach/tools.py` — pure functions (no MCP framework yet,
+- **New**: `../../../lifekit/coach/tools.py` — pure functions (no MCP framework yet,
   just the logic; MCP adapter is deferred as "explicitly later" if needed,
   but the functions are MCP-ready):
   - `list_exercises(db_path, book_id, limit=20, offset=0) -> list[dict]`:
@@ -34,7 +34,7 @@ log completions, and get the next recommended exercise.
 
 ## Impact
 
-- New package `lifekit/coach/` (`tools.py`, `__main__.py`).
+- New package `../../../lifekit/coach/` (`tools.py`, `__main__.py`).
 - Schema: `completions` table.
 - No model calls (deterministic).
 

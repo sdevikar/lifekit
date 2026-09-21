@@ -12,7 +12,7 @@ signals + instructions for the host LLM to phrase.
 
 ## What Changes
 
-- **Model** (`lifekit/momentum/`):
+- **Model** (`../../../lifekit/momentum/`):
   - `momentum_state(exercise_id/book_id/global, momentum float 0..1, streak_days, last_completed_at, decay_rate)` — exponential decay `m = m_prev * e^(-λΔt)`; bumped by completions (+Δ per outcome grade), penalized by misses and ignored intentions.
   - **Momentum brief engine** — priority order, first match wins (adapted from tutor-mcp's `SelectBrief`):
     1. `milestone` — streak crossed 3/7/14/30 days
@@ -38,7 +38,7 @@ signals + instructions for the host LLM to phrase.
 
 ## Impact
 
-- New package `lifekit/momentum/`; `momentum_state` table; depends on Step 8
+- New package `../../../lifekit/momentum/`; `momentum_state` table; depends on Step 8
   sessions + existing FSRS scheduler. No new dependencies.
 
 ## Done criterion

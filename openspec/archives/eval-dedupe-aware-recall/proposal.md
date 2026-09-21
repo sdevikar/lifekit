@@ -13,19 +13,19 @@ must be measured post-dedupe to mean anything (BACKLOG E2).
 
 ## What Changes
 
-- **New**: `scripts/eval_dedupe_recall.py` — loads the eval's raw extractions
-  (`evals/step2-recall-qwen3.8-27b-q8_0/extractions_qwen3.8-27b-q8_0.json`),
-  runs the existing Step 3 reducer (`lifekit/reduce/reducer.py`) over them,
+- **New**: `../../../scripts/eval_dedupe_recall.py` — loads the eval's raw extractions
+  (`../../../evals/step2-recall-qwen3.8-27b-q8_0/extractions_qwen3.8-27b-q8_0.json`),
+  runs the existing Step 3 reducer (`../../../lifekit/reduce/reducer.py`) over them,
   then scores dedupe-aware recall: for each of the 20 ground-truth exercises,
   is its substance present in the deduped set (allowing many-to-one merges)?
   Reports: deduped record count, merge count, per-GT-exercise hit/miss, and
   the fragmentation patterns that survived dedupe.
 - **Report**: append the dedupe-aware numbers to
-  `evals/step2-recall-qwen3.8-27b-q8_0/README.md` and update the verdict line
+  `../../../evals/step2-recall-qwen3.8-27b-q8_0/README.md` and update the verdict line
   if the result changes it.
 - **Harden if needed**: if same-title duplicates survive the deterministic
   dedupe (normalized-title keying), record the surviving patterns in
-  BACKLOG.md as a Step 3 refinement candidate (the converged two-tier shape:
+  ../../../docs/product/BACKLOG.md as a Step 3 refinement candidate (the converged two-tier shape:
   cheap string-similarity within chapter → expensive LLM/embedding
   consolidation across chapters, per book2anki + flashcard-mcp). Do NOT
   implement the two-tier dedupe in this change — file it, don't build it.
@@ -38,7 +38,7 @@ must be measured post-dedupe to mean anything (BACKLOG E2).
 
 ## Impact
 
-- New script `scripts/eval_dedupe_recall.py`; reuses `lifekit/reduce/` as-is.
+- New script `../../../scripts/eval_dedupe_recall.py`; reuses `../../../lifekit/reduce/` as-is.
 - No product code changes unless a trivial reducer bug is found while
   running (then fix + regression test, per the defect protocol).
 

@@ -21,9 +21,9 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A5 | Single user, local machine, Ollama running (`qwen3.6:latest` or configured model). | locked |
 | A6 | Books are chapter-detectable; fixed-size sections as fallback. | locked |
 | A7 | Extraction need not be perfect — misses fine; systemic failures flagged, not silently shipped. | locked |
-| A8 | No frontend (CLI + MCP tools only); no auth, no cloud, no sync. | retired 2026-09-21: UI unlocked as the product interface — feed + conversations web UI (`intent/ui-feed-and-conversations.md`, roadmap Step 13). The throwaway Streamlit dogfood UI is superseded. The no-auth/no-cloud/no-sync clause continues as A24. |
+| A8 | No frontend (CLI + MCP tools only); no auth, no cloud, no sync. | retired 2026-09-21: UI unlocked as the product interface — feed + conversations web UI (`../../intent/ui-feed-and-conversations.md`, roadmap Step 13). The throwaway Streamlit dogfood UI is superseded. The no-auth/no-cloud/no-sync clause continues as A24. |
 
-## Step 1 — chapter splitter (`openspec/changes/step-1-chapter-splitter/`)
+## Step 1 — chapter splitter (`../../openspec/changes/step-1-chapter-splitter/`)
 
 | ID | Assumption | Status | Revisit trigger |
 |----|------------|--------|-----------------|
@@ -36,24 +36,24 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A15 | Fixed-size fallback granularity: 15 pages per section (`FALLBACK_SECTION_PAGES`). | active | If Step 2 extraction quality suffers on section-split chapters, tune granularity. |
 | A16 | `chapters.book_id` has no FK to `books` — the splitter stays decoupled from ingestion; book_id defaults to sha256(path)[:16]. | active | If referential integrity is needed later, add the FK + migration. |
 
-## Step 2 — extraction map (`openspec/changes/step-2-extraction-map/`)
+## Step 2 — extraction map (`../../openspec/changes/step-2-extraction-map/`)
 
 | ID | Assumption | Status | Revisit trigger |
 |----|------------|--------|-----------------|
 | A17 | Dev eval uses llama.cpp + Qwen3-4B-Q4_K_M GGUF via a dev-only Ollama-interface shim (Ollama binary not downloadable in this sandbox: registry TLS blocked). Product code stays Ollama-native (`ollama.Client`, `format=<json_schema>`, temp 0.1). Subset validation (ch.0,1) confirms pipeline correctness. The 4B cannot extract exercises from content chapters (systematic validation failures; plain-JSON mode worse); Qwen3-8B (5GB) OOMs on 7.9GB RAM. Full 15/20 recall DEFERRED to production Ollama + capable model. | active | When Ollama runs with a suitable model (qwen3.6 or larger), re-run the full-book recall eval through the product path. |
 | A18 | Oversized chapters (>48k chars) split via Chonkie `RecursiveChunker` into per-section extractions, concatenated. Dev eval uses smaller thresholds (16k/12k) to fit 7GB RAM; product defaults unchanged. | active | If section-boundary exercises are missed/duplicated in recall, add overlap or raise thresholds. |
 | A19 | `extract_chapter` backfills missing `chapter_title` from the known `Chapter.title` instead of failing/retriing when the model omits it (observed on front matter). Strict Pydantic schema unchanged for model output. | active | If backfill masks real model confusion, remove it and require the field. |
-| A20 | Full-book extraction recall eval (20-exercise ground truth) deferred to the user's local dev setup with their own model (decision 2026-09-15). Not blocking Steps 3–7; pipeline validated via subset/proxy evals (A17). | superseded 2026-09-17 | Ran 2026-09-17 on home Ollama (`qwen3.8:27b-q8_0`), 17/17 chapters, recall 19/20 (95%), conditional pass; results recorded in `openspec/archives/step-2-extraction-map/tasks.md` and `evals/step2-recall-qwen3.8-27b-q8_0/`. |
+| A20 | Full-book extraction recall eval (20-exercise ground truth) deferred to the user's local dev setup with their own model (decision 2026-09-15). Not blocking Steps 3–7; pipeline validated via subset/proxy evals (A17). | superseded 2026-09-17 | Ran 2026-09-17 on home Ollama (`qwen3.8:27b-q8_0`), 17/17 chapters, recall 19/20 (95%), conditional pass; results recorded in `../../openspec/archives/step-2-extraction-map/tasks.md` and `../../evals/step2-recall-qwen3.8-27b-q8_0/`. |
 | A22 | Long-running model evals run against the user's home workstation Ollama (`qwen3.8:27b-q8_0`) over Tailscale — the VM runs only the eval harness; no model runs here (directed 2026-09-17). Sectioned extraction (4000/3000-char sections) is required over the tunnel because full-chapter requests time out; socket timeout 600 s, per-request deadline 900 s; sequential chapters with 15 s pacing (user's home GPU). | active | If evals need parallelism or a different model, revisit with the user. |
-| A23 | `validate_quotes` uses exact-substring comparison; the 2026-09-17 eval proved this false-fails ~90% of genuine quotes (10% exact vs 56% whitespace-normalized grounding). Whitespace normalization before comparison is a required fix, not optional polish. | active | Fix proposal: `openspec/changes/step-4-quote-whitespace-normalization/`. |
+| A23 | `validate_quotes` uses exact-substring comparison; the 2026-09-17 eval proved this false-fails ~90% of genuine quotes (10% exact vs 56% whitespace-normalized grounding). Whitespace normalization before comparison is a required fix, not optional polish. | active | Fix proposal: `../../openspec/changes/step-4-quote-whitespace-normalization/`. |
 
-## Infra — LLM provider config (`openspec/archives/llm-provider-config/`)
+## Infra — LLM provider config (`../../openspec/archives/llm-provider-config/`)
 
 | ID | Assumption | Status | Revisit trigger |
 |----|------------|--------|-----------------|
 | A21 | Model backend is pluggable via `lifekit.llm` (provider protocol: Ollama default, OpenRouter via `OPENROUTER_API_KEY` env only). Config resolution: CLI flags > env vars (`LIFEKIT_PROVIDER`/`LIFEKIT_MODEL`, legacy `OLLAMA_MODEL`) > `~/.lifekit/config.json` (provider/model only, never keys) > defaults (`ollama`/`qwen3.6:latest`; OpenRouter requires an explicit model). No new dependencies (OpenRouter via stdlib urllib). | active | If more providers (Anthropic, Gemini) are wanted, add them behind the same protocol. |
 
-## UI — feed + conversations (`intent/ui-feed-and-conversations.md`, 2026-09-21)
+## UI — feed + conversations (`../../intent/ui-feed-and-conversations.md`, 2026-09-21)
 
 | ID | Assumption | Status | Revisit trigger |
 |----|------------|--------|-----------------|

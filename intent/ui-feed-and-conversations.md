@@ -3,13 +3,13 @@
 **Author:** Atlas (product owner) — from Swapnil's approved mock direction
 **Date:** 2026-09-21
 **Status:** draft
-**Supersedes:** — (retires the no-frontend clause of A8; see `ASSUMPTIONS.md`)
+**Supersedes:** — (retires the no-frontend clause of A8; see `../docs/product/ASSUMPTIONS.md`)
 
 <!--
 Per-change proto-spec (Claude Academy "Capture as intent.md" practice).
 Every change starts here: no spec without an approved intent, no code
 without a spec. Brainstorm until concrete, then fill this in.
-Checked against the standing contract in /intent.md before approval.
+Checked against the standing contract in ../intent.md before approval.
 -->
 
 ## Problem
@@ -50,17 +50,17 @@ Single user (Swapnil). Touches: the daily briefing (Steps 5 + 7 — coach tools
 and resurfacing schedule feed the cards); the store (new conversation storage +
 completion logging from Mark done / Still with me); the coach LLM (replies
 grounded in the book); a new UI layer (`frontend/` exists as a stub). The
-throwaway Streamlit dogfood UI (`ui/app.py`) is superseded by this.
+throwaway Streamlit dogfood UI (`../ui/app.py`) is superseded by this.
 
 ## Constraints
 
-Standing constraints from `/intent.md` that bound this change: local-first,
+Standing constraints from `../intent.md` that bound this change: local-first,
 single user, localhost only, no auth / no cloud / no sync (A24). Deterministic
 runtime owns scheduling, surfacing, and state; the LLM owns conversational
 prose. Facts-only user model — no profiling, no inferred persona. Minimal code:
 reuse the approved mock's plain HTML/CSS/JS rather than adopting a framework.
 Long evals run on the home workstation Ollama, not this VM. Docs stay true —
-`ROADMAP.md` / `ASSUMPTIONS.md` / `STATUS.md` updated with this change.
+`../docs/product/ROADMAP.md` / `../docs/product/ASSUMPTIONS.md` / `../docs/product/STATUS.md` updated with this change.
 
 ## Open questions
 
@@ -70,7 +70,7 @@ Long evals run on the home workstation Ollama, not this VM. Docs stay true —
    it share a process with anything else?
 3. Conversation storage: new table(s) in the existing SQLite store — schema TBD
    in the spec.
-4. What happens to `ui/app.py` (Streamlit dogfood) — remove now or leave until
+4. What happens to `../ui/app.py` (Streamlit dogfood) — remove now or leave until
    the new UI is dogfood-ready?
 5. Does the feed need Steps 8–12 (sessions, momentum) first, or are Steps 5 + 7
    enough for v1? (PO recommendation: 5 + 7 are enough; sessions come later.)

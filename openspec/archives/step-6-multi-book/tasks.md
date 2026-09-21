@@ -11,8 +11,8 @@
 
 ## Implementation
 
-- [ ] `lifekit/books/registry.py`: `register_book()`.
-- [ ] `lifekit/books/search.py`: `search_exercises()`.
+- [ ] `../../../lifekit/books/registry.py`: `register_book()`.
+- [ ] `../../../lifekit/books/search.py`: `search_exercises()`.
 - [ ] CLI: `python -m lifekit.books`.
 
 ## Done criterion

@@ -9,7 +9,7 @@ validation pass plus a sampled LLM-as-judge for quality.
 
 ## What Changes
 
-- **New**: `lifekit/validate/validator.py`:
+- **New**: `../../../lifekit/validate/validator.py`:
   - `validate_exercise(exercise, chapter_text) -> dict`: check
     `source_quote` is an exact substring of `chapter_text`; check
     `extra_quotes` too. Returns `{ok, failures[]}`.
@@ -19,7 +19,7 @@ validation pass plus a sampled LLM-as-judge for quality.
     (suspicious) get flagged for review. Threshold: 5000 chars.
   - Persist results to `validation_log` table:
     `(id, book_id, exercise_id, check_type, passed, detail, created_at)`.
-- **New**: `lifekit/validate/judge.py`:
+- **New**: `../../../lifekit/validate/judge.py`:
   - `sample_for_judge(db_path, book_id, pct=0.10)`: select 10% of exercises
     (min 1) for LLM review.
   - `judge_exercise(exercise, chapter_text, client)`: ask model "Is this
@@ -39,7 +39,7 @@ validation pass plus a sampled LLM-as-judge for quality.
 
 ## Impact
 
-- New package `lifekit/validate/` (`validator.py`, `judge.py`, `__main__.py`).
+- New package `../../../lifekit/validate/` (`validator.py`, `judge.py`, `__main__.py`).
 - Schema: `validation_log`, `judge_log`.
 - Judge uses Ollama (optional; skipped if no client).
 

@@ -36,7 +36,7 @@ version until that question is answered.
 
 ## Impact
 
-- New `lifekit/export/coach_report.py` + CLI. Reads sessions (Step 8),
+- New `../../../lifekit/export/coach_report.py` + CLI. Reads sessions (Step 8),
   momentum (Step 9), goals (Step 10). No schema changes.
 
 ## Done criterion

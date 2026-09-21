@@ -38,7 +38,7 @@ being defined.)
 
 ## Impact
 
-- New `lifekit/export/skill.py` + CLI `lifekit export skill`. No schema
+- New `../../../lifekit/export/skill.py` + CLI `lifekit export skill`. No schema
   changes. No new dependencies (Markdown generation via templates).
 
 ## Done criterion

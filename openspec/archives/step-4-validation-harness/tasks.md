@@ -13,9 +13,9 @@
 ## Implementation
 
 - [ ] Schema: `validation_log`, `judge_log` tables.
-- [ ] `lifekit/validate/validator.py`: `validate_exercise()`,
+- [ ] `../../../lifekit/validate/validator.py`: `validate_exercise()`,
       `validate_book()`, zero-extraction flags.
-- [ ] `lifekit/validate/judge.py`: `sample_for_judge()`, `judge_exercise()`.
+- [ ] `../../../lifekit/validate/judge.py`: `sample_for_judge()`, `judge_exercise()`.
 - [ ] CLI: `python -m lifekit.validate --db-path DB --book-id ID`.
 
 ## Done criterion

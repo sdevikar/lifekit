@@ -14,7 +14,7 @@ There are two intent artifacts:
 
 1. **`intent.md` (repo root)** — the *standing product intent*: mission,
    non-negotiable rules, never-build list, gates. Derived from
-   `PHILOSOPHY.md`; on any conflict, `intent.md` wins. Every change is
+   `docs/product/PHILOSOPHY.md`; on any conflict, `intent.md` wins. Every change is
    checked against it.
 2. **`intent/<slug>.md`** — the *per-change proto-spec*: problem, proposed
    outcome, affected users/systems, constraints, open questions. Template:
@@ -45,7 +45,7 @@ There are two intent artifacts:
    propose an update — do not silently drift.
 
 At the start of every task or session: read `intent.md` first, then
-`STATUS.md` for current project state.
+`docs/product/STATUS.md` for current project state.
 
 ## Working agreements
 
@@ -53,8 +53,8 @@ At the start of every task or session: read `intent.md` first, then
   defined before implementation.
 - **Minimal diffs:** the smallest change that satisfies the spec. No
   speculative generality, no drive-by refactors.
-- **Docs stay true:** keep `STATUS.md`, `ROADMAP.md`, `ASSUMPTIONS.md`,
-  `BACKLOG.md` accurate with every change.
+- **Docs stay true:** keep `docs/product/STATUS.md`, `docs/product/ROADMAP.md`, `docs/product/ASSUMPTIONS.md`,
+  `docs/product/BACKLOG.md` accurate with every change.
 - **Push discipline:** fetch `origin/main` first; one consolidated commit
   per unit of work; verify the remote tree after pushing.
 - **Local-first:** long evals run on the home workstation's Ollama, never
