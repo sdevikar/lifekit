@@ -57,4 +57,4 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 
 | ID | Assumption | Status | Revisit trigger |
 |----|------------|--------|-----------------|
-| A24 | Product interface is a local single-user web UI (feed of cards + conversation view) served on localhost; no auth, no cloud, no sync. Plain HTML/CSS/JS, no framework, reusing the approved mock. | active | If multi-user or remote access is wanted, revisit auth/sync then. If the UI outgrows plain HTML/JS, revisit the no-framework call. |
+| A24 | Product interface is a local single-user web UI (feed of cards + conversation view) served on localhost; no auth, no cloud, no sync. Built with Next.js (decided 2026-09-21), visually faithful to the approved mock. | active | If multi-user or remote access is wanted, revisit auth/sync then. |

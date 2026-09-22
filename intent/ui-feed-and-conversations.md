@@ -2,7 +2,7 @@
 
 **Author:** Atlas (product owner) — from Swapnil's approved mock direction
 **Date:** 2026-09-21
-**Status:** draft
+**Status:** approved 2026-09-21 (human approval; enters Design as OpenSpec proposal)
 **Supersedes:** — (retires the no-frontend clause of A8; see `../docs/product/ASSUMPTIONS.md`)
 
 <!--
@@ -113,19 +113,19 @@ Standing constraints from `../intent.md` that bound this change: local-first,
 single user, localhost only, no auth / no cloud / no sync (A24). Deterministic
 runtime owns scheduling, surfacing, and state; the LLM owns conversational
 prose. Facts-only user model — no profiling, no inferred persona. Minimal code: the
-smallest diff that satisfies the spec. The UI framework is TBD — plain
-HTML/CSS/JS was rejected by the human on 2026-09-21 (see open question 1).
+smallest diff that satisfies the spec. The UI framework is **Next.js**
+(decided 2026-09-21 on the human's explicit approval; recorded in
+`../intent.md` Gates).
 Long evals run on the home workstation Ollama, not this VM. Docs stay true —
 `../docs/product/ROADMAP.md` / `../docs/product/ASSUMPTIONS.md` / `../docs/product/STATUS.md` updated with this change.
 
 ## Open questions
 
-1. UI framework: plain HTML/CSS/JS was rejected by the human on 2026-09-21
-   as too simplistic. DeepTutor's web UI is Next.js 16 + React 19 +
-   TypeScript + Tailwind (per its repo's `web/package.json`) — a useful
-   data point, not a mandate. Decision open; per the standing contract
-   (`../intent.md`), the venue UI framework choice must be recorded there
-   on the human's explicit approval before framework investment begins.
+1. UI framework: **decided 2026-09-21 — Next.js** (human approval;
+   plain HTML/CSS/JS rejected as too simplistic). DeepTutor's web UI is
+   Next.js 16 + React 19 + TypeScript + Tailwind (per its repo's
+   `web/package.json`) — the reference stack, not a mandate to match
+   versions. Recorded in `../intent.md` Gates per the standing contract.
 2. Served how — a `lifekit ui` command on a localhost port? Which port, and does
    it share a process with anything else?
 3. Conversation storage: new table(s) in the existing SQLite store — schema TBD
@@ -138,10 +138,9 @@ Long evals run on the home workstation Ollama, not this VM. Docs stay true —
 ## PO review
 
 - Reviewed by: Atlas (product owner) — 2026-09-21
-- Verdict: pending — awaiting Swapnil's approval of this draft
+- Verdict: **approved** — human approved 2026-09-21; enters Design as
+  `openspec/changes/step-13-ui-feed-conversations/`
 - Notes: PO review pass added the Pillars section and the pillar mapping,
   cross-referenced against `../intent.md` and `../docs/product/ROADMAP.md`;
-  open question 1 updated after the human rejected plain HTML/CSS/JS
-  (DeepTutor stack datapoint added). No conflicts with the standing
-  contract; the framework decision is flagged as needing an `intent.md`
-  amendment on explicit approval.
+  open question 1 resolved to Next.js on human approval (DeepTutor stack
+  datapoint). No conflicts with the standing contract.

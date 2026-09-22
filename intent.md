@@ -93,8 +93,9 @@ that surfaces the right thing at the right time.
 
 - **Dogfood exit criterion: UNDECIDED.** Until it is decided, no F-item and
   no learning-runtime work is unlocked. Do not start that work on your own.
-- **Streamlit is scaffolding.** The venue UI framework is undecided — do not
-  invest in a new framework without a decision recorded here.
+- **Streamlit is scaffolding (superseded by the feed UI).** The venue UI
+  framework is **Next.js** — decided 2026-09-21, recorded here on the
+  human's explicit approval.
 
 ## Per-change intents
 

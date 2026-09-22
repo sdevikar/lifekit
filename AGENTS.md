@@ -51,6 +51,9 @@ At the start of every task or session: read `intent.md` first, then
 
 - **Spec-first:** OpenSpec proposals before code; tests and done criteria
   defined before implementation.
+- **Keep proposals small:** one independently testable slice per proposal
+  (a/b/c/d slices for UI-sized work, as in Step 13). The local coding
+  harness chokes on large proposals — never hand it a whole step at once.
 - **Minimal diffs:** the smallest change that satisfies the spec. No
   speculative generality, no drive-by refactors.
 - **Docs stay true:** keep `docs/product/STATUS.md`, `docs/product/ROADMAP.md`, `docs/product/ASSUMPTIONS.md`,
