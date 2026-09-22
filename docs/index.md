@@ -7,6 +7,7 @@ Map of the documentation, organized by domain. Start here.
 | [product/](product/) | Vision, planning, and standing truth: roadmap, backlog, assumptions, status, philosophy, intents, MVP scope, user manual |
 | [ux/](ux/) | UI direction: the feed + conversations interface |
 | [backend/](backend/) | Pipeline, storage, and serving: extraction → book model → coach tools → scheduling |
+| [arch/](arch/) | Architecture: pillar blocks, connections, and the daily-loop data flow |
 | [algorithms/](algorithms/) | The math that picks what resurfaces: FSRS adaptation, dedupe, chunking |
 | [integrations/](integrations/) | Model providers (Ollama/OpenRouter) and what's deliberately not integrated |
 | [research/](research/) | Landscape surveys and borrow reports (tutor-mcp, DeepTutor) that informed the design |
