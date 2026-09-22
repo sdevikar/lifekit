@@ -44,6 +44,47 @@ open feed → do the exercise → Mark done → Talk about this on a card → st
 new chat from the composer → return to feed — all local, no quiz framing, no
 probabilities shown, no mastery gates.
 
+## Pillars
+
+The project decomposes into seven pillars, each independently workable
+against a stable interface. Step 13 needs only some of them.
+
+1. **Book pipeline (intake)** — Steps 1–4: split → extract → reduce/dedupe →
+   validate. Turns a published book PDF into validated, quote-grounded
+   exercises + key ideas registered under a `book_id`. Interface: "a
+   structured book in the store." Its evals are its own gate.
+2. **Book store & model** — SQLite schema + multi-book registry (Step 6;
+   `docs/backend/BOOK_MODEL.md` proposal). The data contract every pillar
+   reads and writes: chapters, sections, exercises, key ideas, completions,
+   conversations. Facts-only — no user profiling.
+3. **Resurfacing engine** — deterministic scheduling (Step 7, FSRS-adapted).
+   Reads completion history + "still with me" signals; emits today's
+   exercise, today's resurfaced idea, and fading ideas. Owns scheduling,
+   surfacing, and state.
+4. **Coach actions** — the deterministic action surface (Step 5:
+   `list_exercises`, `get_exercise`, `log_completion`, `next_exercise`;
+   MCP tools). The write path: records what the user did, with completion
+   provenance (self-declared vs assessed).
+5. **Retrieval (RAG)** — chunking + retrieval over book content for
+   grounding. Supports chat citations, reference lookups, deep dives. Not
+   the differentiator; a quality upgrade is explicitly later (BACKLOG
+   F9–F11).
+6. **Grounded chat** — the conversational coach: LLM replies grounded in the
+   book via retrieval; conversations seeded from feed cards; one stored
+   conversation per chat. The runtime owns state and turn structure; the LLM
+   owns the prose.
+7. **Feed UI** — the local web frontend: feed cards, stage strip,
+   conversations list, master composer, conversation view. Framework TBD
+   (open question 1).
+
+Proposed but not committed — **Program layer** (Steps 8–11: coaching
+sessions, momentum, interviewer): a future eighth pillar, not a dependency
+of this change.
+
+Cross-cutting, not pillars: per-pillar evals/quality gates, the intent/SDLC
+workflow itself, docs, and the standing constraints (local-first, facts-only
+user model, notifications deferred until the loop is proven).
+
 ## Affected users and systems
 
 Single user (Swapnil). Touches: the daily briefing (Steps 5 + 7 — coach tools
@@ -52,20 +93,39 @@ completion logging from Mark done / Still with me); the coach LLM (replies
 grounded in the book); a new UI layer (`frontend/` exists as a stub). The
 throwaway Streamlit dogfood UI (`../ui/app.py`) is superseded by this.
 
+## How this change maps to the pillars
+
+- **New:** Feed UI (pillar 7); the grounded-chat surface (pillar 6 — a new
+  surface on the existing retrieval + LLM plumbing); conversation storage
+  (pillar 2 — one additive table, schema TBD in the spec).
+- **Reused as-is:** the resurfacing engine's outputs (pillar 3) feed the
+  cards; coach actions (pillar 4) back Mark done / Still with me.
+- **Untouched:** the book pipeline (pillar 1) and retrieval internals
+  (pillar 5) — chat uses retrieval exactly as it exists today.
+
+This settles open question 5: the feed needs only pillars 2, 3, 4, 6,
+and 7. Steps 5 + 7 are sufficient for v1; the program layer (Steps 8–12)
+is not a dependency.
+
 ## Constraints
 
 Standing constraints from `../intent.md` that bound this change: local-first,
 single user, localhost only, no auth / no cloud / no sync (A24). Deterministic
 runtime owns scheduling, surfacing, and state; the LLM owns conversational
-prose. Facts-only user model — no profiling, no inferred persona. Minimal code:
-reuse the approved mock's plain HTML/CSS/JS rather than adopting a framework.
+prose. Facts-only user model — no profiling, no inferred persona. Minimal code: the
+smallest diff that satisfies the spec. The UI framework is TBD — plain
+HTML/CSS/JS was rejected by the human on 2026-09-21 (see open question 1).
 Long evals run on the home workstation Ollama, not this VM. Docs stay true —
 `../docs/product/ROADMAP.md` / `../docs/product/ASSUMPTIONS.md` / `../docs/product/STATUS.md` updated with this change.
 
 ## Open questions
 
-1. Stack: plain HTML/CSS/JS served by the backend (PO recommendation — the
-   approved mock already is this) vs. a UI framework?
+1. UI framework: plain HTML/CSS/JS was rejected by the human on 2026-09-21
+   as too simplistic. DeepTutor's web UI is Next.js 16 + React 19 +
+   TypeScript + Tailwind (per its repo's `web/package.json`) — a useful
+   data point, not a mandate. Decision open; per the standing contract
+   (`../intent.md`), the venue UI framework choice must be recorded there
+   on the human's explicit approval before framework investment begins.
 2. Served how — a `lifekit ui` command on a localhost port? Which port, and does
    it share a process with anything else?
 3. Conversation storage: new table(s) in the existing SQLite store — schema TBD
@@ -77,6 +137,11 @@ Long evals run on the home workstation Ollama, not this VM. Docs stay true —
 
 ## PO review
 
-- Reviewed by: Atlas (product owner)
+- Reviewed by: Atlas (product owner) — 2026-09-21
 - Verdict: pending — awaiting Swapnil's approval of this draft
-- Notes: —
+- Notes: PO review pass added the Pillars section and the pillar mapping,
+  cross-referenced against `../intent.md` and `../docs/product/ROADMAP.md`;
+  open question 1 updated after the human rejected plain HTML/CSS/JS
+  (DeepTutor stack datapoint added). No conflicts with the standing
+  contract; the framework decision is flagged as needing an `intent.md`
+  amendment on explicit approval.
