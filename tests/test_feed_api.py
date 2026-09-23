@@ -168,6 +168,38 @@ class TestBriefing:
         assert "fading_ideas" in data
         assert isinstance(data["fading_ideas"], list)
 
+    def test_briefing_uses_due_exercises(self, client, db_path):
+        """Exercise with a past-due FSRS card is served by due_exercises,
+        not the no-completion fallback."""
+        from fsrs import Card
+        import json as _json
+        import datetime
+
+        p, ids = db_path
+        # Insert a card due in the past for exercise 2
+        card = Card(due=datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc))
+        c = sqlite3.connect(p)
+        c.execute(
+            "INSERT INTO fsrs_cards (exercise_id, card_json) VALUES (?, ?)",
+            (ids["exercise_ids"][1], _json.dumps(card.to_dict())),
+        )
+        c.commit()
+        c.close()
+
+        resp = client.get("/api/briefing/today")
+        assert resp.status_code == 200
+        exercise = resp.get_json()["exercise"]
+        # due_exercises ordered by id → exercise 2 is due, should be returned
+        assert exercise["id"] == ids["exercise_ids"][1]
+
+    def test_briefing_fallback_no_cards(self, client, db_path):
+        """With no FSRS cards, falls back to first incomplete exercise."""
+        resp = client.get("/api/briefing/today")
+        assert resp.status_code == 200
+        exercise = resp.get_json()["exercise"]
+        # Fallback is "first exercise with no completion" → exercise 1
+        assert exercise["id"] is not None
+
 
 class TestCompletions:
     def test_post_completion(self, client, db_path):
@@ -220,6 +252,24 @@ class TestIdeaSignals:
         })
         assert resp.status_code == 200
         assert resp.get_json()["ok"] is True
+
+    def test_post_idea_signal_persists(self, client, db_path):
+        _, ids = db_path
+        resp = client.post("/api/idea-signals", json={
+            "idea_id": ids["idea_ids"][0],
+            "remembered": True,
+        })
+        assert resp.status_code == 200
+        p, _ = db_path
+        c = sqlite3.connect(p)
+        row = c.execute(
+            "SELECT idea_id, remembered FROM idea_signals WHERE idea_id = ?",
+            (ids["idea_ids"][0],),
+        ).fetchone()
+        c.close()
+        assert row is not None
+        assert row[0] == ids["idea_ids"][0]
+        assert row[1] == 1
 
     def test_post_idea_signal_malformed(self, client):
         resp = client.post("/api/idea-signals", json={})
