@@ -27,6 +27,7 @@ home workstation (sandbox accepts no inbound connections). Suite 82/82.
 | DYL product ingest (dogfood data) | ✅ Done 2026-09-18 — `../../scripts/ingest_eval_book.py` → `~/.lifekit/lifekit.db` (book `dyl`): 144 exercises, 875 key ideas, validation 142/144 grounded, 0 hallucinations. |
 | Dogfood UI (Streamlit) | ✅ Done 2026-09-18 — `../../ui/app.py` reshaped Today-first per the MVP vision ("one exercise to do, one idea to remember"): Today tab (Up next card, One idea, suggested prompt chips), Chat tab (rule-based router: due / chapter recap / exercise search), Library tab (browse). Superseded 2026-09-21 by the feed + conversations UI intent (A8 retired). |
 | UI unlocked (A8 retired) | 📋 2026-09-21 — UI is now the product interface: feed + conversations web UI (intent `../../intent/ui-feed-and-conversations.md`, **approved**; framework Next.js; proposal at `../../openspec/changes/step-13-ui-feed-conversations/`). Builds on Steps 5 & 7. |
+| Step 13a feed API | ✅ Shipped 2026-09-22 — `lifekit.serve.server` (Flask, localhost-only `:8765`): `GET /api/briefing/today`, `POST /api/completions`, `POST /api/idea-signals`, conversations CRUD + `POST /api/conversations/:id/messages` (grounded chat via retrieval + `lifekit.llm`). Schema migration adds `conversations`, `messages` tables; `idea_signals` column added to completions. Suite 112/112 (82 + 30 new feed API tests). Verified against dogfood DB (`~/.lifekit/lifekit.db`): briefing returns exercise 28 + stages, completions persist, conversation round-trip works. Slice archive at `../../openspec/archives/step-13a-feed-api/`; slices 13b–13d queued. |
 | Phone access (workstation) | ✅ 2026-09-18 — User runs the UI on the home workstation: `uv sync`, copy `../../dogfood/lifekit.db` → `~/.lifekit/lifekit.db`, `uv run streamlit run ../../ui/app.py`; phone opens the workstation's tailnet IP on 8501. (Codespace route dropped: sandbox is Tailscale client-only; stored GitHub credential lacks Codespace scope.) `.devcontainer/` kept consistent with the uv flow. |
 | MCP coach tools (H1) | ✅ Done 2026-09-18 — `../../lifekit/mcp/server.py` rewritten as real MCP stdio server (FastMCP): `list_exercises`, `search_exercises`, `get_exercise`, `complete_exercise`, `due_exercises`, `list_key_ideas`, `book_progress`. Handshake + tool call verified against the product DB. |
 | Known issues | See `BACKLOG.md` (D3–D7, H2–H4, P1–P6 open; E1–E2, H1 fixed) |
@@ -35,7 +36,7 @@ home workstation (sandbox accepts no inbound connections). Suite 82/82.
 
 ## Test inventory — what the tests actually cover
 
-Suite: **82 passed** (2026-09-18). Every model call is stubbed/mocked — **zero
+Suite: **112 passed** (82 + 30 feed API tests, 2026-09-22). Every model call is stubbed/mocked — **zero
 tests exercise a real LLM**. The suite proves the pipeline is *plumbed*, not
 that it *extracts*; the real-model eval (`../../evals/step2-recall-qwen3.8-27b-q8_0/`,
 conditional pass) is the quality gate. Provider tests use a mocked transport —
@@ -55,9 +56,11 @@ OpenRouter call succeeds.
 | `test_llm_config` | 9 | Provider/model resolution order (CLI flags > env vars > `~/.lifekit/config.json` > defaults); config never stores keys; invalid values rejected. |
 | `test_llm_providers` | 6 | **Mocked transport, no network.** Ollama provider passes JSON schema + temperature 0.1; OpenRouter request shape (model, messages, Authorization header from env); missing key raises; factory defaults to Ollama; both satisfy the provider protocol. Does NOT prove a real API call succeeds. |
 | `test_config_cli` | 5 | `lifekit config` get/set/show round-trips; secrets rejected from config file. |
+| `test_feed_api` | 30 | Step 13a feed API: schema migration (conversations/messages tables, idempotent), briefing endpoint, completions + idea-signals persistence, conversation CRUD, grounded chat message round-trip, localhost-only binding, `due_exercises` FSRS path. LLM provider mocked. |
 
 ## Recent history
 
+- **2026-09-22** — Step 13a feed API shipped: `lifekit/serve/server.py` Flask app (localhost-only `:8765`) with briefing, completions, idea-signals, conversations CRUD + grounded chat; schema migration adds `conversations`, `messages` tables; `idea_signals` column on completions. 30 new tests in `tests/test_feed_api.py` covering migration, every endpoint, malformed input, conversation round-trip, and `due_exercises` FSRS path. Full suite 112/112 (was 82). All endpoints verified against the dogfood DB (`~/.lifekit/lifekit.db`). Slice archived at `openspec/archives/step-13a-feed-api/`.
 - **2026-09-20** — New `PHILOSOPHY.md` (draft): corrected three pillars —
   deep book model + deliberately shallow user model, venue-not-menu (UI
   design is first-class), algorithmic coaching via a deterministic learning
