@@ -146,6 +146,13 @@ CREATE TABLE IF NOT EXISTS completions (
     notes TEXT
 );
 
+CREATE TABLE IF NOT EXISTS idea_signals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    idea_id INTEGER NOT NULL REFERENCES key_ideas(id),
+    remembered BOOLEAN NOT NULL,
+    signal_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS fsrs_cards (
     exercise_id INTEGER PRIMARY KEY REFERENCES exercises(id),
     card_json TEXT NOT NULL
