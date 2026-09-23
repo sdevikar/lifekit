@@ -44,19 +44,19 @@ def _book_info(c, book_id):
     return {"id": row["id"], "title": row["title"]} if row else None
 
 
-def _today_exercise(c, book_id):
+def _today_exercise(c, db_path, book_id):
     """Today's exercise: FSRS-due, fallback to first incomplete."""
     try:
         from lifekit.schedule.scheduler import due_exercises
 
-        due = due_exercises(c.connection, book_id, limit=5)
+        due = due_exercises(db_path, book_id, limit=5)
         if due:
             ex = c.execute(
                 "SELECT * FROM exercises WHERE id = ?", (due[0]["id"],)
             ).fetchone()
             if ex:
                 return _exercise_dict(ex)
-    except ImportError:
+    except Exception:
         pass
 
     # Fallback: first exercise with no completion
@@ -114,12 +114,12 @@ def _fading_ideas(c, book_id, limit=5):
     return [{"id": r["id"], "text": r["idea"]} for r in rows]
 
 
-def _briefing(c, book_id):
+def _briefing(c, book_id, db_path):
     book = _book_info(c, book_id)
     if not book:
         return None
 
-    exercise = _today_exercise(c, book_id)
+    exercise = _today_exercise(c, db_path, book_id)
 
     seen_ideas = c.execute(
         "SELECT COUNT(*) FROM key_ideas WHERE book_id = ?", (book_id,)
@@ -239,7 +239,7 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
     def get_briefing():
         c = _conn(app.config["db_path"])
         try:
-            data = _briefing(c, app.config["book_id"])
+            data = _briefing(c, app.config["book_id"], app.config["db_path"])
             if data is None:
                 return jsonify({"error": "book not found"}), 404
             return jsonify(data)
