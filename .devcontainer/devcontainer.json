@@ -1,15 +1,15 @@
 {
   "forwardPorts": [
-    8501
+    3000
   ],
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "name": "lifekit",
   "portsAttributes": {
-    "8501": {
-      "label": "LifeKit",
+    "3000": {
+      "label": "LifeKit UI",
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && export PATH=\"$HOME/.local/bin:$PATH\" && cd /workspaces/lifekit && uv sync --frozen && mkdir -p ~/.lifekit && cp dogfood/lifekit.db ~/.lifekit/lifekit.db && ls -la ~/.lifekit/lifekit.db",
-  "postStartCommand": "nohup bash -c 'export PATH=\"$HOME/.local/bin:$PATH\" && cd /workspaces/lifekit && uv run --frozen streamlit run ui/app.py --server.headless true --server.port 8501 --server.address 0.0.0.0' > /tmp/lifekit-streamlit.log 2>&1 &"
+  "postCreateCommand": "curl -LSsf https://astral.sh/uv/install.sh | sh && export PATH=\"$HOME/.local/bin:$PATH\" && cd /workspaces/lifekit && uv sync --frozen && mkdir -p ~/.lifekit && cp dogfood/lifekit.db ~/.lifekit/lifekit.db && ls -la ~/.lifekit/lifekit.db",
+  "postStartCommand": "export PATH=\"$HOME/.local/bin:$PATH\" && cd /workspaces/lifekit/frontend && npx next build && nohup bash -c 'cd /workspaces/lifekit && uv run --frozen python -m lifekit.ui' > /tmp/lifekit-ui.log 2>&1 &"
 }

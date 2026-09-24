@@ -12,5 +12,9 @@ What the UI is *not*: quiz framing, retention percentages, grades, mastery gates
 ## Spec status
 
 - Intent (draft, awaiting approval): [`intent/ui-feed-and-conversations.md`](../../intent/ui-feed-and-conversations.md)
-- Roadmap: Step 13, queued — builds on Steps 5 (coach tools) and 7 (scheduling)
-- The throwaway Streamlit dogfood UI (`ui/app.py`) is superseded by this direction (A8 retired 2026-09-21)
+- Umbrella proposal + 4 slices at `../../openspec/changes/step-13-ui-feed-conversations/`:
+  - 13a ✅ feed API (Flask, localhost `:8765`)
+  - 13b ✅ feed screen (Next.js, component set)
+  - 13c ✅ conversation view (chat UI with seed display)
+  - 13d in progress — `lifekit ui` serve command
+- Run: `uv sync` (Python deps) + `npx next build` (frontend) in `frontend/`, then `lifekit ui`
