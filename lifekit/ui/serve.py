@@ -27,6 +27,22 @@ WEB_PORT = 3000
 _PACKAGE_DIR = Path(__file__).resolve().parent  # lifekit/ui/
 _REPO_ROOT = _PACKAGE_DIR.parent.parent  # repo root
 _FRONTEND_DIR = _REPO_ROOT / "frontend"
+_NEXT_BIN = _FRONTEND_DIR / "node_modules" / "next" / "dist" / "bin" / "next"
+
+
+def _kill_stale_port(port: int) -> None:
+    """Kill any process listening on *port* so our subprocess can bind.
+
+    Uses ``fuser -k`` (more reliable than ``lsof`` for finding processes
+    by port on Linux).  Silently skips if ``fuser`` is unavailable.
+    """
+    try:
+        subprocess.run(
+            ["fuser", "-k", "%d/tcp" % port],
+            capture_output=True,
+        )
+    except FileNotFoundError:
+        pass  # fuser not available — skip
 
 
 def _start_feed_api() -> subprocess.Popen:
@@ -57,9 +73,15 @@ def _build_nextjs() -> None:
 
 
 def _start_nextjs() -> subprocess.Popen:
-    """Start the Next.js production server."""
+    """Start the Next.js production server.
+
+    Uses ``node`` to run the Next.js binary directly, not ``npx``.
+    The ``npx`` wrapper spawns a detached ``node`` child and exits
+    immediately, which makes ``Popen.poll()`` report a stale exit
+    code (1) while the real server keeps running orphaned.
+    """
     return subprocess.Popen(
-        ["npx", "next", "start", "-p", str(WEB_PORT), "-H", WEB_HOST],
+        ["node", str(_NEXT_BIN), "start", "-p", str(WEB_PORT), "-H", WEB_HOST],
         cwd=str(_FRONTEND_DIR),
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
@@ -80,6 +102,29 @@ def _wait_for_port(host: str, port: int, timeout: float = 15.0) -> bool:
     return False
 
 
+def _wait_for_port_with_proc(
+    host: str, port: int, proc: subprocess.Popen, timeout: float = 15.0
+) -> bool:
+    """Wait for a port to open **and** the subprocess to still be alive.
+
+    A stale process from a previous run can hold the port open even when
+    our new subprocess failed to bind.  This function detects that by
+    checking ``proc.poll()`` alongside the port check.
+    """
+    import socket
+
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if proc.poll() is not None:
+            return False  # process died before (or right after) opening the port
+        try:
+            with socket.create_connection((host, port), timeout=1):
+                return True
+        except OSError:
+            time.sleep(0.5)
+    return False
+
+
 def run() -> int:
     """Start both services; return when both have shut down."""
     print(
@@ -87,6 +132,10 @@ def run() -> int:
         f"feed API on http://{FEED_HOST}:{FEED_PORT}, "
         f"web on http://{WEB_HOST}:{WEB_PORT}"
     )
+
+    # Clear stale processes from a previous run
+    _kill_stale_port(FEED_PORT)
+    _kill_stale_port(WEB_PORT)
 
     # Ensure the Next.js build exists
     _build_nextjs()
@@ -111,16 +160,24 @@ def run() -> int:
         api_proc = _start_feed_api()
         procs.append(api_proc)
 
-        if not _wait_for_port(FEED_HOST, FEED_PORT):
-            print("❌ Feed API failed to start on :8765")
+        if not _wait_for_port_with_proc(FEED_HOST, FEED_PORT, api_proc):
+            rc = api_proc.poll()
+            if rc is not None:
+                print(f"❌ Feed API exited with code {rc} (port :8765 may be in use)")
+            else:
+                print("❌ Feed API failed to start on :8765")
             return 1
 
         print("  → Starting Next.js app...")
         web_proc = _start_nextjs()
         procs.append(web_proc)
 
-        if not _wait_for_port(WEB_HOST, WEB_PORT):
-            print("❌ Next.js failed to start on :3000")
+        if not _wait_for_port_with_proc(WEB_HOST, WEB_PORT, web_proc):
+            rc = web_proc.poll()
+            if rc is not None:
+                print(f"❌ Next.js exited with code {rc} (port :3000 may be in use)")
+            else:
+                print("❌ Next.js failed to start on :3000")
             return 1
 
         print(f"\n✅ UI ready — open http://{WEB_HOST}:{WEB_PORT}")
@@ -129,11 +186,13 @@ def run() -> int:
 
         # Wait indefinitely until killed
         while True:
-            for p in procs:
-                if p.poll() is not None and p.returncode != 0:
-                    print(f"⚠️  Process exited with code {p.returncode}")
+            for i, p in enumerate(procs):
+                rc = p.poll()
+                if rc is not None and rc != 0:
+                    label = "feed API" if i == 0 else "Next.js"
+                    print(f"⚠️  {label} process exited with code {rc}")
                     shutdown()
-                    return p.returncode
+                    return rc
             time.sleep(1)
 
     finally:
