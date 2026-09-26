@@ -11,19 +11,19 @@ export function ConversationsList({
   onOpen,
 }: ConversationsListProps) {
   return (
-    <section className="lk-card mb-4">
-      <h2 className="text-sm font-semibold text-lk-muted uppercase tracking-wider">
+    <section className="lk-card mb-5 mx-6">
+      <h2 className="text-xs font-medium text-lk-muted mb-3">
         Conversations
       </h2>
 
       {conversations.length === 0 ? (
-        <p className="mt-3 text-sm text-lk-muted">No conversations yet.</p>
+        <p className="text-xs text-lk-muted">No conversations yet.</p>
       ) : (
         <ul className="mt-2 space-y-1">
           {conversations.map((conv) => (
             <li key={conv.id}>
               <button
-                className="w-full text-left rounded-md px-2 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="w-full text-left rounded-sm px-2 py-1.5 text-sm hover:bg-lk-muted/5 transition-colors"
                 onClick={() => onOpen(conv.id)}
               >
                 <span className="flex items-center gap-2">

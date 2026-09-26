@@ -9,11 +9,11 @@ export function FadingIdeasCard({ ideas, onTalkAbout }: FadingIdeasCardProps) {
   if (!ideas.length) return null;
 
   return (
-    <section className="lk-card mb-4">
-      <h2 className="text-sm font-semibold text-lk-muted uppercase tracking-wider">
-        Fading Ideas
+    <section className="lk-card mb-5 mx-6">
+      <h2 className="text-xs font-medium text-lk-muted mb-3">
+        Fading ideas
       </h2>
-      <p className="mt-1 text-sm text-lk-muted">
+      <p className="text-xs text-lk-muted mb-3">
         These ideas are slipping — reflect on them.
       </p>
 

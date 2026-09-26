@@ -18,15 +18,18 @@ export function MasterComposer({ onSubmit, submitting = false }: MasterComposerP
   };
 
   return (
-    <form onSubmit={handleSubmit} className="fixed bottom-0 left-0 right-0 p-4 bg-lk-bg border-t border-lk-border">
-      <div className="max-w-2xl mx-auto">
+    <form
+      onSubmit={handleSubmit}
+      className="fixed bottom-0 left-0 right-0 p-4 bg-lk-bg border-t border-lk-border"
+    >
+      <div className="max-w-[785px] mx-auto">
         <div className="flex gap-2">
           <input
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Ask about an exercise or idea…"
-            className="flex-1 px-3 py-2 border border-lk-border rounded-md focus:outline-none focus:ring-1 focus:ring-lk-accent"
+            className="flex-1 px-3 py-2 border border-lk-border rounded-sm focus:outline-none focus:border-lk-primary"
             disabled={submitting}
             maxLength={500}
           />

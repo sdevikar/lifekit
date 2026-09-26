@@ -19,20 +19,22 @@ export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
     try {
       await onSend(trimmed);
     } catch {
-      // Error handled by parent via error state
       setText(trimmed);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-3 border-t border-lk-border bg-lk-bg">
-      <div className="max-w-2xl mx-auto flex gap-2">
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 border-t border-lk-border bg-lk-bg"
+    >
+      <div className="max-w-[785px] mx-auto flex gap-2">
         <input
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Ask about this exercise or idea…"
-          className="flex-1 px-3 py-2 border border-lk-border rounded-md focus:outline-none focus:ring-1 focus:ring-lk-accent resize-none"
+          className="flex-1 px-3 py-2 border border-lk-border rounded-sm focus:outline-none focus:border-lk-primary"
           disabled={disabled}
           maxLength={1000}
           autoFocus

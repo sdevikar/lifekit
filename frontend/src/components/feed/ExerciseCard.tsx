@@ -14,14 +14,14 @@ export function ExerciseCard({
   markingDone = false,
 }: ExerciseCardProps) {
   return (
-    <section className="lk-card mb-4">
-      <h2 className="text-sm font-semibold text-lk-muted uppercase tracking-wider">
-        Today's Exercise
+    <section className="lk-card mb-5 mx-6">
+      <h2 className="text-xs font-medium text-lk-muted mb-3">
+        Today&apos;s exercise
       </h2>
-      <p className="mt-2 text-lg">{exercise.text}</p>
+      <p className="text-sm">{exercise.text}</p>
 
       {exercise.source_quote && (
-        <blockquote className="mt-3 border-l-2 border-lk-accent pl-3 text-sm italic text-lk-muted">
+        <blockquote className="mt-3 border-l-2 border-lk-primary pl-3 text-sm italic text-lk-muted">
           {exercise.source_quote}
         </blockquote>
       )}

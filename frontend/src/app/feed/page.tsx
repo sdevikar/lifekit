@@ -80,9 +80,9 @@ export default function FeedPage() {
   if (loading) {
     return (
       <div className="pb-24">
-        <div className="animate-pulse space-y-4 p-4">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+        <div className="animate-pulse space-y-4 p-6">
+          <div className="h-5 bg-lk-muted/20 rounded w-3/4" />
+          <div className="h-4 bg-lk-muted/20 rounded w-1/2" />
           <div className="lk-card" />
           <div className="lk-card" />
           <div className="lk-card" />
@@ -93,10 +93,10 @@ export default function FeedPage() {
 
   if (error) {
     return (
-      <div className="p-4">
-        <p className="text-red-500">Failed to load feed: {error}</p>
+      <div className="p-6">
+        <p className="text-sm text-lk-primary">Failed to load feed: {error}</p>
         <button
-          className="lk-btn lk-btn-sm mt-2"
+          className="lk-btn lk-btn-sm mt-3"
           onClick={() => window.location.reload()}
         >
           Retry
@@ -107,8 +107,8 @@ export default function FeedPage() {
 
   if (!briefing) {
     return (
-      <div className="p-4">
-        <p className="text-lk-muted">No briefing available.</p>
+      <div className="p-6">
+        <p className="text-sm text-lk-muted">No briefing available.</p>
       </div>
     );
   }

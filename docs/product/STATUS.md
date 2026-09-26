@@ -13,6 +13,8 @@ home workstation (sandbox accepts no inbound connections). Suite 82/82.
 
 **Last updated:** 2026-09-21 — UI unlocked: A8 retired, feed + conversations UI is now the product interface (intent `../../intent/ui-feed-and-conversations.md`, draft; roadmap Step 13 queued; new assumption A24).
 
+**Last updated:** 2026-09-26 — UI styled to the platform.claude.com flat design system (extracted via `designlang`): platform palette (`#cf222e` primary, `#0550ae` secondary, `#6da7ec` accent, `#0b0b0b`/`#898781` neutrals), system-ui font stack, 785px container, snapped spacing/radii, sentence-case headings, neutral voice. All 12 feed + conversation components restyled; `npx next build` + `eslint` pass clean.
+
 **Last updated:** 2026-09-21 — Step 13 intent approved (framework: Next.js, recorded in `intent.md` Gates + A24). OpenSpec umbrella proposal + 4 small slice proposals (13a feed API → 13b feed screen → 13c conversation → 13d serve command) at `../../openspec/changes/step-13*/`; "keep proposals small" rule added to `AGENTS.md`.
 
 ## Current state

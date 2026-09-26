@@ -7,8 +7,8 @@ interface MessageListProps {
 export function MessageList({ messages }: MessageListProps) {
   if (messages.length === 0) {
     return (
-      <div className="p-4 text-center text-lk-muted">
-        <p>Send a message to start the conversation.</p>
+      <div className="p-6 text-center text-lk-muted">
+        <p className="text-sm">Send a message to start the conversation.</p>
       </div>
     );
   }
@@ -21,22 +21,22 @@ export function MessageList({ messages }: MessageListProps) {
           className={
             "py-3 " +
             (msg.role === "coach"
-              ? "bg-lk-accent/5"
+              ? "bg-lk-secondary/5"
               : "bg-transparent")
           }
         >
-          <div className="max-w-[85%] mx-auto px-3">
+          <div className="max-w-[785px] mx-auto px-6">
             <span
               className={
-                "text-xs font-semibold " +
+                "text-xs font-medium " +
                 (msg.role === "coach"
-                  ? "text-lk-accent"
+                  ? "text-lk-secondary"
                   : "text-lk-muted")
               }
             >
               {msg.role === "coach" ? "Coach" : "You"}
             </span>
-            <p className="mt-1 whitespace-pre-wrap">{msg.text}</p>
+            <p className="mt-1 whitespace-pre-wrap text-sm">{msg.text}</p>
             <time className="text-xs text-lk-muted opacity-60">
               {new Date(msg.created_at).toLocaleTimeString([], {
                 hour: "2-digit",

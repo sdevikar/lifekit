@@ -35,18 +35,20 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     return (
       <div className="flex flex-col h-screen">
         <header className="border-b border-lk-border p-4">
-          <button
-            className="lk-btn lk-btn-sm lk-btn-secondary"
-            onClick={handleBack}
-          >
-            ← Feed
-          </button>
+          <div className="max-w-[785px] mx-auto">
+            <button
+              className="lk-btn lk-btn-sm lk-btn-secondary"
+              onClick={handleBack}
+            >
+              ← Feed
+            </button>
+          </div>
         </header>
         <main className="flex-1 p-4 overflow-y-auto">
-          <div className="animate-pulse space-y-3">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+          <div className="animate-pulse space-y-3 max-w-[785px] mx-auto">
+            <div className="h-4 bg-lk-muted/20 rounded w-3/4" />
+            <div className="h-4 bg-lk-muted/20 rounded w-1/2" />
+            <div className="h-4 bg-lk-muted/20 rounded w-full" />
           </div>
         </main>
       </div>
@@ -57,22 +59,22 @@ export default function ConversationPage({ params }: ConversationPageProps) {
     <div className="flex flex-col h-screen">
       {/* Header: back button + title */}
       <header className="border-b border-lk-border p-4 bg-lk-bg">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
+        <div className="max-w-[785px] mx-auto flex items-center gap-3">
           <button
             className="lk-btn lk-btn-sm lk-btn-secondary"
             onClick={handleBack}
           >
             ← Feed
           </button>
-          <h1 className="text-lg font-semibold truncate">
+          <h1 className="text-sm font-medium truncate">
             {conversation?.title || "Conversation"}
           </h1>
         </div>
 
         {/* Seed context display */}
         {conversation?.seed_kind === "card" && conversation.seed_ref && (
-          <div className="max-w-2xl mx-auto mt-2 px-4">
-            <span className="lk-badge bg-lk-accent/10 text-lk-accent">
+          <div className="max-w-[785px] mx-auto mt-2 px-4">
+            <span className="lk-badge bg-lk-secondary/10 text-lk-secondary">
               Seeded from card
             </span>
           </div>
@@ -82,7 +84,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
       {/* Message list */}
       <main className="flex-1 overflow-y-auto">
         {error && (
-          <div className="p-3 mx-3 mt-2 text-sm text-red-500 bg-red-50 dark:bg-red-900/20 rounded-md">
+          <div className="p-3 mx-3 mt-2 text-sm text-lk-primary bg-lk-primary/5 rounded-md">
             {error}
           </div>
         )}

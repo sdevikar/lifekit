@@ -14,13 +14,13 @@ export function ResurfacedIdeaCard({
   signaling = false,
 }: ResurfacedIdeaCardProps) {
   return (
-    <section className="lk-card mb-4">
-      <h2 className="text-sm font-semibold text-lk-muted uppercase tracking-wider">
-        Idea to Remember
+    <section className="lk-card mb-5 mx-6">
+      <h2 className="text-xs font-medium text-lk-muted mb-3">
+        Idea to remember
       </h2>
-      <blockquote className="mt-2 text-lg italic">"{idea.text}"</blockquote>
+      <blockquote className="text-sm italic">&ldquo;{idea.text}&rdquo;</blockquote>
 
-      <p className="mt-2 text-sm text-lk-muted">
+      <p className="mt-2 text-xs text-lk-muted">
         <span className="font-medium">Why it resurfaced:</span> {idea.why}
       </p>
 
