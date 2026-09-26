@@ -19,3 +19,6 @@ knowledge-store/books/*.mobi
 # OS
 .DS_Store
 Thumbs.db
+
+# indexing
+.serena

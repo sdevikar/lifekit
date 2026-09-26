@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* LifeKit visual theme — clean, focused, venue not menu. */
+:root {
+  --lk-bg: #ffffff;
+  --lk-fg: #171717;
+  --lk-muted: #6b7280;
+  --lk-border: #e5e7eb;
+  --lk-accent: #2563eb;
+  --lk-accent-hover: #1d4ed8;
+  --lk-card: #ffffff;
+  --lk-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --lk-bg: #0a0a0a;
+    --lk-fg: #ededed;
+    --lk-muted: #9ca3af;
+    --lk-border: #1f2937;
+    --lk-card: #111827;
+    --lk-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@theme inline {
+  --color-background: var(--lk-bg);
+  --color-foreground: var(--lk-fg);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-lk-accent: var(--lk-accent);
+  --color-lk-border: var(--lk-border);
+}
+
+body {
+  background: var(--lk-bg);
+  color: var(--lk-fg);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Card base */
+.lk-card {
+  background: var(--lk-card);
+  border: 1px solid var(--lk-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--lk-shadow);
+  padding: 1.25rem;
+}
+
+/* Button — minimal, no quiz framing */
+.lk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.15s;
+  background: var(--lk-accent);
+  color: #ffffff;
+}
+
+.lk-btn:hover {
+  opacity: 0.9;
+}
+
+.lk-btn-secondary {
+  background: #f3f4f6;
+  color: var(--lk-fg);
+}
+
+.lk-btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.lk-btn-sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Badge */
+.lk-badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}

@@ -146,10 +146,49 @@ CREATE TABLE IF NOT EXISTS completions (
     notes TEXT
 );
 
+CREATE TABLE IF NOT EXISTS idea_signals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    idea_id INTEGER NOT NULL REFERENCES key_ideas(id),
+    remembered BOOLEAN NOT NULL,
+    signal_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS fsrs_cards (
     exercise_id INTEGER PRIMARY KEY REFERENCES exercises(id),
     card_json TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS conversations (
+    id TEXT PRIMARY KEY,
+    title TEXT,
+    book_id TEXT NOT NULL,
+    seed_kind TEXT NOT NULL CHECK(seed_kind IN ('card', 'composer')),
+    seed_ref TEXT,  -- exercise_id | idea_id | NULL (composer)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id TEXT NOT NULL REFERENCES conversations(id),
+    role TEXT NOT NULL CHECK(role IN ('user', 'coach')),
+    text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER IF NOT EXISTS conversations_touch
+AFTER UPDATE ON conversations
+BEGIN
+    UPDATE conversations SET updated_at = CURRENT_TIMESTAMP
+    WHERE id = new.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS messages_touch_conversation
+AFTER INSERT ON messages
+BEGIN
+    UPDATE conversations SET updated_at = CURRENT_TIMESTAMP
+    WHERE id = new.conversation_id;
+END;
 """
 
 

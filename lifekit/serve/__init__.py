@@ -1,0 +1,1 @@
+"""lifekit.serve — Step 13a Feed API (localhost-only HTTP)."""
