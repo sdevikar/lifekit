@@ -15,6 +15,7 @@ dependencies = [
     "fsrs>=6.0",  # open-source FSRS spaced repetition (Step 7)
     "mcp<2",  # real MCP stdio server (FastMCP) for the coach tools
     "pypdf>=6.0",  # PDF text extraction fallback in lifekit/store/pdf_ingester.py
+    "flask>=3.0",  # Step 13a: localhost feed API server
 ]
 
 [project.scripts]
