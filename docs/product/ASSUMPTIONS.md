@@ -21,7 +21,7 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A5 | Single user, local machine, Ollama running (`qwen3.6:latest` or configured model). | locked |
 | A6 | Books are chapter-detectable; fixed-size sections as fallback. | locked |
 | A7 | Extraction need not be perfect — misses fine; systemic failures flagged, not silently shipped. | locked |
-| A8 | No frontend (CLI + MCP tools only); no auth, no cloud, no sync. | retired 2026-09-21: UI unlocked as the product interface — feed + conversations web UI (`../../intent/ui-feed-and-conversations.md`, roadmap Step 13). The throwaway Streamlit dogfood UI is superseded. The no-auth/no-cloud/no-sync clause continues as A24. |
+| A8 | No frontend (CLI + MCP tools only); no auth, no cloud, no sync. | retired 2026-09-21: UI unlocked as the product interface — feed + conversations web UI (roadmap Step 13, shipped 2026-09-24). The throwaway Streamlit dogfood UI is superseded. The no-auth/no-cloud/no-sync clause continues as A24. |
 
 ## Step 1 — chapter splitter (`../../openspec/changes/step-1-chapter-splitter/`)
 
@@ -53,7 +53,7 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 |----|------------|--------|-----------------|
 | A21 | Model backend is pluggable via `lifekit.llm` (provider protocol: Ollama default, OpenRouter via `OPENROUTER_API_KEY` env only). Config resolution: CLI flags > env vars (`LIFEKIT_PROVIDER`/`LIFEKIT_MODEL`, legacy `OLLAMA_MODEL`) > `~/.lifekit/config.json` (provider/model only, never keys) > defaults (`ollama`/`qwen3.6:latest`; OpenRouter requires an explicit model). No new dependencies (OpenRouter via stdlib urllib). | active | If more providers (Anthropic, Gemini) are wanted, add them behind the same protocol. |
 
-## UI — feed + conversations (`../../intent/ui-feed-and-conversations.md`, 2026-09-21)
+## UI — feed + conversations (approved 2026-09-21, shipped 2026-09-24)
 
 | ID | Assumption | Status | Revisit trigger |
 |----|------------|--------|-----------------|

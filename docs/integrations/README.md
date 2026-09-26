@@ -12,4 +12,4 @@ Pluggable via `lifekit.llm` (provider protocol): **Ollama** is the default; **Op
 
 No messaging channels (WeChat/Telegram/Slack), no calendar or todo wiring for exercises, no cloud sync, no auth, no multi-tenant anything. Phone access today is the workstation's tailnet IP in a browser — no additional integration needed. See Step 0 in [the roadmap](../product/ROADMAP.md) and A24.
 
-If an integration is ever proposed, it starts as an [`intent/`](../../intent/) like any other change.
+If an integration is ever proposed, it starts as an OpenSpec proposal like any other change.

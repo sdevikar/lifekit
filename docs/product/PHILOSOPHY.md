@@ -1,10 +1,13 @@
 # LifeKit Philosophy & Tech Stack
 
-**Status:** Draft for review — 2026-09-20
-**Replaces:** the three-pillar sketch from 2026-09-19. Correction folded in:
+**Status:** Living rationale — revised 2026-09-26 to match `.agents/intent.md`.
+Replaces the three-pillar sketch from 2026-09-19. Correction folded in:
 "human-like" does **not** mean deep user modeling — that path would kill the
 project. The user model stays deliberately shallow (important facts only);
-the modeling investment goes into the **book**.
+the modeling investment goes into the **book**. A second correction, 2026-09-26:
+teach-back grading is out — LifeKit is a coach that checks what you did, not
+a tutor that checks what you learned. No quizzes, no grades, no FSRS rating
+mappings of judged explanations.
 
 ## Why not "glorified RAG with UI"
 
@@ -51,12 +54,13 @@ The runtime never writes canned coaching text — it emits signals +
 instructions; the LLM phrases them.
 
 Core mechanics:
-- **Decay scheduling** — FSRS over exercises *and* teach-backs (already in
-  use for exercises; extend the rating mapping).
-- **Feynman teach-backs** — "explain this idea in your own words." The
-  explanation is graded (LLM judge against the book model) and the grade maps
-  to an FSRS rating (≥0.8 Easy … <0.4 Again), which reschedules the concept.
-  This tests *understanding*, which is the point of pillar 1.
+- **Resurfacing** — FSRS over completion history as a resurface-priority
+  signal. Completions are self-declared ("mark done"); "still with me"
+  signals feed the schedule. The user never sees a number, a percentage,
+  or a grade.
+- **Grounded conversation** — the coach talks through exercises and ideas
+  with replies grounded in the book (citations). Conversation, not
+  examination: the LLM never tests, scores, or gates the user.
 - **Motivation briefs** — one angle per surfacing, priority-ordered
   (milestone → reactivation → plateau → value-recall …); signals +
   instruction, never canned text.
@@ -110,9 +114,9 @@ proven with real use.
 | Book model | Extraction tables + structuring passes (F1/F2/F12/F14 + relations) | To design |
 | Retrieval | FTS5 now; F9 hybrid + rerank later | FTS5 live |
 | Scheduling | `fsrs` library over exercises and teach-backs | Live for exercises |
-| Learning runtime | Python FastMCP server; tutor-mcp split, srs-mcp tool taxonomy | To design |
+| Learning runtime | Python FastMCP server; deterministic-runtime/LLM-prose split | Coach tools shipped (Step 5); full session runtime is Stage 5, to design |
 | User facts | SQLite + Markdown mirror | To design |
-| Venue UI | Chat-first; framework TBD (Streamlit is scaffolding) | To decide |
+| Venue UI | Feed + conversations (Next.js), served via `lifekit ui` on localhost | Shipped (Step 13); Streamlit scaffolding retired |
 | LLM | Home Ollama (qwen3.8:27b-q8_0) for extraction/eval; product LLM TBD | — |
 
 ## Borrow / build / reject
@@ -121,8 +125,8 @@ proven with real use.
 |---|---|---|
 | tutor-mcp (ArnaudGuiovanna, Go, MIT) | Deterministic-runtime/LLM split; motivation briefs (signals+instruction); Markdown episodic memory; if-then intentions | **Borrow the pattern**, mirror in Python — do not port Go |
 | srs-mcp (klutometis, ~200 lines, FSRS MCP) | Minimal "card box + scheduler" tool taxonomy (`due`, `grade`, `suspend`, `stats`) | **Study closely** — closest borrowable shape |
-| prometheus learn-retain | Feynman artifact → numeric grade → FSRS rating mapping | **Copy the mapping** for teach-backs |
-| lucid / Feynman Reader | Teach-back UX mechanics, misconception diagnosis | Reference for venue UI design |
+| prometheus learn-retain | Feynman artifact → numeric grade → FSRS rating mapping | **Reject** — graded teach-backs are tutor behavior; LifeKit never grades. Kept in the table to record the decision. |
+| lucid / Feynman Reader | "Explain it back" UX mechanics | Reference for conversational venue design only — never for graded assessment |
 | book2anki (mdrcs) | Per-chapter checkpoints, depth-aware prompts | Borrow for extraction robustness |
 | Mem0 (+ mem0-mcp, Apache-2.0) | Managed memory layer w/ MCP | **Reject for now** — facts-only model doesn't need it |
 | BKT / IRT / KST (tutor-mcp's cognitive core) | Mastery modeling, prerequisite graphs | **Reject** — exercises are practices, not prerequisites; FSRS + facts suffices |
@@ -140,11 +144,7 @@ and that compound is not replicable by ChatGPT + a PDF.
 
 ## Open questions
 
-1. Venue UI framework: what replaces Streamlit, and when? (Design investment
-   is pillar 2 — needs a real decision, not drift.)
-2. Learning runtime: evolve `../../lifekit/mcp/server.py` in place, or a second
-   server beside it?
-3. Teach-back grading: LLM judge against the book model — which model, and
-   what rubric keeps it honest (no grade inflation)?
-4. What is the dogfood exit criterion for the core loop? (Needed before any
-   F-item or runtime work is unlocked.)
+1. Learning runtime: evolve `../../lifekit/mcp/server.py` in place, or a second
+   server beside it? (Stage 5 — not before the dogfood loop is proven.)
+2. What is the dogfood exit criterion for the core loop? (Needed before any
+   program-layer work is unlocked.)

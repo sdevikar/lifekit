@@ -14,7 +14,9 @@ Map of the documentation, organized by domain. Start here.
 
 Change mechanics (not docs, but adjacent):
 
-- [`intent/`](../intent/) — per-change proto-specs. Every change starts as an intent: no spec without an approved intent, no code without a spec. The standing contract is [`intent.md`](../intent.md).
+- [`.agents/intent.md`](../.agents/intent.md) — the standing vision. Read this
+  first; on any conflict with other docs, it wins. (`.claude/intent.md`
+  symlinks to it.)
 - [`openspec/`](../openspec/) — `changes/<step-slug>/` holds proposal → tasks → implement; finished work moves to `archives/`.
 
 **Docs stay true:** whoever merges a change updates `product/STATUS.md`, `product/ROADMAP.md`, `product/ASSUMPTIONS.md`, and `product/BACKLOG.md` in the same commit.

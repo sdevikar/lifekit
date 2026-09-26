@@ -2,8 +2,9 @@
 
 How LifeKit's pillars connect, and how data flows through them at runtime.
 
-The pillar definitions live in the UI intent
-(`../../intent/ui-feed-and-conversations.md`, Pillars section); this page draws
+The pillar definitions were introduced in the Step 13 intent (archived at
+`../../openspec/archives/step-13-ui-feed-conversations/`) and restated in
+[`.agents/intent.md`](../../.agents/intent.md); this page draws
 them. The contract behind every arrow: local-first, single user, localhost,
 no auth / no cloud / no sync (A24). Deterministic runtime owns scheduling,
 surfacing, and state; the LLM owns conversational prose.

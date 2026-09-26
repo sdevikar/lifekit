@@ -11,8 +11,8 @@ What the UI is *not*: quiz framing, retention percentages, grades, mastery gates
 
 ## Spec status
 
-- Intent (draft, awaiting approval): [`intent/ui-feed-and-conversations.md`](../../intent/ui-feed-and-conversations.md)
-- Umbrella proposal + 4 slices at `../../openspec/changes/step-13-ui-feed-conversations/`:
+- Intent (approved 2026-09-21, retired 2026-09-26 with the `intent/` folder; pillars now live in the shipped design): `../../openspec/archives/step-13-ui-feed-conversations/`
+- Umbrella proposal + 4 slices at `../../openspec/archives/step-13-ui-feed-conversations/`:
   - 13a ✅ feed API (Flask, localhost `:8765`)
   - 13b ✅ feed screen (Next.js, component set)
   - 13c ✅ conversation view (chat UI with seed display)

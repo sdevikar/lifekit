@@ -1,6 +1,6 @@
 # Research
 
-Landscape surveys and borrow reports from September 2026. These informed LifeKit's architecture; they are working papers, not specs. The binding decisions live in [product/](../product/) and [`intent/`](../../intent/).
+Landscape surveys and borrow reports from September 2026. These informed LifeKit's architecture; they are working papers, not specs. The binding decisions live in [.agents/intent.md](../../.agents/intent.md) and [product/](../product/).
 
 | File | What it is |
 |------|------------|
