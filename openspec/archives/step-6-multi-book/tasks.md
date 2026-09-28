@@ -2,18 +2,18 @@
 
 ## Tests first
 
-- [ ] `tests/test_multibook.py`:
-  - [ ] `register_book` creates row, returns stable id (sha256).
-  - [ ] `register_book` idempotent (same file → same id, no dup).
-  - [ ] `list_exercises` with book A id does not return book B exercises.
-  - [ ] `search_exercises` with `book_ids=[A]` only searches A.
-  - [ ] `search_exercises` with no book_ids returns grouped by book.
+- [x] `tests/test_multibook.py`:
+  - [x] `register_book` creates row, returns stable id (sha256).
+  - [x] `register_book` idempotent (same file → same id, no dup).
+  - [x] `list_exercises` with book A id does not return book B exercises.
+  - [x] `search_exercises` with `book_ids=[A]` only searches A.
+  - [x] `search_exercises` with no book_ids returns grouped by book.
 
 ## Implementation
 
-- [ ] `../../../lifekit/books/registry.py`: `register_book()`.
-- [ ] `../../../lifekit/books/search.py`: `search_exercises()`.
-- [ ] CLI: `python -m lifekit.books`.
+- [x] `../../../lifekit/books/registry.py`: `register_book()`.
+- [x] `../../../lifekit/books/search.py`: `search_exercises()`.
+- [x] CLI: `python -m lifekit.books`.
 
 ## Done criterion
 

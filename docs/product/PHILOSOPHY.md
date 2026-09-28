@@ -117,7 +117,7 @@ proven with real use.
 | Learning runtime | Python FastMCP server; deterministic-runtime/LLM-prose split | Coach tools shipped (Step 5); full session runtime is Stage 5, to design |
 | User facts | SQLite + Markdown mirror | To design |
 | Venue UI | Feed + conversations (Next.js), served via `lifekit ui` on localhost | Shipped (Step 13); Streamlit scaffolding retired |
-| LLM | Home Ollama (qwen3.8:27b-q8_0) for extraction/eval; product LLM TBD | — |
+| LLM | Home Ollama (qwen3.8:27b-q8_0 or active llm) for extraction/eval; product LLM TBD | — |
 
 ## Borrow / build / reject
 

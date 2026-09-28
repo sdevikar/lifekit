@@ -2,19 +2,19 @@
 
 ## Tests first
 
-- [ ] `tests/test_coach.py`:
-  - [ ] `list_exercises` returns paginated summaries (id, title, chapter).
-  - [ ] `get_exercise` returns full details (purpose, steps, materials, quotes).
-  - [ ] `get_exercise` with bad id raises/returns None.
-  - [ ] `log_completion` persists to `completions` with timestamp.
-  - [ ] `next_exercise` returns first incomplete (by id).
-  - [ ] `next_exercise` skips completed; returns None when all done.
+- [x] `tests/test_coach.py`:
+  - [x] `list_exercises` returns paginated summaries (id, title, chapter).
+  - [x] `get_exercise` returns full details (purpose, steps, materials, quotes).
+  - [x] `get_exercise` with bad id raises/returns None.
+  - [x] `log_completion` persists to `completions` with timestamp.
+  - [x] `next_exercise` returns first incomplete (by id).
+  - [x] `next_exercise` skips completed; returns None when all done.
 
 ## Implementation
 
-- [ ] Schema: `completions` table.
-- [ ] `../../../lifekit/coach/tools.py`: 4 functions.
-- [ ] CLI: `python -m lifekit.coach`.
+- [x] Schema: `completions` table.
+- [x] `../../../lifekit/coach/tools.py`: 4 functions.
+- [x] CLI: `python -m lifekit.coach`.
 
 ## Done criterion
 

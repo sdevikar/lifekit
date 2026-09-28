@@ -2,20 +2,20 @@
 
 ## Tests first
 
-- [ ] `tests/test_scheduler.py`:
-  - [ ] `get_card` creates new card for exercise (default state).
-  - [ ] `get_card` loads existing card (persistence).
-  - [ ] `review_exercise` with Good rating pushes due date forward.
-  - [ ] `review_exercise` with Again rating keeps due date near.
-  - [ ] `review_exercise` logs to `completions`.
-  - [ ] `due_exercises` returns only due items, ordered by due.
+- [x] `tests/test_scheduler.py`:
+  - [x] `get_card` creates new card for exercise (default state).
+  - [x] `get_card` loads existing card (persistence).
+  - [x] `review_exercise` with Good rating pushes due date forward.
+  - [x] `review_exercise` with Again rating keeps due date near.
+  - [x] `review_exercise` logs to `completions`.
+  - [x] `due_exercises` returns only due items, ordered by due.
 
 ## Implementation
 
-- [ ] Dependency: `fsrs` in `pyproject.toml`.
-- [ ] Schema: `fsrs_cards` table.
-- [ ] `../../../lifekit/schedule/scheduler.py`.
-- [ ] CLI: `python -m lifekit.schedule`.
+- [x] Dependency: `fsrs` in `pyproject.toml`.
+- [x] Schema: `fsrs_cards` table.
+- [x] `../../../lifekit/schedule/scheduler.py`.
+- [x] CLI: `python -m lifekit.schedule`.
 
 ## Done criterion
 

@@ -68,11 +68,16 @@ need to link back to pages.
   `due_exercises`, `list_key_ideas`, `book_progress`. Verified with a real
   MCP initialize/tools-list/tools-call handshake against the product DB.
   `tests/test_mcp_server.py` (5 tests); suite 82/82.
-- **H2 — Step 2 tasks.md checkboxes unchecked.** All 8 task boxes are `- [ ]`
-  though the change is archived as done
+- **H2 — Archived proposal task checkboxes left unchecked.** Step 2's
+  `tasks.md` had all 8 boxes as `- [ ]` though archived as done
   (`../../openspec/archives/step-2-extraction-map/tasks.md`). Status: ✅ FIXED
   2026-09-17 — all boxes checked; 2.7 completed with the home-Ollama
-  full-book eval results recorded in tasks.md.
+  full-book eval results recorded in tasks.md. The same pattern existed for
+  Steps 3–7 (reduce/dedupe, validation harness, coach tools, multi-book,
+  scheduling): implementation and tests shipped and test results are recorded,
+  but individual "Tests first" / "Implementation" sub-tasks were never checked.
+  Status: ✅ FIXED 2026-09-26 audit — all retroactively checked; deferred
+  Phase-0 items in `lifekit-mvp-core-loop` correctly left unchecked.
 - **H3 — `validate_exercise` ignores `extra_quotes`.** The Step 4 proposal says
   it checks them; only the `validate_book` path does. The code comment admits
   it (`../../lifekit/validate/validator.py` line 26). Status: OPEN. Suggested

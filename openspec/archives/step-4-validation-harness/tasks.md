@@ -2,21 +2,21 @@
 
 ## Tests first
 
-- [ ] `tests/test_validator.py`:
-  - [ ] Verbatim `source_quote` (exact substring) → pass.
-  - [ ] Non-verbatim quote (paraphrased) → fail with detail.
-  - [ ] `extra_quotes` each checked; one bad → fail.
-  - [ ] Zero-extraction flag: chapter >5000 chars, 0 exercises → flagged.
-  - [ ] Zero-extraction flag: chapter <5000 chars, 0 exercises → not flagged.
-  - [ ] Judge sampling: 10% of N exercises selected (min 1, deterministic seed).
+- [x] `tests/test_validator.py`:
+  - [x] Verbatim `source_quote` (exact substring) → pass.
+  - [x] Non-verbatim quote (paraphrased) → fail with detail.
+  - [x] `extra_quotes` each checked; one bad → fail.
+  - [x] Zero-extraction flag: chapter >5000 chars, 0 exercises → flagged.
+  - [x] Zero-extraction flag: chapter <5000 chars, 0 exercises → not flagged.
+  - [x] Judge sampling: 10% of N exercises selected (min 1, deterministic seed).
 
 ## Implementation
 
-- [ ] Schema: `validation_log`, `judge_log` tables.
-- [ ] `../../../lifekit/validate/validator.py`: `validate_exercise()`,
+- [x] Schema: `validation_log`, `judge_log` tables.
+- [x] `../../../lifekit/validate/validator.py`: `validate_exercise()`,
       `validate_book()`, zero-extraction flags.
-- [ ] `../../../lifekit/validate/judge.py`: `sample_for_judge()`, `judge_exercise()`.
-- [ ] CLI: `python -m lifekit.validate --db-path DB --book-id ID`.
+- [x] `../../../lifekit/validate/judge.py`: `sample_for_judge()`, `judge_exercise()`.
+- [x] CLI: `python -m lifekit.validate --db-path DB --book-id ID`.
 
 ## Done criterion
 

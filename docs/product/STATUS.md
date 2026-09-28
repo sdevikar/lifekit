@@ -17,6 +17,8 @@ home workstation (sandbox accepts no inbound connections). Suite 82/82.
 
 **Last updated:** 2026-09-26 — Docs reorganization: vision consolidated into `.agents/intent.md` (`.claude/intent.md` symlinks to it); `intent/` retired; `intent.md`, `pitch.md`, `plan.md`, `mvp.md`, stale user manual, and OpenWebUI-era user stories archived to `docs/archive/`; user stories rewritten for the accountability-partner vision (`requirements/user-stories.md`); Step 12 proposal rejected (never-build list) and archived; Step 13 umbrella archived (shipped); README rewritten; teach-back grading language removed from `PHILOSOPHY.md`.
 
+**Last updated:** 2026-09-26 — OpenSpec proposal audit. Archived proposals (Steps 1–7, 13a–d, llm-provider-config, eval-dedupe-aware-recall) all verified implemented & shipped; retroactively checked all deferred task boxes in Steps 3–7 `tasks.md` (BACKLOG H2). Pending proposals (Steps 8–11, Stage 5 Program layer) confirmed not implemented — gated behind Stage 4 dogfood exit. `CR-content-digestibility-pipeline` archived as superseded concept (no `content_processor.py`; Step 1 used a separate `chapters` table instead).
+
 **Last updated:** 2026-09-21 — Step 13 intent approved (framework: Next.js, recorded in `intent.md` Gates + A24). OpenSpec umbrella proposal + 4 small slice proposals (13a feed API → 13b feed screen → 13c conversation → 13d serve command) at `../../openspec/changes/step-13*/`; "keep proposals small" rule added to `AGENTS.md`.
 
 ## Current state
