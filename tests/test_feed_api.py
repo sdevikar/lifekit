@@ -405,6 +405,155 @@ class TestConversationMessages:
         assert resp.status_code == 400
 
     @patch("lifekit.serve.server.get_provider")
+    def test_post_message_with_punctuation_query_succeeds(
+        self, mock_get_provider, client, db_path
+    ):
+        """A natural-language question must not blow up FTS5.
+
+        Regression: a raw user message was passed straight to MATCH, and
+        FTS5 raises on sentence punctuation ("What is design thinking?").
+        """
+        mock_provider = MagicMock()
+        mock_provider.chat_json_schema.return_value = '{"reply": "ok"}'
+        mock_get_provider.return_value = mock_provider
+
+        resp = client.post("/api/conversations", json={"seed_kind": "composer"})
+        conv_id = resp.get_json()["id"]
+
+        resp = client.post(
+            f"/api/conversations/{conv_id}/messages",
+            json={"text": "What is design thinking? (really!)"},
+        )
+        assert resp.status_code == 200, resp.get_data(as_text=True)
+
+    def test_retrieve_passages_falls_back_to_chapters(self, client, db_path):
+        """With no chunks, retrieval must still ground on chapter text.
+
+        Regression: the dogfood DB has chapters but zero book_chunks, so
+        the coach received no context at all and replied "I don't have
+        any context from the book".
+        """
+        from lifekit.serve.server import _conn, _retrieve_passages
+
+        c = _conn(db_path[0])
+        try:
+            # A second book that has chapters but no chunks — the exact
+            # shape of the dogfood DB.
+            c.execute(
+                "INSERT INTO books (id, title, file_path) VALUES ('nochunk', 'N', '/x')"
+            )
+            c.execute(
+                "INSERT INTO chapters (book_id, idx, title, content, page_start, page_end)"
+                " VALUES ('nochunk', 0, 'Ch 0', ?, 1, 2)",
+                (
+                    "filler " * 500
+                    + "Prototyping means making a rough model. "
+                    + "filler " * 500,
+                ),
+            )
+            c.commit()
+            assert (
+                c.execute(
+                    "SELECT COUNT(*) FROM book_chunks WHERE book_id = 'nochunk'"
+                ).fetchone()[0]
+                == 0
+            )
+
+            passages = _retrieve_passages(c, "nochunk", "What is prototyping?", limit=3)
+            assert passages, "expected chapter grounding"
+            assert any("Prototyping" in p for p in passages), (
+                f"chapter fallback missed the term: {passages[0][:100]!r}"
+            )
+        finally:
+            c.close()
+
+    @patch("lifekit.serve.server.get_provider")
+    def test_post_message_provider_failure_is_json_error(
+        self, mock_get_provider, client, db_path
+    ):
+        """An LLM failure must return a JSON error, not an opaque 500.
+
+        Regression: a missing/unreachable model (e.g. the configured default
+        is not pulled) raised out of the provider and Flask returned an HTML
+        500, which the UI could only render as "INTERNAL SERVER ERROR".
+        """
+        mock_provider = MagicMock()
+        mock_provider.chat_json_schema.side_effect = RuntimeError(
+            "model 'qwen3.6:latest' not found (status code: 404)"
+        )
+        mock_get_provider.return_value = mock_provider
+
+        resp = client.post("/api/conversations", json={"seed_kind": "composer"})
+        conv_id = resp.get_json()["id"]
+
+        resp = client.post(
+            f"/api/conversations/{conv_id}/messages", json={"text": "hi"}
+        )
+
+        assert resp.status_code == 502
+        assert resp.is_json
+        body = resp.get_json()
+        assert body["ok"] is False
+        # The model name is the actionable part — it must reach the user.
+        assert "qwen3.6:latest" in body["error"]
+
+    @patch("lifekit.serve.server.get_provider")
+    def test_retrieve_passages_ranks_by_query_not_insertion_order(
+        self, client, db_path
+    ):
+        """Retrieval must return passages relevant to the query.
+
+        Regression: book_chunks_fts has no book_id column, so the MATCH
+        query always raised OperationalError and was swallowed, silently
+        falling back to "first N chunks in insertion order" — the query
+        was ignored and the coach was handed front matter.
+        """
+        from lifekit.serve.server import _conn, _retrieve_passages
+
+        c = _conn(db_path[0])
+        try:
+            c.execute(
+                "INSERT INTO book_chunks (book_id, chunk_index, content, page_number)"
+                " VALUES (?, 90, 'Dedication and table of contents front matter.', 1)",
+                (BOOK_ID,),
+            )
+            c.execute(
+                "INSERT INTO book_chunks (book_id, chunk_index, content, page_number)"
+                " VALUES (?, 91, 'Prototyping is a critical component of the design"
+                " thinking process.', 2)",
+                (BOOK_ID,),
+            )
+            c.commit()
+
+            passages = _retrieve_passages(c, BOOK_ID, "prototyping", limit=3)
+            assert passages, "expected at least one passage"
+            assert "Prototyping" in passages[0], (
+                f"query 'prototyping' returned the wrong passage: {passages[0][:80]!r}"
+            )
+        finally:
+            c.close()
+
+    def test_retrieve_passages_excludes_other_books(self, client, db_path):
+        """Retrieval must not leak another book's chunks."""
+        from lifekit.serve.server import _conn, _retrieve_passages
+
+        c = _conn(db_path[0])
+        try:
+            c.execute(
+                "INSERT INTO books (id, title, file_path) VALUES ('other', 'Other', '/x')"
+            )
+            c.execute(
+                "INSERT INTO book_chunks (book_id, chunk_index, content, page_number)"
+                " VALUES ('other', 0, 'TEXT FROM THE WRONG BOOK about prototyping', 1)"
+            )
+            c.commit()
+
+            joined = " ".join(_retrieve_passages(c, BOOK_ID, "prototyping", limit=5))
+            assert "WRONG BOOK" not in joined
+        finally:
+            c.close()
+
+    @patch("lifekit.serve.server.get_provider")
     def test_conversation_round_trip(self, mock_get_provider, client, db_path):
         """Full round-trip: create → message → reply → reload."""
         mock_provider = MagicMock()

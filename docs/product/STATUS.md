@@ -17,8 +17,8 @@ for the stage table. The venue is shipped; now dogfooding the daily loop.
 | Multi-book registry | ✅ Shipped |
 | FSRS scheduling | ✅ Shipped |
 | LLM provider config (Ollama default + OpenRouter, `lifekit config` CLI) | ✅ Shipped — spec archived at `../../openspec/archives/llm-provider-config/` |
-| Feed API (`lifekit.serve.server`, Flask, localhost `:8765`) | ✅ Shipped — briefing, completions, idea-signals, conversations CRUD, grounded chat |
-| Feed UI (Next.js, `frontend/`) | ✅ Shipped — feed cards + conversation view, `/api/*` rewrites to feed API |
+| Feed API (`lifekit.serve.server`, Flask, localhost `:8765`) | ✅ Shipped — briefing, completions, idea-signals, conversations CRUD, grounded chat. Chat was broken end-to-end (bad default model, dead FTS query, no chunk data, 30 s proxy timeout) — all four fixed 2026-09-27, see BACKLOG D8. |
+| Feed UI (Next.js, `frontend/`) | ✅ Shipped — feed cards + conversation view, `/api/*` rewrites to feed API, `experimental.proxyTimeout` raised for slow local models |
 | `lifekit ui` serve command | ✅ Shipped — boots feed API + Next.js production, localhost only |
 | Full-book extraction eval (20-exercise ground truth) | ✅ Done — `qwen3.8:27b-q8_0` on home Ollama, 17/17 chapters, 156 records, recall 19/20 (95%), conditional pass. Results in `../../evals/step2-recall-qwen3.8-27b-q8_0/`. |
 | DYL product ingest (dogfood data) | ✅ Done — `../../scripts/ingest_eval_book.py` → `~/.lifekit/lifekit.db` (book `dyl`): 144 exercises, 875 key ideas, validation 142/144 grounded, 0 hallucinations. |
@@ -30,7 +30,7 @@ for the stage table. The venue is shipped; now dogfooding the daily loop.
 
 ## Test inventory
 
-Suite: **113 checks green** (82 + 30 feed API + 1 frontend hook regression); 1
+Suite: **120 checks green** (82 + 37 feed API + 1 frontend hook regression); 1
 pre-existing failure, `test_split_dyl_pdf` (hardcoded VM path, BACKLOG P2). Every
 model call is stubbed/mocked — **zero tests exercise a real LLM**. The suite
 proves the pipeline is *plumbed*, not that it *extracts*; the real-model eval is
@@ -50,4 +50,4 @@ the quality gate.
 | `test_llm_providers` | 6 | **Mocked transport, no network.** Ollama provider passes JSON schema + temperature 0.1; OpenRouter request shape (model, messages, Authorization header from env); missing key raises; factory defaults to Ollama; both satisfy the provider protocol. Does NOT prove a real API call succeeds. |
 | `test_config_cli` | 5 | `lifekit config` get/set/show round-trips; secrets rejected from config file. |
 | `test_useConversation` (frontend, `node --experimental-strip-types`) | 1 | Frontend hook regression: `useConversation` must not fetch while the route id is unresolved (it would hit the `/api/conversations/` collection, get an array, and crash `MessageList` on `messages.length`), and must expose a `messages` array for a real id. Drives the real hook with a React stub against the running `:3000`. |
-| `test_feed_api` | 30 | Feed API: schema migration (conversations/messages tables, idempotent), briefing endpoint, completions + idea-signals persistence, conversation CRUD, grounded chat message round-trip, localhost-only binding, `due_exercises` FSRS path. LLM provider mocked. |
+| `test_feed_api` | 37 | Feed API: schema migration (conversations/messages tables, idempotent), briefing endpoint, completions + idea-signals persistence, conversation CRUD, grounded chat message round-trip, localhost-only binding, `due_exercises` FSRS path. LLM provider mocked. Chat regressions (D8): provider failure returns a JSON 502 instead of an HTML 500 and leaves no orphan user message; FTS retrieval ranks by query and excludes other books; retrieval falls back to `chapters` when a book has no chunks; a punctuated natural-language query does not crash FTS5. |

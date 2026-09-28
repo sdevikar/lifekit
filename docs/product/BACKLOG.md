@@ -47,6 +47,51 @@ Suggested disposition: either add the columns (needs chapter→page mapping from
 the splitter) or record the drift in `ASSUMPTIONS.md`. Matters if exercises ever
 need to link back to pages.
 
+### D8 — Chat was entirely broken end-to-end (model, retrieval, timeout) — HIGH — FIXED 2026-09-27
+Sending any chat message returned `INTERNAL SERVER ERROR`. Four independent
+defects stacked, each masking the next; all are fixed with regression tests
+(`tests/test_feed_api.py::TestConversationMessages`).
+1. **Default model does not exist.** `DEFAULT_OLLAMA_MODEL = "qwen3.6:latest"`
+   (`lifekit/llm/config.py`) is not a real tag and was never installed; the
+   provider's 404 propagated out of the route as an HTML 500 that the UI could
+   only render as "INTERNAL SERVER ERROR". `.env.example` and every doc say
+   `qwen3.8:27b-q8_0`. Local fix: `lifekit config set model qwen3.8:27b-q8_0`.
+   **Still open:** the code default is unchanged — see D9.
+2. **FTS retrieval never ran.** `_retrieve_passages` filtered on a `book_id`
+   column that `book_chunks_fts` does not have (it indexes `content` only), so
+   the query always raised and a blanket `except sqlite3.OperationalError`
+   swallowed it, silently degrading to "first N chunks in insertion order" —
+   the query was ignored entirely.
+3. **No grounding data for the dogfood book.** `book_chunks` is empty for `dyl`
+   (the eval ingest writes `chapters`, not chunks), so the coach had nothing
+   and replied "I don't have any context from the book". Retrieval now falls
+   back to the `chapters` text.
+4. **Proxy timeout.** Next.js's rewrite proxy defaults to 30 s; a 27B local
+   model needs 20–70 s per reply, so the proxy returned a bare 500. Set
+   `experimental.proxyTimeout` in `frontend/next.config.ts`.
+
+### D9 — Default model slug is still wrong — MEDIUM — OPEN
+`DEFAULT_OLLAMA_MODEL` remains `qwen3.6:latest`, a tag that does not exist
+anywhere; `.env.example`, `ASSUMPTIONS.md` A5/A21, and `ARCHITECTURE.md` all
+say `qwen3.8:27b-q8_0`. Left unchanged here because the right default is a
+product decision (which model, which machine, which hardware budget) and
+`tests/test_llm_config.py` pins the current value. Ref: `lifekit/llm/config.py`
+line 26. Suggested disposition: pick the default, update
+`test_defaults_ollama` in the same commit.
+
+### D10 — `book_chunks_fts` DELETE trigger is malformed — LOW — OPEN (blocked)
+`book_chunks_ad` (schema creation) inserts `('delete', old.id)` into a
+three-column FTS5 delete, but supplies only two values, so every
+`DELETE FROM book_chunks` raises `OperationalError: 2 values for 3 columns`.
+The obvious fix (`VALUES('delete', old.id, old.content)`) could not be
+verified: this machine's SQLite (3.50.4 and 3.53.1) fails the FTS5 `delete`
+command with "SQL logic error" even on a bare in-memory table, with or without
+the content argument. Not fixed rather than shipping an unverified schema
+migration. Ref: `lifekit/db/schema.py` line 46.
+Suggested disposition: reproduce on a normal SQLite build, then fix the trigger
+and add a `CREATE TRIGGER IF NOT EXISTS` migration to replace the broken
+trigger on existing databases.
+
 ## Spec-vs-reality notes (honesty, not defects)
 
 - **H3 — `validate_exercise` ignores `extra_quotes`.** The Step 4 proposal says

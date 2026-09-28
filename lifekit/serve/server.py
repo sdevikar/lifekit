@@ -14,6 +14,7 @@ The LLM only writes prose; the endpoint owns turn structure and persistence.
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 import uuid
 from datetime import datetime
@@ -142,26 +143,92 @@ def _briefing(c, book_id, db_path):
     }
 
 
+def _fts_query(query: str) -> str:
+    """Turn free text into a safe FTS5 MATCH expression.
+
+    Users type sentences ("What is design thinking?"), but FTS5 treats
+    punctuation as query syntax and raises on it. Keep alphanumerics, drop
+    everything else, and quote each term so no term can be an operator.
+    Returns "" when nothing searchable is left.
+    """
+    terms = re.findall(r"[\w]+", query, flags=re.UNICODE)
+    return " OR ".join(f'"{t}"' for t in terms if len(t) > 1)
+
+
 def _retrieve_passages(c, book_id, query, limit=3):
-    """FTS5 keyword retrieval over book_chunks for grounding."""
-    try:
-        rows = c.execute(
-            """SELECT content FROM book_chunks_fts
-               WHERE book_chunks_fts MATCH ?
-               AND book_id = ?
-               ORDER BY rank
-               LIMIT ?""",
-            (query, book_id, limit),
-        ).fetchall()
-        if rows:
-            return [r["content"] for r in rows]
-    except sqlite3.OperationalError:
-        pass
-    # Fallback: any chunks for the book
+    """FTS5 keyword retrieval over book_chunks for grounding.
+
+    book_chunks_fts indexes only `content` (content_rowid=book_chunks.id),
+    so the book filter has to join back to book_chunks — querying a
+    `book_id` column on the FTS table raises OperationalError, which used
+    to be swallowed here and silently degrade to "first N chunks in
+    insertion order", ignoring the query entirely.
+    """
+    match = _fts_query(query)
+    rows = []
+    if match:
+        try:
+            rows = c.execute(
+                """SELECT bc.content
+                   FROM book_chunks_fts
+                   JOIN book_chunks bc ON bc.id = book_chunks_fts.rowid
+                   WHERE book_chunks_fts MATCH ?
+                   AND bc.book_id = ?
+                   ORDER BY rank
+                   LIMIT ?""",
+                (match, book_id, limit),
+            ).fetchall()
+        except sqlite3.OperationalError:
+            # Malformed MATCH expression — fall through to the text search.
+            rows = []
+    if rows:
+        return [r["content"] for r in rows]
+
+    # No chunk hit. Fall back to the chapter text, which is what the eval
+    # pipeline actually populates — the dogfood DB has 17 chapters of full
+    # text and zero chunks, so without this the coach has nothing to ground
+    # on and answers "I don't have any context".
+    passages = _search_chapters(c, book_id, query, limit)
+    if passages:
+        return passages
+
     rows = c.execute(
         "SELECT content FROM book_chunks WHERE book_id = ? LIMIT ?", (book_id, limit)
     ).fetchall()
     return [r["content"] for r in rows]
+
+
+def _search_chapters(c, book_id, query, limit=3, window=1200):
+    """Rank chapters by query-term overlap and return a window around each hit.
+
+    ponytail: naive term counting, no BM25/tfidf. Fine for 17 chapters; if
+    retrieval quality matters, build real chunks and index them instead.
+    """
+    terms = {t.lower() for t in re.findall(r"\w+", query) if len(t) > 2}
+    if not terms:
+        return []
+    rows = c.execute(
+        "SELECT idx, content FROM chapters WHERE book_id = ? ORDER BY idx", (book_id,)
+    ).fetchall()
+    scored = []
+    for r in rows:
+        content = r["content"]
+        low = content.lower()
+        hits = [(m.start(), t) for t in terms for m in re.finditer(re.escape(t), low)]
+        if not hits:
+            continue
+        hits.sort()
+        # Keep the densest region rather than the first hit, so a term that
+        # shows up in a table of contents doesn't drag in the wrong page.
+        best_start, best_count = hits[0][0], 0
+        for start, _ in hits:
+            count = sum(1 for s, _ in hits if start <= s < start + window)
+            if count > best_count:
+                best_count, best_start = count, start
+        start = max(0, best_start - window // 4)
+        scored.append((best_count, f"[{r['idx']}] " + content[start : start + window]))
+    scored.sort(key=lambda x: -x[0])
+    return [text for _, text in scored[:limit]]
 
 
 def _coach_reply(c, book_id, conv_id, message_text):
@@ -360,14 +427,24 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
             if not conv:
                 return jsonify({"error": "conversation not found"}), 404
 
+            # Generate the reply *before* persisting anything: if the LLM
+            # fails we must not leave a user message with no coach answer.
+            # _coach_reply appends `text` to the history itself, so the
+            # uncommitted insert is not needed for context.
+            try:
+                reply = _coach_reply(c, app.config["book_id"], conv_id, text)
+            except Exception as e:  # provider/network/model failure
+                c.rollback()
+                app.logger.exception("coach reply failed")
+                return (
+                    jsonify({"ok": False, "error": f"Coach unavailable: {e}"}),
+                    502,
+                )
+
             c.execute(
                 "INSERT INTO messages (conversation_id, role, text) VALUES (?, 'user', ?)",
                 (conv_id, text),
             )
-            c.commit()
-
-            reply = _coach_reply(c, app.config["book_id"], conv_id, text)
-
             c.execute(
                 "INSERT INTO messages (conversation_id, role, text) VALUES (?, 'coach', ?)",
                 (conv_id, reply),
