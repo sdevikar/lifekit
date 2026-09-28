@@ -79,13 +79,12 @@ export default function FeedPage() {
 
   if (loading) {
     return (
-      <div className="pb-24">
-        <div className="animate-pulse space-y-4 p-6">
-          <div className="h-5 bg-lk-muted/20 rounded w-3/4" />
-          <div className="h-4 bg-lk-muted/20 rounded w-1/2" />
-          <div className="lk-card" />
-          <div className="lk-card" />
-          <div className="lk-card" />
+      <div className="lk-shell py-8 pb-28">
+        <div className="animate-pulse space-y-4">
+          <div className="h-6 bg-lk-muted/20 rounded-md w-1/3" />
+          <div className="h-12 bg-lk-muted/20 rounded-md w-full" />
+          <div className="h-32 bg-lk-muted/20 rounded-lg w-full" />
+          <div className="h-32 bg-lk-muted/20 rounded-lg w-full" />
         </div>
       </div>
     );
@@ -93,28 +92,30 @@ export default function FeedPage() {
 
   if (error) {
     return (
-      <div className="p-6">
-        <p className="text-sm text-lk-primary">Failed to load feed: {error}</p>
-        <button
-          className="lk-btn lk-btn-sm mt-3"
-          onClick={() => window.location.reload()}
-        >
-          Retry
-        </button>
+      <div className="lk-shell py-12">
+        <div className="lk-card border-lk-primary/30">
+          <p className="text-sm text-lk-primary font-medium">Failed to load briefing feed: {error}</p>
+          <button
+            className="lk-btn lk-btn-sm mt-3"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!briefing) {
     return (
-      <div className="p-6">
+      <div className="lk-shell py-12">
         <p className="text-sm text-lk-muted">No briefing available.</p>
       </div>
     );
   }
 
   return (
-    <div className="pb-24">
+    <div className="lk-shell pb-28">
       {/* 1. Today header + stage strip */}
       <TodayHeader
         book={briefing.book}
