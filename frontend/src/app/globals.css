@@ -1,64 +1,78 @@
 @import "tailwindcss";
 
 /*
- * LifeKit visual theme — inspired by platform.claude.com flat design.
- * All colour and spacing values snap to the extracted platform scale:
- * colours, radii, and spacing are never invented — only derived.
+ * LifeKit visual theme — faithful recreation of platform.claude.com design language
+ * Extracted scale & tokens from docs/ux/ui/design_language.md & variable.css
  */
 
 :root {
-  /* Colours — platform.claude.com palette */
+  /* Colors — Primary, Secondary, Accent */
   --lk-primary: #cf222e;
+  --lk-primary-hover: #e23a3f;
   --lk-secondary: #0550ae;
+  --lk-secondary-hover: #2a69c5;
   --lk-accent: #6da7ec;
 
   /* Neutrals */
   --lk-fg: #0b0b0b;
   --lk-muted: #898781;
-  --lk-border: #d1d1ce; /* 10 % tint of #0b0b0b — note: platform uses color-mix / 10 % opacity */
+  --lk-subtle: #52514e;
+  --lk-border: rgba(11, 11, 11, 0.1);
+  --lk-border-strong: rgba(11, 11, 11, 0.2);
 
-  /* Semantic surfaces */
+  /* Surfaces */
   --lk-bg: #fcfcfb;
   --lk-card: #ffffff;
+  --lk-user-msg: rgba(11, 11, 11, 0.05);
 
-  /* Spacing — snapped to platform scale: 1·20·24·28·41·46·56·64·78·89 */
+  /* Spacing Scale */
+  --spacing-1: 1px;
   --spacing-20: 20px;
   --spacing-24: 24px;
   --spacing-28: 28px;
   --spacing-41: 41px;
+  --spacing-46: 46px;
+  --spacing-56: 56px;
 
   /* Layout */
   --container-width: 785px;
   --container-gutter: 24px;
-  --section-rhythm: 20px;
 
-  /* Border radius — platform scale: 4·10·14 */
+  /* Radii */
   --radius-sm: 4px;
   --radius-md: 10px;
   --radius-lg: 14px;
 
-  /* Typography — platform uses system-ui as anthropicSans fallback */
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Shadows */
+  --lk-shadow-xs: inset 0 0 0 1px rgba(11, 11, 11, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --lk-shadow-panel: inset 0 0 0 1px rgba(11, 11, 11, 0.1), 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  /* Typography */
+  --font-sans: "anthropicSans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "anthropicSerif", Georgia, serif;
+  --font-mono: "anthropicMono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
 }
 
 @theme inline {
   --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
   --font-mono: var(--font-mono);
 
   --color-lk-bg: var(--lk-bg);
   --color-lk-fg: var(--lk-fg);
   --color-lk-muted: var(--lk-muted);
+  --color-lk-subtle: var(--lk-subtle);
   --color-lk-border: var(--lk-border);
+  --color-lk-border-strong: var(--lk-border-strong);
   --color-lk-card: var(--lk-card);
   --color-lk-primary: var(--lk-primary);
   --color-lk-secondary: var(--lk-secondary);
   --color-lk-accent: var(--lk-accent);
+  --color-lk-user-msg: var(--lk-user-msg);
 
-  /* Border radii — override Tailwind defaults to platform scale: 4·10·14 */
-  --radius-sm: 4px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
 }
 
 body {
@@ -68,84 +82,113 @@ body {
   font-size: 14px;
   line-height: 21px;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Card base — flat, clean, raised surface */
+/* Base Page Shell — Centered 785px max-width container */
+.lk-shell {
+  max-width: var(--container-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-gutter);
+  padding-right: var(--container-gutter);
+  width: 100%;
+}
+
+/* Card pattern — 14px radius, white surface, subtle 1px inset border + panel shadow */
 .lk-card {
   background: var(--lk-card);
   border: 1px solid var(--lk-border);
-  border-radius: var(--radius-md);
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--lk-shadow-xs);
   padding: 20px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-/* Button — primary action uses platform red (#cf222e) */
+.lk-card:hover {
+  box-shadow: var(--lk-shadow-panel);
+}
+
+/* Button Primary — platform red (#cf222e) */
 .lk-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-sm);
-  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
   cursor: pointer;
+  font-size: 14px;
   font-weight: 500;
-  transition: opacity 0.15s ease;
-  background: var(--lk-primary);
+  line-height: 20px;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+  background-color: var(--lk-primary);
   color: #ffffff;
 }
 
 .lk-btn:hover {
-  opacity: 0.9;
+  background-color: var(--lk-primary-hover);
 }
 
+/* Button Secondary — platform secondary (#0550ae) or neutral ghost */
 .lk-btn-secondary {
-  background: var(--lk-secondary);
+  background-color: var(--lk-secondary);
   color: #ffffff;
 }
 
 .lk-btn-secondary:hover {
-  opacity: 0.9;
+  background-color: var(--lk-secondary-hover);
+}
+
+.lk-btn-ghost {
+  background-color: transparent;
+  color: var(--lk-fg);
+  border: 1px solid var(--lk-border);
+}
+
+.lk-btn-ghost:hover {
+  background-color: rgba(11, 11, 11, 0.05);
 }
 
 .lk-btn:disabled,
-.lk-btn-secondary:disabled {
-  opacity: 0.5;
+.lk-btn-secondary:disabled,
+.lk-btn-ghost:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .lk-btn-sm {
-  padding: 0.25rem 0.75rem;
+  padding: 4px 12px;
   font-size: 13px;
+  border-radius: var(--radius-sm);
 }
 
-/* Badge */
+/* Badges */
 .lk-badge {
-  display: inline-block;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 5px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
+  background-color: rgba(11, 11, 11, 0.05);
+  color: var(--lk-subtle);
 }
 
-/* Input — flat, minimal */
+/* Inputs */
 .lk-input {
   background: var(--lk-card);
   border: 1px solid var(--lk-border);
-  border-radius: var(--radius-sm);
-  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  padding: 8px 12px;
   font-family: var(--font-sans);
   font-size: 14px;
   color: var(--lk-fg);
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .lk-input:focus {
-  border-color: var(--lk-primary);
-}
-
-/* Focus ring — platform uses neutral inset + accent glow */
-.lk-focus {
-  outline: 2px solid var(--lk-primary);
-  outline-offset: 2px;
+  border-color: var(--lk-secondary);
+  box-shadow: 0 0 0 1px var(--lk-secondary);
 }
