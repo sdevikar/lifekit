@@ -1,13 +1,8 @@
 # LifeKit Philosophy & Tech Stack
 
-**Status:** Living rationale — revised 2026-09-26 to match `.agents/intent.md`.
-Replaces the three-pillar sketch from 2026-09-19. Correction folded in:
-"human-like" does **not** mean deep user modeling — that path would kill the
-project. The user model stays deliberately shallow (important facts only);
-the modeling investment goes into the **book**. A second correction, 2026-09-26:
-teach-back grading is out — LifeKit is a coach that checks what you did, not
-a tutor that checks what you learned. No quizzes, no grades, no FSRS rating
-mappings of judged explanations.
+Living rationale for the design decisions behind LifeKit. The binding vision
+and non-negotiables live in [`.agents/intent.md`](../../.agents/intent.md); this
+file explains *why* the architecture looks the way it does.
 
 ## Why not "glorified RAG with UI"
 
@@ -116,7 +111,7 @@ proven with real use.
 | Scheduling | `fsrs` library over exercises and teach-backs | Live for exercises |
 | Learning runtime | Python FastMCP server; deterministic-runtime/LLM-prose split | Coach tools shipped (Step 5); full session runtime is Stage 5, to design |
 | User facts | SQLite + Markdown mirror | To design |
-| Venue UI | Feed + conversations (Next.js), served via `lifekit ui` on localhost | Shipped (Step 13); Streamlit scaffolding retired |
+| Venue UI | Feed + conversations (Next.js), served via `lifekit ui` on localhost | Shipped |
 | LLM | Home Ollama (qwen3.8:27b-q8_0 or active llm) for extraction/eval; product LLM TBD | — |
 
 ## Borrow / build / reject
@@ -125,7 +120,7 @@ proven with real use.
 |---|---|---|
 | tutor-mcp (ArnaudGuiovanna, Go, MIT) | Deterministic-runtime/LLM split; motivation briefs (signals+instruction); Markdown episodic memory; if-then intentions | **Borrow the pattern**, mirror in Python — do not port Go |
 | srs-mcp (klutometis, ~200 lines, FSRS MCP) | Minimal "card box + scheduler" tool taxonomy (`due`, `grade`, `suspend`, `stats`) | **Study closely** — closest borrowable shape |
-| prometheus learn-retain | Feynman artifact → numeric grade → FSRS rating mapping | **Reject** — graded teach-backs are tutor behavior; LifeKit never grades. Kept in the table to record the decision. |
+| prometheus learn-retain | Feynman artifact → numeric grade → FSRS rating mapping | **Reject** — graded teach-backs are tutor behavior; LifeKit never grades. |
 | lucid / Feynman Reader | "Explain it back" UX mechanics | Reference for conversational venue design only — never for graded assessment |
 | book2anki (mdrcs) | Per-chapter checkpoints, depth-aware prompts | Borrow for extraction robustness |
 | Mem0 (+ mem0-mcp, Apache-2.0) | Managed memory layer w/ MCP | **Reject for now** — facts-only model doesn't need it |

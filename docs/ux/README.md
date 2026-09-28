@@ -9,12 +9,8 @@ LifeKit's interface is a **feed + conversations** web UI — a hybrid of a daily
 
 What the UI is *not*: quiz framing, retention percentages, grades, mastery gates. The deterministic runtime owns scheduling and state; the LLM owns conversational prose.
 
-## Spec status
+## Status
 
-- Intent (approved 2026-09-21, retired 2026-09-26 with the `intent/` folder; pillars now live in the shipped design): `../../openspec/archives/step-13-ui-feed-conversations/`
-- Umbrella proposal + 4 slices at `../../openspec/archives/step-13-ui-feed-conversations/`:
-  - 13a ✅ feed API (Flask, localhost `:8765`)
-  - 13b ✅ feed screen (Next.js, component set)
-  - 13c ✅ conversation view (chat UI with seed display)
-  - 13d in progress — `lifekit ui` serve command
-- Run: `uv sync` (Python deps) + `npx next build` (frontend) in `frontend/`, then `lifekit ui`
+Shipped. The feed + conversations UI is the product interface, served via
+`lifekit ui` on localhost. Spec archived at
+`../../openspec/archives/step-13-ui-feed-conversations/`.

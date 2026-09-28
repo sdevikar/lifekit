@@ -1,19 +1,8 @@
 # LifeKit Known-Issues Backlog
 
-Issues found in the 2026-09-15 code review of Steps 1–7. D1 and D2 were fixed
-the same day (see commit history); everything below is **open** unless noted.
-IDs are stable — new findings append, never renumber.
-
-## Fixed (record)
-
-- **D1 (HIGH)** — reducer re-ran delete+reinsert, changing exercise ids → fixed
-  2026-09-15 by upserting on `UNIQUE(book_id, title)` (`../../lifekit/reduce/reducer.py`).
-- **D2 (MEDIUM)** — validate without `--chapters` logged 100% false failures →
-  fixed 2026-09-15: quote checks are logged as *skipped* (`validation_log.passed`
-  NULL, schema migrated) and the CLI warns loudly (`../../lifekit/validate/`).
-- **P1 (MEDIUM)** — `../../scripts/eval_step2_recall.py` hardcoded sandbox paths →
-  fixed 2026-09-15: `--provider`/`--model`/`--results` flags added; the
-  2026-09-17 full-book eval ran portably against home Ollama.
+Open defects, spec-vs-reality notes, and feature ideas for the extraction
+pipeline and content model. IDs are stable — new findings append, never
+renumber.
 
 ## Open defects
 
@@ -60,24 +49,6 @@ need to link back to pages.
 
 ## Spec-vs-reality notes (honesty, not defects)
 
-- **H1 — Step 5 "Coach MCP tools" overpromises — FIXED 2026-09-18.**
-  `../../lifekit/mcp/server.py` rewritten as a real MCP stdio server (FastMCP,
-  `mcp<2`) exposing 7 tools: `list_exercises`, `search_exercises`
-  (natural-language, e.g. "i want to do the mindmapping exercise"),
-  `get_exercise`, `complete_exercise` (FSRS review + completion log),
-  `due_exercises`, `list_key_ideas`, `book_progress`. Verified with a real
-  MCP initialize/tools-list/tools-call handshake against the product DB.
-  `tests/test_mcp_server.py` (5 tests); suite 82/82.
-- **H2 — Archived proposal task checkboxes left unchecked.** Step 2's
-  `tasks.md` had all 8 boxes as `- [ ]` though archived as done
-  (`../../openspec/archives/step-2-extraction-map/tasks.md`). Status: ✅ FIXED
-  2026-09-17 — all boxes checked; 2.7 completed with the home-Ollama
-  full-book eval results recorded in tasks.md. The same pattern existed for
-  Steps 3–7 (reduce/dedupe, validation harness, coach tools, multi-book,
-  scheduling): implementation and tests shipped and test results are recorded,
-  but individual "Tests first" / "Implementation" sub-tasks were never checked.
-  Status: ✅ FIXED 2026-09-26 audit — all retroactively checked; deferred
-  Phase-0 items in `lifekit-mvp-core-loop` correctly left unchecked.
 - **H3 — `validate_exercise` ignores `extra_quotes`.** The Step 4 proposal says
   it checks them; only the `validate_book` path does. The code comment admits
   it (`../../lifekit/validate/validator.py` line 26). Status: OPEN. Suggested
@@ -89,35 +60,8 @@ need to link back to pages.
   disposition: document "query latest per (book_id, exercise_id, check_type)"
   in USER_MANUAL if it ever confuses anyone.
 
-## Eval findings (2026-09-17 full-book eval, qwen3.8:27b-q8_0, home Ollama)
-
-- **E1 — Validator quote check false-fails on whitespace — MEDIUM — FIXED 2026-09-18**
-  Fixed in `../../lifekit/validate/validator.py::normalize_ws`: NFKC + typographic
-  punctuation folding (curly quotes, em/en dashes, NBSP) then whitespace
-  collapse, still strict substring matching. Post-fix validation of the DYL
-  ingest: 142/144 exercises grounded; the 2 failures are PDF-extraction
-  corruptions in chapter text ("welldesigned", "designi ngyour.life") where
-  the model quoted correctly. Also fixed: extra_quotes now ground against
-  full book text (merged records come from other chapters); source_quote
-  still requires its own chapter. 7 new tests.
-- **E2 — Raw recall overstates coverage until Step 3 dedupe runs — MEDIUM — FIXED 2026-09-18**
-  `../../scripts/eval_dedupe_recall.py` ran Step 3 reduce over the eval output:
-  156 raw -> 144 exercises (12 merges), dedupe-aware recall 19/20 (95%),
-  same single miss (Ask-for-Help Journal). Dedupe only merges identical
-  normalized titles, so fragmentation survives (Good Time Journal ×4,
-  Mind Mapping ×3, five mind-set questions separate). Near-dupe title
-  merging is a future improvement, not required for MVP.
-  Ref: `../../evals/step2-recall-qwen3.8-27b-q8_0/README.md`.
-  Suggested disposition: run Step 3 reduce over the eval extractions, then
-  re-score recall — OpenSpec proposal at
-  `../../openspec/changes/eval-dedupe-aware-recall/`.
-
 ## Portability / hygiene
 
-- **P1 — `../../scripts/eval_step2_recall.py` hardcodes sandbox paths** (5 spots,
-  e.g. lines 32, 111, 135–136, 211). Will break on the user's local dev setup
-  before the deferred eval (A20). Status: ✅ FIXED 2026-09-15 (flags added;
-  used portably in the 2026-09-17 home-Ollama eval).
 - **P2 — `test_split_dyl_pdf` hardcodes an absolute VM path**
   (`tests/test_chapter_splitter.py` line 23). Passes here, errors on any other
   machine — real-PDF coverage evaporates outside this VM. Status: OPEN.
@@ -162,7 +106,7 @@ borrow backend, UX, and how-to-content ideas only, never vision-changing ones.
   test: never merge distinct named frameworks on normalized titles
   ("The 5 Whys" ≠ "ask why repeatedly"). Current dedupe merges only identical
   normalized titles, but the rule should be stated and locked before any
-  near-dupe merging is attempted (see E2).
+  near-dupe merging is attempted.
 - **F5 — Analyze-only mode + pre-flight cost estimate.** Before a long eval
   extraction, run analysis only and report what was found plus estimated
   token/time cost, then ask to proceed. Would have saved real pain on the

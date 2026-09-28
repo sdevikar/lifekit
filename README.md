@@ -39,8 +39,7 @@ Tailscale — never run them on a small VM. Never commit secrets.
 
 ## How we build
 
-Spec-first: OpenSpec proposals (`openspec/changes/<slug>/`) before code,
-one independently testable slice per proposal, tests and done criteria up
-front. The human writes the code and makes product decisions; the agent is
-product owner / project manager / chief of staff. Docs stay true — update
-`docs/product/{STATUS,ROADMAP,ASSUMPTIONS,BACKLOG}.md` with every change.
+Spec-first: OpenSpec proposals before code, one independently testable slice
+per proposal. The human writes the code and makes product decisions; the
+agent is product owner / project manager / chief of staff. See
+[`AGENTS.md`](AGENTS.md) for the full workflow.

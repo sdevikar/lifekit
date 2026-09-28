@@ -4,7 +4,7 @@ Map of the documentation, organized by domain. Start here.
 
 | Domain | What's in it |
 |--------|--------------|
-| [product/](product/) | Vision, planning, and standing truth: roadmap, backlog, assumptions, status, philosophy, intents, MVP scope, user manual |
+| [product/](product/) | Planning and standing truth: roadmap, backlog, assumptions, status, philosophy |
 | [ux/](ux/) | UI direction: the feed + conversations interface |
 | [backend/](backend/) | Pipeline, storage, and serving: extraction → book model → coach tools → scheduling |
 | [arch/](arch/) | Architecture: pillar blocks, connections, and the daily-loop data flow |

@@ -33,7 +33,7 @@ Locked. Not revisited during MVP.
 | 5 | Coach MCP tools: `list_exercises`, `get_exercise`, `log_completion`, `next_exercise` | ✅ Done (2026-09-15) | `../../openspec/archives/step-5-coach-tools/` |
 | 6 | Multi-book: registry, per-book pipelines, cross-book search | ✅ Done (2026-09-15) | `../../openspec/archives/step-6-multi-book/` |
 | 7 | Scheduling: FSRS-style spaced repetition over completion history | ✅ Done (2026-09-15) | `../../openspec/archives/step-7-scheduling/` |
-| 13 | UI: feed + conversations web UI (Next.js) — daily briefing cards (one exercise, one resurfaced idea, fading list), per-card "Talk about this", master composer, conversation view with back-to-feed; builds on Steps 5 & 7, independent of proposed Steps 8–12 | ✅ Done 2026-09-24 — all 4 slices shipped (13a feed API, 13b feed screen, 13c conversation view, 13d serve command). Umbrella + slices archived at `../../openspec/archives/`. `lifekit ui` boots both services locally; Streamlit retired. | `../../openspec/archives/step-13-ui-feed-conversations/` (+ `13a-feed-api/`, `13b-feed-screen/`, `13c-conversation/`, `13d-serve-command/`) |
+| 13 | UI: feed + conversations web UI (Next.js) — daily briefing cards (one exercise, one resurfaced idea, fading list), per-card "Talk about this", master composer, conversation view with back-to-feed; builds on Steps 5 & 7, independent of proposed Steps 8–12 | ✅ Done — all 4 slices shipped (13a feed API, 13b feed screen, 13c conversation view, 13d serve command). `lifekit ui` boots both services locally. | `../../openspec/archives/step-13-ui-feed-conversations/` (+ `13a-feed-api/`, `13b-feed-screen/`, `13c-conversation/`, `13d-serve-command/`) |
 
 Each step ships with its test and done-criterion written before implementation.
 Test one step at a time; don't start the next until the current one's done-criterion passes.
@@ -65,6 +65,6 @@ Candidate steps from the coaching plan (`~/workspace/self-help-exercises/lifekit
 
 - LLM provider config (2026-09-16): pluggable model backends (`../../lifekit/llm/` — Ollama default, OpenRouter via `OPENROUTER_API_KEY`), layered config (CLI > env > `~/.lifekit/config.json` > defaults), `lifekit config` CLI, portable eval script. Archived spec: `../../openspec/archives/llm-provider-config/`.
 
-## Already shipped (Phase 0 / v0.1.0)
+## Shipped infra (not numbered MVP steps)
 
-PDF ingestion (pypdf, sentence-boundary chunking, SQLite + FTS5) · Ollama SMART plan forge with Pydantic validation · MCP server (`get_next_task`, `complete_task`, `get_plan_status`). Archived spec: `../../openspec/archives/lifekit-mvp-core-loop/`.
+- LLM provider config: pluggable model backends (`../../lifekit/llm/` — Ollama default, OpenRouter via `OPENROUTER_API_KEY`), layered config (CLI > env > `~/.lifekit/config.json` > defaults), `lifekit config` CLI, portable eval script. Archived spec: `../../openspec/archives/llm-provider-config/`.
