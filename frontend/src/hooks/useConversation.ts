@@ -15,6 +15,10 @@ export function useConversation(convId: string) {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    // No id yet (route params are async) — fetching would hit the
+    // /api/conversations/ collection, which returns an array, not a
+    // conversation, and crashes MessageList on `messages.length`.
+    if (!convId) return;
     setLoading(true);
     setError(null);
     try {

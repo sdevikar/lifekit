@@ -30,9 +30,11 @@ for the stage table. The venue is shipped; now dogfooding the daily loop.
 
 ## Test inventory
 
-Suite: **112 passed** (82 + 30 feed API tests). Every model call is stubbed/mocked — **zero
-tests exercise a real LLM**. The suite proves the pipeline is *plumbed*, not
-that it *extracts*; the real-model eval is the quality gate.
+Suite: **113 checks green** (82 + 30 feed API + 1 frontend hook regression); 1
+pre-existing failure, `test_split_dyl_pdf` (hardcoded VM path, BACKLOG P2). Every
+model call is stubbed/mocked — **zero tests exercise a real LLM**. The suite
+proves the pipeline is *plumbed*, not that it *extracts*; the real-model eval is
+the quality gate.
 
 | Test file | Count | What it actually covers |
 |-----------|-------|------------------------|
@@ -47,4 +49,5 @@ that it *extracts*; the real-model eval is the quality gate.
 | `test_llm_config` | 9 | Provider/model resolution order (CLI flags > env vars > `~/.lifekit/config.json` > defaults); config never stores keys; invalid values rejected. |
 | `test_llm_providers` | 6 | **Mocked transport, no network.** Ollama provider passes JSON schema + temperature 0.1; OpenRouter request shape (model, messages, Authorization header from env); missing key raises; factory defaults to Ollama; both satisfy the provider protocol. Does NOT prove a real API call succeeds. |
 | `test_config_cli` | 5 | `lifekit config` get/set/show round-trips; secrets rejected from config file. |
+| `test_useConversation` (frontend, `node --experimental-strip-types`) | 1 | Frontend hook regression: `useConversation` must not fetch while the route id is unresolved (it would hit the `/api/conversations/` collection, get an array, and crash `MessageList` on `messages.length`), and must expose a `messages` array for a real id. Drives the real hook with a React stub against the running `:3000`. |
 | `test_feed_api` | 30 | Feed API: schema migration (conversations/messages tables, idempotent), briefing endpoint, completions + idea-signals persistence, conversation CRUD, grounded chat message round-trip, localhost-only binding, `due_exercises` FSRS path. LLM provider mocked. |
