@@ -20,29 +20,29 @@ export function MasterComposer({ onSubmit, submitting = false }: MasterComposerP
   return (
     <form
       onSubmit={handleSubmit}
-      className="fixed bottom-0 left-0 right-0 p-4 bg-lk-bg border-t border-lk-border"
+      className="fixed bottom-0 left-0 right-0 p-4 bg-lk-bg/95 backdrop-blur-sm border-t border-lk-border shadow-panel z-10"
     >
-      <div className="max-w-[785px] mx-auto">
+      <div className="lk-shell">
         <div className="flex gap-2">
           <input
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Ask about an exercise or idea…"
-            className="flex-1 px-3 py-2 border border-lk-border rounded-sm focus:outline-none focus:border-lk-primary"
+            placeholder="Ask about an exercise or start a coach conversation…"
+            className="lk-input flex-1"
             disabled={submitting}
             maxLength={500}
           />
           <button
             type="submit"
             disabled={!text.trim() || submitting}
-            className="lk-btn lk-btn-sm"
+            className="lk-btn"
           >
             {submitting ? "Sending…" : <SendIcon />}
           </button>
         </div>
-        <p className="mt-1 text-xs text-lk-muted">
-          Creates a new conversation grounded in the book.
+        <p className="mt-1.5 text-xs text-lk-muted">
+          Opens a grounded coach conversation anchored in book knowledge.
         </p>
       </div>
     </form>

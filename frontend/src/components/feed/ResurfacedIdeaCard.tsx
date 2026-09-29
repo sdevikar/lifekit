@@ -14,17 +14,22 @@ export function ResurfacedIdeaCard({
   signaling = false,
 }: ResurfacedIdeaCardProps) {
   return (
-    <section className="lk-card mb-5 mx-6">
-      <h2 className="text-xs font-medium text-lk-muted mb-3">
-        Idea to remember
-      </h2>
-      <blockquote className="text-sm italic">&ldquo;{idea.text}&rdquo;</blockquote>
+    <section className="lk-card mb-5">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-lk-muted">
+          Idea to Remember
+        </h2>
+        <span className="lk-badge">Resurfaced</span>
+      </div>
+      <blockquote className="text-sm italic font-serif text-lk-fg leading-relaxed">
+        &ldquo;{idea.text}&rdquo;
+      </blockquote>
 
-      <p className="mt-2 text-xs text-lk-muted">
-        <span className="font-medium">Why it resurfaced:</span> {idea.why}
+      <p className="mt-3 text-xs text-lk-subtle bg-lk-bg p-2 rounded-sm border border-lk-border">
+        <span className="font-medium text-lk-fg">Why it resurfaced:</span> {idea.why}
       </p>
 
-      <div className="mt-4 flex gap-2">
+      <div className="mt-5 flex items-center gap-3">
         <button
           className="lk-btn lk-btn-sm"
           onClick={() => onStillWithMe(true)}
@@ -33,7 +38,7 @@ export function ResurfacedIdeaCard({
           Still with me
         </button>
         <button
-          className="lk-btn lk-btn-sm lk-btn-secondary"
+          className="lk-btn lk-btn-sm lk-btn-ghost"
           onClick={onTalkAbout}
         >
           Talk about this

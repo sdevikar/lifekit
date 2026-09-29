@@ -14,7 +14,6 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   const router = useRouter();
   const [convId, setConvId] = useState<string | null>(null);
 
-  // Resolve params (async in App Router)
   useEffect(() => {
     params.then((p) => setConvId(p.id));
   }, [params]);
@@ -33,22 +32,22 @@ export default function ConversationPage({ params }: ConversationPageProps) {
 
   if (loading || !convId) {
     return (
-      <div className="flex flex-col h-screen">
-        <header className="border-b border-lk-border p-4">
-          <div className="max-w-[785px] mx-auto">
+      <div className="flex flex-col min-h-screen bg-lk-bg">
+        <header className="border-b border-lk-border py-3 bg-lk-card">
+          <div className="lk-shell flex items-center justify-between">
             <button
-              className="lk-btn lk-btn-sm lk-btn-secondary"
+              className="lk-btn lk-btn-sm lk-btn-ghost"
               onClick={handleBack}
             >
               ← Feed
             </button>
           </div>
         </header>
-        <main className="flex-1 p-4 overflow-y-auto">
-          <div className="animate-pulse space-y-3 max-w-[785px] mx-auto">
-            <div className="h-4 bg-lk-muted/20 rounded w-3/4" />
-            <div className="h-4 bg-lk-muted/20 rounded w-1/2" />
-            <div className="h-4 bg-lk-muted/20 rounded w-full" />
+        <main className="flex-1 lk-shell py-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-lk-muted/20 rounded w-1/3" />
+            <div className="h-16 bg-lk-muted/20 rounded-md w-3/4" />
+            <div className="h-16 bg-lk-muted/20 rounded-md w-1/2 ml-auto" />
           </div>
         </main>
       </div>
@@ -56,36 +55,37 @@ export default function ConversationPage({ params }: ConversationPageProps) {
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col min-h-screen bg-lk-bg">
       {/* Header: back button + title */}
-      <header className="border-b border-lk-border p-4 bg-lk-bg">
-        <div className="max-w-[785px] mx-auto flex items-center gap-3">
-          <button
-            className="lk-btn lk-btn-sm lk-btn-secondary"
-            onClick={handleBack}
-          >
-            ← Feed
-          </button>
-          <h1 className="text-sm font-medium truncate">
-            {conversation?.title || "Conversation"}
-          </h1>
-        </div>
-
-        {/* Seed context display */}
-        {conversation?.seed_kind === "card" && conversation.seed_ref && (
-          <div className="max-w-[785px] mx-auto mt-2 px-4">
-            <span className="lk-badge bg-lk-secondary/10 text-lk-secondary">
-              Seeded from card
-            </span>
+      <header className="border-b border-lk-border py-3.5 bg-lk-card sticky top-0 z-20 shadow-xs">
+        <div className="lk-shell flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 truncate">
+            <button
+              className="lk-btn lk-btn-sm lk-btn-ghost shrink-0"
+              onClick={handleBack}
+            >
+              ← Feed
+            </button>
+            <h1 className="text-sm font-semibold text-lk-fg truncate">
+              {conversation?.title || "Conversation"}
+            </h1>
           </div>
-        )}
+
+          {conversation?.seed_kind === "card" && conversation.seed_ref && (
+            <span className="lk-badge text-lk-secondary bg-lk-secondary/10 shrink-0">
+              Card seed
+            </span>
+          )}
+        </div>
       </header>
 
       {/* Message list */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 pb-4">
         {error && (
-          <div className="p-3 mx-3 mt-2 text-sm text-lk-primary bg-lk-primary/5 rounded-md">
-            {error}
+          <div className="lk-shell mt-4">
+            <div className="p-3 text-sm text-lk-primary bg-lk-primary/10 border border-lk-primary/20 rounded-md">
+              {error}
+            </div>
           </div>
         )}
         <MessageList messages={messages} />
