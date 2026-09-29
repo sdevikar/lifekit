@@ -25,8 +25,8 @@ export function ResurfacedIdeaCard({
         &ldquo;{idea.text}&rdquo;
       </blockquote>
 
-      <p className="mt-3 text-xs text-lk-subtle bg-lk-bg p-2 rounded-sm border border-lk-border">
-        <span className="font-medium text-lk-fg">Why it resurfaced:</span> {idea.why}
+      <p className="mt-3 text-xs text-lk-subtle bg-lk-bg p-2.5 rounded-sm border border-lk-border">
+        <span className="font-semibold text-lk-fg">Why it resurfaced:</span> {idea.why}
       </p>
 
       <div className="mt-5 flex items-center gap-3">
@@ -38,7 +38,7 @@ export function ResurfacedIdeaCard({
           Still with me
         </button>
         <button
-          className="lk-btn lk-btn-sm lk-btn-ghost"
+          className="lk-btn lk-btn-ghost lk-btn-sm"
           onClick={onTalkAbout}
         >
           Talk about this
