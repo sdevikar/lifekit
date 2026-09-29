@@ -1,17 +1,19 @@
 @import "tailwindcss";
 
 /*
- * LifeKit visual theme — faithful recreation of platform.claude.com design language
- * Extracted scale & tokens from docs/ux/ui/design_language.md & variable.css
+ * LifeKit visual theme — Claude Platform Docs (platform.claude.com)
+ * Warm off-white canvas, crisp white cards, dark charcoal buttons (#0b0b0b),
+ * brand clay accent (#c6613f / #d97757), and soft inset borders/shadows.
  */
 
 :root {
-  /* Colors — Primary, Secondary, Accent */
-  --lk-primary: #cf222e;
-  --lk-primary-hover: #e23a3f;
-  --lk-secondary: #0550ae;
-  --lk-secondary-hover: #2a69c5;
-  --lk-accent: #6da7ec;
+  /* Colors — Claude Platform Palette */
+  --lk-primary: #0b0b0b;
+  --lk-primary-hover: #2c2c2a;
+  --lk-secondary: #52514e;
+  --lk-brand-clay: #c6613f;
+  --lk-brand-clay-hover: #d97757;
+  --lk-accent-blue: #2a78d6;
 
   /* Neutrals */
   --lk-fg: #0b0b0b;
@@ -23,7 +25,8 @@
   /* Surfaces */
   --lk-bg: #fcfcfb;
   --lk-card: #ffffff;
-  --lk-user-msg: rgba(11, 11, 11, 0.05);
+  --lk-user-msg: rgba(11, 11, 11, 0.04);
+  --lk-badge-bg: rgba(11, 11, 11, 0.05);
 
   /* Spacing Scale */
   --spacing-1: 1px;
@@ -31,8 +34,6 @@
   --spacing-24: 24px;
   --spacing-28: 28px;
   --spacing-41: 41px;
-  --spacing-46: 46px;
-  --spacing-56: 56px;
 
   /* Layout */
   --container-width: 785px;
@@ -40,17 +41,17 @@
 
   /* Radii */
   --radius-sm: 4px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
   /* Shadows */
-  --lk-shadow-xs: inset 0 0 0 1px rgba(11, 11, 11, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --lk-shadow-panel: inset 0 0 0 1px rgba(11, 11, 11, 0.1), 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+  --lk-shadow-xs: inset 0 0 0 1px rgba(11, 11, 11, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --lk-shadow-panel: inset 0 0 0 1px rgba(11, 11, 11, 0.1), 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
 
   /* Typography */
-  --font-sans: "anthropicSans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "anthropicSerif", Georgia, serif;
-  --font-mono: "anthropicMono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --font-sans: "anthropicSans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-serif: "anthropicSerif", Georgia, "Times New Roman", serif;
+  --font-mono: "anthropicMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @theme inline {
@@ -67,7 +68,7 @@
   --color-lk-card: var(--lk-card);
   --color-lk-primary: var(--lk-primary);
   --color-lk-secondary: var(--lk-secondary);
-  --color-lk-accent: var(--lk-accent);
+  --color-lk-brand-clay: var(--lk-brand-clay);
   --color-lk-user-msg: var(--lk-user-msg);
 
   --radius-sm: var(--radius-sm);
@@ -95,7 +96,7 @@ body {
   width: 100%;
 }
 
-/* Card pattern — 14px radius, white surface, subtle 1px inset border + panel shadow */
+/* Card pattern — Raised white surface with clean 1px border */
 .lk-card {
   background: var(--lk-card);
   border: 1px solid var(--lk-border);
@@ -109,19 +110,19 @@ body {
   box-shadow: var(--lk-shadow-panel);
 }
 
-/* Button Primary — platform red (#cf222e) */
+/* Button Primary — Claude platform dark neutral (#0b0b0b) */
 .lk-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   line-height: 20px;
-  transition: background-color 0.15s ease, opacity 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
   background-color: var(--lk-primary);
   color: #ffffff;
 }
@@ -130,16 +131,17 @@ body {
   background-color: var(--lk-primary-hover);
 }
 
-/* Button Secondary — platform secondary (#0550ae) or neutral ghost */
-.lk-btn-secondary {
-  background-color: var(--lk-secondary);
+/* Button Brand Accent — Clay (#c6613f) */
+.lk-btn-clay {
+  background-color: var(--lk-brand-clay);
   color: #ffffff;
 }
 
-.lk-btn-secondary:hover {
-  background-color: var(--lk-secondary-hover);
+.lk-btn-clay:hover {
+  background-color: var(--lk-brand-clay-hover);
 }
 
+/* Button Ghost / Secondary — Neutral subtle border */
 .lk-btn-ghost {
   background-color: transparent;
   color: var(--lk-fg);
@@ -147,18 +149,19 @@ body {
 }
 
 .lk-btn-ghost:hover {
-  background-color: rgba(11, 11, 11, 0.05);
+  background-color: rgba(11, 11, 11, 0.04);
+  border-color: var(--lk-border-strong);
 }
 
 .lk-btn:disabled,
-.lk-btn-secondary:disabled,
+.lk-btn-clay:disabled,
 .lk-btn-ghost:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
 .lk-btn-sm {
-  padding: 4px 12px;
+  padding: 4px 10px;
   font-size: 13px;
   border-radius: var(--radius-sm);
 }
@@ -168,18 +171,19 @@ body {
   display: inline-flex;
   align-items: center;
   padding: 2px 8px;
-  border-radius: 5px;
-  font-size: 12px;
+  border-radius: 4px;
+  font-size: 11.5px;
   font-weight: 500;
-  background-color: rgba(11, 11, 11, 0.05);
+  background-color: var(--lk-badge-bg);
   color: var(--lk-subtle);
+  border: 1px solid rgba(11, 11, 11, 0.06);
 }
 
 /* Inputs */
 .lk-input {
   background: var(--lk-card);
   border: 1px solid var(--lk-border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 8px 12px;
   font-family: var(--font-sans);
   font-size: 14px;
@@ -189,6 +193,6 @@ body {
 }
 
 .lk-input:focus {
-  border-color: var(--lk-secondary);
-  box-shadow: 0 0 0 1px var(--lk-secondary);
+  border-color: var(--lk-fg);
+  box-shadow: 0 0 0 1px var(--lk-fg);
 }

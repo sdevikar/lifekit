@@ -20,7 +20,7 @@ export function ConversationsList({
       </div>
 
       {conversations.length === 0 ? (
-        <p className="text-xs text-lk-muted py-2">No active conversations yet.</p>
+        <p className="text-xs text-lk-muted py-1">No active conversations yet.</p>
       ) : (
         <ul className="mt-2 space-y-1">
           {conversations.map((conv) => (
@@ -30,7 +30,7 @@ export function ConversationsList({
                 onClick={() => onOpen(conv.id)}
               >
                 <span className="flex items-center gap-2.5 truncate">
-                  <ConversationIcon className="text-lk-muted group-hover:text-lk-secondary transition-colors" />
+                  <ConversationIcon className="text-lk-muted group-hover:text-lk-fg transition-colors" />
                   <span className="truncate text-lk-fg font-medium">{conv.title}</span>
                 </span>
                 <span className="text-xs text-lk-muted shrink-0 font-mono">
