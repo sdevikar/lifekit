@@ -26,15 +26,15 @@ export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 border-t border-lk-border bg-lk-bg"
+      className="p-4 border-t border-lk-border bg-lk-bg/95 backdrop-blur-sm sticky bottom-0 z-10"
     >
-      <div className="max-w-[785px] mx-auto flex gap-2">
+      <div className="lk-shell flex gap-2">
         <input
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Ask about this exercise or idea…"
-          className="flex-1 px-3 py-2 border border-lk-border rounded-sm focus:outline-none focus:border-lk-primary"
+          placeholder="Ask your coach a question…"
+          className="lk-input flex-1"
           disabled={disabled}
           maxLength={1000}
           autoFocus
@@ -42,7 +42,7 @@ export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
         <button
           type="submit"
           disabled={!text.trim() || disabled}
-          className="lk-btn lk-btn-sm"
+          className="lk-btn"
         >
           {disabled ? "Sending…" : <SendIcon />}
         </button>

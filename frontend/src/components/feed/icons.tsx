@@ -1,7 +1,11 @@
-export function ConversationIcon() {
+interface IconProps {
+  className?: string;
+}
+
+export function ConversationIcon({ className = "h-4 w-4 text-lk-muted" }: IconProps) {
   return (
     <svg
-      className="h-4 w-4 text-lk-muted"
+      className={className}
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -17,10 +21,10 @@ export function ConversationIcon() {
   );
 }
 
-export function SendIcon() {
+export function SendIcon({ className = "h-4 w-4" }: IconProps) {
   return (
     <svg
-      className="h-4 w-4"
+      className={className}
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
