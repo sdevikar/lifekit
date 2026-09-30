@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { BookInfo, StageStrip } from "@/types/api";
 
 interface TodayHeaderProps {
@@ -16,7 +17,10 @@ export function TodayHeader({ book, day, stages }: TodayHeaderProps) {
             {book.title}
           </h1>
         </div>
-        <time className="text-xs text-lk-muted font-mono">{day}</time>
+        <div className="flex items-center gap-3">
+          <time className="text-xs text-lk-muted font-mono">{day}</time>
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Stage strip — ideas seen → retained → lived */}

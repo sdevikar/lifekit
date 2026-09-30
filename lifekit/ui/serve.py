@@ -1,7 +1,7 @@
 """lifekit.ui.serve — orchestrates the feed API + Next.js app.
 
 Starts the 13a feed API (Flask, :8765) and the Next.js production server
-(:3000) as subprocesses, bound to 127.0.0.1 only. Clean shutdown on exit
+(:3783) as subprocesses, bound to 127.0.0.1 only. Clean shutdown on exit
 (CTRL-C or SIGTERM).
 
 Logs (if needed for debugging):
@@ -21,7 +21,7 @@ from pathlib import Path
 FEED_HOST = "127.0.0.1"
 FEED_PORT = 8765
 WEB_HOST = "127.0.0.1"
-WEB_PORT = 3000
+WEB_PORT = 3783
 
 # Resolve directories relative to the repo root (parent of lifekit/)
 _PACKAGE_DIR = Path(__file__).resolve().parent  # lifekit/ui/
@@ -60,10 +60,13 @@ def _start_feed_api() -> subprocess.Popen:
 
 
 def _build_nextjs() -> None:
-    """Build the Next.js production bundle (no-op if already built)."""
-    next_dir = _FRONTEND_DIR / ".next"
-    if next_dir.exists():
-        return
+    """Build the Next.js production bundle.
+
+    Always rebuilds. The build is incremental and costs ~2-4s, and skipping it
+    when ``.next`` merely *exists* serves a stale bundle after a source change
+    — or fails outright with "Could not find a production build" when the
+    directory only holds ``next dev`` artifacts.
+    """
     print("🔨 Building Next.js app...")
     subprocess.run(
         ["npx", "next", "build"],
@@ -175,13 +178,13 @@ def run() -> int:
         if not _wait_for_port_with_proc(WEB_HOST, WEB_PORT, web_proc):
             rc = web_proc.poll()
             if rc is not None:
-                print(f"❌ Next.js exited with code {rc} (port :3000 may be in use)")
+                print(f"❌ Next.js exited with code {rc} (port :{WEB_PORT} may be in use)")
             else:
-                print("❌ Next.js failed to start on :3000")
+                print(f"❌ Next.js failed to start on :{WEB_PORT}")
             return 1
 
         print(f"\n✅ UI ready — open http://{WEB_HOST}:{WEB_PORT}")
-        print("   (Phone: workstation tailnet IP :3000)")
+        print(f"   (Phone: workstation tailnet IP :{WEB_PORT})")
         print("   Ctrl-C to stop.\n")
 
         # Wait indefinitely until killed

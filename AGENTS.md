@@ -44,6 +44,16 @@ At the start of every task or session: read `.agents/intent.md` first, then
   speculative generality, no drive-by refactors.
 - **Docs stay true:** keep `docs/product/STATUS.md`, `docs/product/ROADMAP.md`, `docs/product/ASSUMPTIONS.md`,
   `docs/product/BACKLOG.md` accurate with every change.
+- **Ask for a visual check when a human can just look.** For changes a human
+  can verify by opening the app — styling, theming, layout, copy, any UI
+  behavior — do not spend turns trying to prove it with headless screenshots or
+  probe pages. Get the code building, then say "please look at it" and let the
+  human be the check. Reserve automation for things only a machine can confirm
+  (contrast ratios, OS-preference resolution, build and test suites), and say
+  plainly what you verified versus what they verified. Directed 2026-09-29 after
+  the dark-theme change, where a throwaway probe page and repeated
+  screenshot-flag guesswork produced nothing the human could not have confirmed
+  in ten seconds by opening http://127.0.0.1:3783.
 - **Push discipline:** fetch `origin/main` first; one consolidated commit
   per unit of work; verify the remote tree after pushing.
 - **Local-first:** long evals run on the home workstation's Ollama, never

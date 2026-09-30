@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChatInput } from "@/components/conversation/ChatInput";
 import { MessageList } from "@/components/conversation/MessageList";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useConversation } from "@/hooks/useConversation";
 
 interface ConversationPageProps {
@@ -41,6 +42,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
             >
               ← Feed
             </button>
+            <ThemeToggle />
           </div>
         </header>
         <main className="flex-1 lk-shell py-8">
@@ -71,11 +73,14 @@ export default function ConversationPage({ params }: ConversationPageProps) {
             </h1>
           </div>
 
-          {conversation?.seed_kind === "card" && conversation.seed_ref && (
-            <span className="lk-badge text-lk-secondary bg-lk-secondary/10 shrink-0">
-              Card seed
-            </span>
-          )}
+          <div className="flex items-center gap-2 shrink-0">
+            {conversation?.seed_kind === "card" && conversation.seed_ref && (
+              <span className="lk-badge text-lk-secondary bg-lk-secondary/10 shrink-0">
+                Card seed
+              </span>
+            )}
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 

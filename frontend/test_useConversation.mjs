@@ -4,14 +4,14 @@
 // MessageList throws on `messages.length`.
 //
 // Run: node --experimental-strip-types test_useConversation.mjs
-//   (needs Next.js :3000 running, which proxies the feed API)
+//   (needs `lifekit ui` running, which proxies the feed API)
 import assert from "node:assert";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
-const BASE = "http://127.0.0.1:3000";
+const BASE = process.env.LIFEKIT_UI ?? "http://127.0.0.1:3783";
 const requests = [];
 
 // Minimal React stub: record state writes and effects so we can drive the
