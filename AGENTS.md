@@ -54,6 +54,12 @@ At the start of every task or session: read `.agents/intent.md` first, then
   the dark-theme change, where a throwaway probe page and repeated
   screenshot-flag guesswork produced nothing the human could not have confirmed
   in ten seconds by opening http://127.0.0.1:3783.
+- **Use serena for code work.** Call `serena.initial_instructions` once per
+  session, then `read_memory` for `conventions` and `tech_stack` (and
+  `backend/core` / `frontend/core` for that side) before editing. Prefer
+  `find_symbol`, `find_referencing_symbols`, and `search_for_pattern` over
+  blind `read` + grep; use `replace_symbol_body` / `replace_content` for
+  edits that land inside a symbol.
 - **Push discipline:** fetch `origin/main` first; one consolidated commit
   per unit of work; verify the remote tree after pushing.
 - **Local-first:** long evals run on the home workstation's Ollama, never

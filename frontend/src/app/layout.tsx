@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { TabProvider } from "@/components/TabContext";
+import { Sidebar } from "@/components/Sidebar";
+import { TabContent } from "@/components/TabContent";
 
 export const metadata: Metadata = {
   title: "LifeKit",
@@ -21,8 +24,15 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-full flex flex-col bg-lk-bg text-lk-fg antialiased">
-        {children}
+      <body className="min-h-full bg-lk-bg text-lk-fg antialiased">
+        <TabProvider>
+          <div className="flex flex-row min-h-full">
+            <Sidebar />
+            <main className="flex-1 min-w-0">
+              <TabContent>{children}</TabContent>
+            </main>
+          </div>
+        </TabProvider>
       </body>
     </html>
   );

@@ -4,9 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ExerciseCard } from "@/components/feed/ExerciseCard";
 import { FadingIdeasCard } from "@/components/feed/FadingIdeasCard";
-import { MasterComposer } from "@/components/feed/MasterComposer";
 import { ResurfacedIdeaCard } from "@/components/feed/ResurfacedIdeaCard";
-import { ConversationsList } from "@/components/feed/ConversationsList";
 import { TodayHeader } from "@/components/feed/TodayHeader";
 import { useBriefing } from "@/hooks/useBriefing";
 
@@ -58,20 +56,6 @@ export default function FeedPage() {
     }
   };
 
-  const handleComposerSubmit = async (text: string) => {
-    setActionPending(true);
-    try {
-      const convId = await createConversation("composer", undefined, text.slice(0, 80));
-      router.push(`/c/${convId}`);
-    } finally {
-      setActionPending(false);
-    }
-  };
-
-  const handleOpenConversation = (id: string) => {
-    router.push(`/c/${id}`);
-  };
-
   const handleStillWithMe = async (remembered: boolean) => {
     if (!briefing) return;
     await signalIdea(briefing.resurfaced_idea.id, remembered);
@@ -79,7 +63,7 @@ export default function FeedPage() {
 
   if (loading) {
     return (
-      <div className="lk-shell py-8 pb-28">
+      <div className="lk-shell py-8">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-lk-muted/20 rounded-md w-1/3" />
           <div className="h-12 bg-lk-muted/20 rounded-md w-full" />
@@ -115,7 +99,7 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="lk-shell pb-28">
+    <div className="lk-shell">
       {/* 1. Today header + stage strip */}
       <TodayHeader
         book={briefing.book}
@@ -147,17 +131,6 @@ export default function FeedPage() {
         onTalkAbout={handleTalkAboutIdea}
       />
 
-      {/* 5. Conversations list */}
-      <ConversationsList
-        conversations={[]}
-        onOpen={handleOpenConversation}
-      />
-
-      {/* 6. Master composer */}
-      <MasterComposer
-        onSubmit={handleComposerSubmit}
-        submitting={actionPending}
-      />
     </div>
   );
 }
