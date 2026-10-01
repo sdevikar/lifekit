@@ -18,10 +18,23 @@ export function Sidebar() {
     localStorage.setItem(COLLAPSE_KEY, String(next));
   };
 
+  const toggle = (
+    <button
+      type="button"
+      onClick={toggleCollapse}
+      className="lk-btn lk-btn-sm lk-btn-ghost px-2"
+      aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+    >
+      {collapsed ? "→" : "←"}
+    </button>
+  );
+
   return (
     <aside className="flex flex-row shrink-0 sticky top-0 h-screen" suppressHydrationWarning>
       {/* Icon strip */}
       <div className="flex flex-col items-center w-14 border-r border-lk-border bg-lk-card py-3 gap-1">
+        {collapsed && <div className="flex justify-end w-full px-1">{toggle}</div>}
         <IconTab
           label="Feed"
           active={activeTab === "feed"}
@@ -44,31 +57,25 @@ export function Sidebar() {
           <ChatIcon />
         </IconTab>
         <div className="flex-1" />
-        <button
-          type="button"
-          onClick={toggleCollapse}
-          className="lk-btn lk-btn-sm lk-btn-ghost px-2"
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? "→" : "←"}
-        </button>
       </div>
       {/* Panel */}
       {!collapsed && (
         <div className="w-70 border-r border-lk-border bg-lk-card p-4 overflow-y-auto">
-          {activeTab === "feed" && (
-            <div>
-              <h2 className="text-sm font-semibold text-lk-fg">LifeKit</h2>
-              <p className="text-xs text-lk-muted mt-1">Today</p>
-            </div>
-          )}
-          {activeTab === "journal" && (
-            <p className="text-sm text-lk-muted">Coming soon.</p>
-          )}
-          {activeTab === "chat" && (
-            <p className="text-sm text-lk-muted">Coming soon.</p>
-          )}
+          <div className="flex items-start justify-between gap-2">
+            {activeTab === "feed" && (
+              <div>
+                <h2 className="text-sm font-semibold text-lk-fg">LifeKit</h2>
+                <p className="text-xs text-lk-muted mt-1">Today</p>
+              </div>
+            )}
+            {activeTab === "journal" && (
+              <p className="text-sm text-lk-muted">Coming soon.</p>
+            )}
+            {activeTab === "chat" && (
+              <p className="text-sm text-lk-muted">Coming soon.</p>
+            )}
+            <div className="shrink-0 -mt-1 -mr-1">{toggle}</div>
+          </div>
         </div>
       )}
     </aside>
