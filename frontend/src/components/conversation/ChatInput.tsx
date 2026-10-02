@@ -33,7 +33,9 @@ export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Ask your coach a question…"
+          placeholder={
+            disabled ? "Coach is thinking…" : "Ask your coach a question…"
+          }
           className="lk-input flex-1"
           disabled={disabled}
           maxLength={1000}
@@ -43,8 +45,13 @@ export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
           type="submit"
           disabled={!text.trim() || disabled}
           className="lk-btn"
+          aria-label="Send message"
         >
-          {disabled ? "Sending…" : <SendIcon />}
+          {disabled ? (
+            <span className="text-xs">Thinking…</span>
+          ) : (
+            <SendIcon />
+          )}
         </button>
       </div>
     </form>

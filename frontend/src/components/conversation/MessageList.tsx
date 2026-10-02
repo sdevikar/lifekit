@@ -6,9 +6,10 @@ import { Message } from "@/types/api";
 
 interface MessageListProps {
   messages: Message[];
+  pending?: boolean;
 }
 
-export function MessageList({ messages }: MessageListProps) {
+export function MessageList({ messages, pending = false }: MessageListProps) {
   if (messages.length === 0) {
     return (
       <div className="lk-shell py-12 text-center text-lk-muted">
@@ -63,6 +64,19 @@ export function MessageList({ messages }: MessageListProps) {
           </div>
         );
       })}
+
+      {pending && (
+        // Status, not content: no timestamp, muted, and it clears itself. Same
+        // bubble geometry as a coach message so the list does not shift.
+        <div className="flex flex-col items-start" role="status" aria-live="polite">
+          <span className="text-xs font-medium text-lk-secondary font-semibold mb-1 px-1">
+            Coach
+          </span>
+          <div className="max-w-[85%] rounded-lg border border-dashed border-lk-border px-3.5 py-3 text-sm text-lk-muted">
+            Thinking…
+          </div>
+        </div>
+      )}
     </div>
   );
 }

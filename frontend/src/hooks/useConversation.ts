@@ -39,24 +39,35 @@ export function useConversation(convId: string) {
   }, [load]);
 
   const sendMessage = async (text: string) => {
+    if (sending) return;
     setSending(true);
     setError(null);
+
+    // Append the user's message now, not after the await. The local model
+    // takes tens of seconds and an input that clears itself with no visible
+    // change reads as a hang. Filtered by object identity on rollback below —
+    // Message carries no id, so there is nothing else to match on.
+    const optimistic: Message = {
+      role: "user",
+      text,
+      created_at: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimistic]);
+
     try {
       const resp = await apiPost<{ reply: string }>(
         `/api/conversations/${convId}/messages`,
         { text },
       );
-
-      // Optimistically add the user message + coach reply
-      const now = new Date().toISOString();
       setMessages((prev) => [
         ...prev,
-        { role: "user", text, created_at: now },
-        { role: "coach", text: resp.reply, created_at: now },
+        { role: "coach", text: resp.reply, created_at: new Date().toISOString() },
       ]);
-
       return resp.reply;
     } catch (err) {
+      // The server replies before it persists, so a failure means nothing was
+      // stored. Drop the optimistic message — the transcript must match the DB.
+      setMessages((prev) => prev.filter((m) => m !== optimistic));
       setError(err instanceof Error ? err.message : "Failed to send message");
       throw err;
     } finally {

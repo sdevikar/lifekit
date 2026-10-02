@@ -93,7 +93,7 @@ export default function ConversationPage({ params }: ConversationPageProps) {
             </div>
           </div>
         )}
-        <MessageList messages={messages} />
+        <MessageList messages={messages} pending={sending} />
       </main>
 
       {/* Input */}
