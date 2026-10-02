@@ -78,25 +78,26 @@ hover target for that tab's "new item" action. Build the unit once, here.
 
 ## Design decisions
 
-Two were resolved by the human on 2026-10-01:
+All resolved by the human on 2026-10-01:
 
 - **Journal's `+`: shown and inert.** It appears on hover/focus like Chat's, and
   does nothing until the journal slices land. Accepted over hiding it, so the
-  nav row does not need a second visual state later. It must not be focusable
-  as if it worked — render it `aria-disabled` with a tooltip saying it is not
-  available yet, so it is visible without being a control that lies.
+  nav row does not need a second visual state later. `aria-disabled` with a
+  native `title` saying it is not available yet — there is no tooltip primitive
+  in the codebase (`Sidebar.tsx:27,116` and `ThemeToggle.tsx:59` all use native
+  `title`), and building one for a single string is not worth it.
+  **Not focusable** — the human's call, over a focusable-but-disabled button.
+  A keyboard user does not reach it; the tab order stays clean.
 - **The Feed panel's `LifeKit / Today` block is dropped** (`Sidebar.tsx:74-76`).
   Once nav rows carry labels, a title block repeating the app name above them
   is redundant chrome.
-
-Still the human's call, and a look rather than a guess:
-
-- **Widths.** Collapsed ≈ 56px, expanded ≈ 260px. The reference's panel is
-  proportionally wider than ours.
-- **Active-row treatment.** The reference uses a filled background on the active
-  row (`bg-lk-user-msg` is already the token for this, `IconTab:112`). Keep it.
-- **What the panel shows per tab.** Chat: the conversation list (slice a). Feed:
-  nothing. Journal and Settings: their placeholder until those tabs ship.
+- **Widths.** Collapsed `w-10` (40px, down from the current `w-14`), expanded
+  unchanged at `w-70` (280px) so conversation titles still fit on one line.
+- **Nav ordering is kept:** Feed / Journal / Chat at the top, Settings pinned to
+  the bottom by the existing `flex-1` spacer (`Sidebar.tsx:59`). This matches the
+  reference, which does the same.
+- **Active-row treatment:** keep `bg-lk-user-msg` (`IconTab:112`), already the
+  token for it.
 
 ## Capabilities
 
@@ -137,14 +138,15 @@ the user re-collapse on every load.
 6. Hovering the Chat row reveals a `+`; tabbing to it reveals it too, and it is
    operable by keyboard.
 7. The Chat and Journal rows reveal `+`; the Feed and Settings rows do not.
-   Journal's `+` is visibly present but inert — `aria-disabled`, not
-   focusable as a working control, with a tooltip saying it is not available
-   yet. Chat's creates a conversation (once slice a lands).
+   Journal's `+` is visibly present but inert — `aria-disabled`, not focusable,
+   with a native `title` saying it is not available yet. Chat's creates a
+   conversation (once slice a lands).
 8. The Feed tab's panel shows no `LifeKit / Today` block — the title is gone.
-9. Chat panel content (once slice a lands) renders below the nav rows in the
-   same column, and is hidden entirely when collapsed.
-10. Ask the human to eyeball collapsed and expanded in both light and dark
+9. Collapsed, the sidebar is `w-10`; expanded, `w-70`.
+10. Chat panel content (once slice a lands) renders below the nav rows in the
+    same column, and is hidden entirely when collapsed.
+11. Ask the human to eyeball collapsed and expanded in both light and dark
     themes — this is a visual change, so the check is theirs, not a screenshot.
-11. `uv run pytest tests/ -v` shows no new failures beyond `test_split_dyl_pdf`.
-12. `docs/product/STATUS.md` and `docs/product/KANBAN.md` updated in the same
+12. `uv run pytest tests/ -v` shows no new failures beyond `test_split_dyl_pdf`.
+13. `docs/product/STATUS.md` and `docs/product/KANBAN.md` updated in the same
     change.
