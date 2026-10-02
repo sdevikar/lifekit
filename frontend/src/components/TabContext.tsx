@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 
-type Tab = "feed" | "journal" | "chat";
+type Tab = "feed" | "journal" | "chat" | "settings";
 
 interface TabContextValue {
   activeTab: Tab;
