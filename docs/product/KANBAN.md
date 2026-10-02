@@ -11,21 +11,30 @@ Ordered by dependency, then by value-per-unit-work. Everything here is
 
 | # | Slice | Proposal | Depends On | Status |
 |---|-------|----------|------------|--------|
-| 1 | Chat Tab **a** — conversation list | `chat-tab-sidebar-a-conversation-list/` | — | Awaiting approval |
-| 2 | Chat Tab **b** — ChatView + selection | `chat-tab-sidebar-b-chatview/` | #1 | Awaiting approval |
-| 3 | Chat Tab **c** — entry points + deep links | `chat-tab-sidebar-c-entry-points/` | #1, #2 | Awaiting approval |
+| 1 | Sidebar nav model (single column) | `sidebar-nav-model/` | — | Awaiting approval |
+| 2 | Chat Tab **a** — conversation list | `chat-tab-sidebar-a-conversation-list/` | #1 | Awaiting approval |
+| 3 | Chat Tab **b** — ChatView + selection | `chat-tab-sidebar-b-chatview/` | #2 | Awaiting approval |
+| 4 | Chat Tab **c** — entry points + deep links | `chat-tab-sidebar-c-entry-points/` | #2, #3 | Awaiting approval |
 
 **Why this order.** `MessageList` and `ChatInput` now have their final shape —
 Markdown rendering and the pending state both landed 2026-10-01, so slice b
 introduces `ChatView.tsx` on top of components that are not about to change
-again. #1 → #2 → #3 is the build order within the Chat Tab: panel-only, then
-the main-area view, then the entry points and routing that depend on both.
+again. #1 comes first because the sidebar is currently **two columns** and
+prints icon labels in both states; a nav row — icon, label, and a trailing `+`
+that appears on hover — is the unit slice a needs for `New chat`, and the
+current layout cannot express it. #2 → #3 → #4 then follows the Chat Tab's
+natural order: panel-only, then the main-area view, then entry points and
+routing that depend on both.
 
-Umbrella rationale and two open questions (`MasterComposer` is dead code —
-wire, delete, or leave? and whether the list needs a collapse control) are at
-`openspec/changes/chat-tab-sidebar/proposal.md`. **The `MasterComposer` question
-is worth answering before #1** — if the composer comes back it belongs in the
-feed and pairs naturally with #3.
+Umbrella rationale for the Chat Tab is at
+`openspec/changes/chat-tab-sidebar/proposal.md`.
+
+**Two open questions worth answering before #1**, both in
+`sidebar-nav-model/proposal.md` and `chat-tab-sidebar/proposal.md`: Journal's
+`+` will have nothing to create until the journal slices land (recommend hiding
+it), and `MasterComposer` is dead code — wire it up, delete it, or leave it. The
+composer is the only path to an *unseeded* chat, so if it comes back it belongs
+in the feed and pairs naturally with #4.
 
 ## Deferred
 

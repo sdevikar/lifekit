@@ -6,6 +6,11 @@ shared state, no routing change. Followed by
 [`../chat-tab-sidebar-b-chatview/`](../chat-tab-sidebar-b-chatview/) and
 [`../chat-tab-sidebar-c-entry-points/`](../chat-tab-sidebar-c-entry-points/).
 
+**Depends on [`../sidebar-nav-model/`](../sidebar-nav-model/)**, which turns the
+sidebar into a single column of nav rows. This slice's `New chat` control lives
+on the Chat nav row, revealed on hover — which does not exist until that slice
+lands.
+
 ## Why
 
 The Chat tab is a placeholder. `Sidebar.tsx:81-83` renders
@@ -45,24 +50,21 @@ conversation is always one click away.
   No new component file. The list is not moving to `components/conversation/`
   in this slice — one move, when the panel and the main area both consume it.
 
-- **`frontend/src/components/Sidebar.tsx`** — the Chat panel branch renders a
-  `Chat` heading, the list, and a `New chat` button that POSTs a
-  `seed_kind: "composer"` conversation and calls `onOpen` with the new id.
+- **`frontend/src/components/Sidebar.tsx`** — the Chat tab's section renders the
+  conversation list. The `New chat` control is the trailing `+` on the **Chat
+  nav row**, which `../sidebar-nav-model/` already builds the hover/focus slot
+  for — this slice only supplies the handler: POST a `seed_kind: "composer"`
+  conversation, then `onOpen` the new id so it appears in the list immediately.
 
   `useBriefing.createConversation` (`:53-60`) already does this POST, but it
-  lives in a hook that fetches the briefing. The panel calls `apiPost` directly
-  from `useConversations` instead — one fetch, and the new conversation is
-  already in the list the hook just returned.
+  lives in a hook that fetches the briefing. The panel calls `apiPost` from
+  `useConversations` instead — one fetch, and the new conversation is already
+  in the list the hook just returned.
 
-  **Layout collision to resolve:** the panel's collapse toggle already sits in
-  the top-right of that row (`Sidebar.tsx:87`). The `+` cannot go there too.
-  Put it immediately after the `Chat` heading, revealed on hover/focus of the
-  row, or in the panel header as a second control. Whichever is chosen, the
-  collapse toggle must stay findable.
-
-- **`frontend/src/components/Sidebar.tsx`** — `New chat` must be reachable by
-  keyboard. A hover-only `+` is not a control; give it `aria-label` and make it
-  visible on `focus-visible` as well as `hover`.
+  This replaces the older draft's plan to put a hover-`+` on the panel title.
+  That was fighting the old two-column layout: the panel's collapse toggle
+  already owns that row's top-right (`Sidebar.tsx:87`), so the `+` had nowhere
+  to go. On a nav row there is a trailing slot by construction.
 
 ## Capabilities
 
@@ -93,8 +95,8 @@ conversation is always one click away.
 3. The list is empty-state clean when there are no conversations.
 4. `New chat` creates a conversation and it appears in the list without a
    reload.
-5. `New chat` is reachable and operable by keyboard alone; it has an
-   `aria-label`; the collapse toggle is still reachable and not overlapped.
+5. `New chat` is the trailing `+` on the Chat nav row, revealed on hover and on
+   keyboard focus, and operable by keyboard alone with an `aria-label`.
 6. The list renders in both light and dark themes — the panel background is
    `--lk-card` in both, so check that hover and border states read.
 7. The feed page is unchanged and still builds.

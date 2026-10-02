@@ -11,6 +11,11 @@
 > - [`../chat-tab-sidebar-c-entry-points/`](../chat-tab-sidebar-c-entry-points/)
 >   — feed entry points and `/c/[id]` deep links. The only routing slice.
 >
+> All three now depend on
+> [`../sidebar-nav-model/`](../sidebar-nav-model/), which replaces the
+> two-column sidebar with a single-column nav. Slice a's `New chat` is a
+> trailing `+` on a nav row, and that row does not exist until it lands.
+>
 > Two responsiveness problems found while writing this were split out first and
 > have since shipped (2026-10-01):
 >
@@ -49,10 +54,17 @@ badge) is wrong in a `w-70` panel and it has no other caller to preserve.
 
 It also changes the `MasterComposer` item below — see open questions.
 
-**2. The header already has a control in the corner.** This document asks for a
-hover-`+` on the Chat panel title. The panel's collapse toggle already occupies
-that row's top-right (`Sidebar.tsx:87`). Slice a resolves the collision rather
-than assuming a free corner.
+**2. The header already has a control in the corner — and the whole layout is
+wrong for it.** This document asks for a hover-`+` on the Chat panel title. The
+panel's collapse toggle already occupies that row's top-right (`Sidebar.tsx:87`),
+so there was nowhere to put it. Chasing that further showed the sidebar itself
+is the problem: it is two columns, and it prints icon labels in *both* states.
+A hover-`+` needs the icon, the label and the `+` to be one row, which the
+current layout cannot express.
+
+That is now [`../sidebar-nav-model/`](../sidebar-nav-model/) — a single column,
+icon-only when collapsed, icon + label rows when expanded — and all three slices
+depend on it.
 
 ## What Changes (across the three slices)
 
@@ -61,8 +73,9 @@ than assuming a free corner.
   Chat panel has no use for.
 - **`frontend/src/components/feed/ConversationsList.tsx`** (slice a) —
   repurposed into a panel-shaped list.
-- **`frontend/src/components/Sidebar.tsx`** (slices a, b) — Chat panel renders
-  the list, `New chat`, and wires selection.
+- **`frontend/src/components/Sidebar.tsx`** (slices a, b) — Chat tab renders the
+  conversation list, wires `New chat` to the nav row's trailing `+`, and wires
+  selection.
 - **`frontend/src/components/ChatView.tsx`** (new, slice b) — conversation view
   for the main area, composing `MessageList` + `ChatInput`. No `← Feed` button.
 - **`frontend/src/components/TabContext.tsx`** (slice b) — gains
@@ -115,5 +128,7 @@ proposes to skip it. Reverse that if the panel will genuinely overflow.
 ## Ordering
 
 Markdown rendering and pending feedback shipped first (independent, and both
-give `ChatView` final-shaped children). Then a → b → c: panel-only, then the
-main-area view, then the entry points and routing that depend on both.
+give `ChatView` final-shaped children). Then
+[`../sidebar-nav-model/`](../sidebar-nav-model/) — single-column nav, which the
+`+` affordance needs. Then a → b → c: panel-only, then the main-area view, then
+the entry points and routing that depend on both.
