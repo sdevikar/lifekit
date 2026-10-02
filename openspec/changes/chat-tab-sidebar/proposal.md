@@ -1,78 +1,119 @@
-# Chat Tab — Proposal
+# Chat Tab — Proposal (umbrella, split)
 
-> **Needs splitting before implementation.** This is a 7-file, 11-criterion
-> proposal; `AGENTS.md` asks for one independently testable slice each and warns
-> the harness chokes on large ones. Two problems found while reviewing it are
-> already split out and are independent of this work:
+> **Split into three independently shippable slices.** `AGENTS.md` asks for one
+> slice per proposal and warns the harness chokes on large ones. This file is the
+> rationale and the umbrella; the slices are what get implemented:
 >
-> - [`../chat-markdown-rendering/`](../chat-markdown-rendering/) — coach replies
->   emit Markdown that `MessageList.tsx:48` does not render.
-> - [`../chat-pending-feedback/`](../chat-pending-feedback/) — the user's own
->   message does not appear until the coach finishes replying.
+> - [`../chat-tab-sidebar-a-conversation-list/`](../chat-tab-sidebar-a-conversation-list/)
+>   — the list in the Chat panel. Panel-only.
+> - [`../chat-tab-sidebar-b-chatview/`](../chat-tab-sidebar-b-chatview/)
+>   — `selectedConvId` + `ChatView` in the main area.
+> - [`../chat-tab-sidebar-c-entry-points/`](../chat-tab-sidebar-c-entry-points/)
+>   — feed entry points and `/c/[id]` deep links. The only routing slice.
 >
-> Landing those two first makes this slice smaller and is real dogfood value on
-> its own. The remaining work here is still too big for one proposal — see the
-> "Suggested split" section at the bottom.
+> Two responsiveness problems found while writing this were split out first and
+> have since shipped (2026-10-01):
+>
+> - [`../../archives/chat-markdown-rendering/`](../../archives/chat-markdown-rendering/)
+>   — coach replies emitted Markdown that `MessageList.tsx` did not render.
+> - [`../../archives/chat-pending-feedback/`](../../archives/chat-pending-feedback/)
+>   — the user's own message did not appear until the coach finished replying.
+>
+> Landing those first left `MessageList` and `ChatInput` in their final shape,
+> which is why slice b is a move rather than a rewrite.
 
 ## Why
 
-Conversations are currently separate pages at `/c/[id]`, and the "Recent Conversations" card sits at the bottom of the feed. In the new sidebar layout, conversations belong in the Chat tab: a collapsible list of recent chats in the sidebar panel, with the active conversation shown in the main area. This matches the DeepTutor/ChatGPT pattern and makes conversations always one click away.
+Conversations are separate pages at `/c/[id]`, and the sidebar's Chat tab is a
+placeholder (`Sidebar.tsx:81-83`). Conversations belong in the Chat tab: a list
+in the panel, the active conversation in the main area. Makes them always one
+click away, and collapses two navigation models — sidebar tabs *and* route
+navigation — into one.
 
-## What Changes
+## Two findings that changed the plan
 
-- **`frontend/src/components/Sidebar.tsx`** — when Chat tab is active, the panel shows a **collapsible conversation list** (reuses the existing `ConversationsList` component, restyled for sidebar). A "New chat" button at the top creates a new conversation via the composer. Hovering over the "Chat" panel title shows a `+` icon to start a new chat.
+Both were found while writing the slices, and both contradict this document as
+originally drafted.
 
-- **`frontend/src/components/ChatView.tsx`** (new, `"use client"`) — the conversation view for the main area:
-  - Renders `MessageList` + `ChatInput` (reuses existing components).
-  - Shows conversation title in a header bar (no back button — navigation is via the sidebar Feed tab).
-  - Handles loading and error states (reuses patterns from `app/c/[id]/page.tsx`).
+**1. `ConversationsList` and `MasterComposer` are dead code.** Neither is
+imported anywhere. `e6da69c` (Sidebar UI overhaul) removed both from
+`feed/page.tsx`, and the `ConversationsList` call it removed was passing a
+hardcoded `conversations={[]}` — the feed list had no data behind it even then.
+So `GET /api/conversations` (`server.py:354-365`) is implemented and tested and
+nothing calls it; there is currently no surface anywhere that lists a
+conversation.
 
-- **`frontend/src/hooks/useConversation.ts`** — unchanged. `ChatView` calls it with the selected conversation ID.
+This changes slice a: the list component is *repurposed* rather than "restyled
+for the sidebar", because its feed-shaped chrome (`lk-card` wrapper, `Coaching`
+badge) is wrong in a `w-70` panel and it has no other caller to preserve.
 
-- **`frontend/src/hooks/useBriefing.ts`** — add a `listConversations` function that calls `GET /api/conversations` and returns the list. Used by the sidebar panel.
+It also changes the `MasterComposer` item below — see open questions.
 
-- **`frontend/src/app/feed/page.tsx`** — the "Talk about this" button handler changes: instead of `router.push(/c/${convId})`, it calls `setActiveTab("chat")` and sets the selected conversation ID. The new conversation opens in the Chat tab's main area.
+**2. The header already has a control in the corner.** This document asks for a
+hover-`+` on the Chat panel title. The panel's collapse toggle already occupies
+that row's top-right (`Sidebar.tsx:87`). Slice a resolves the collision rather
+than assuming a free corner.
 
-- **`frontend/src/app/c/[id]/page.tsx`** — becomes a thin wrapper: on mount, switches to Chat tab and sets the selected conversation ID. Preserves deep-linking (pasting a `/c/[id]` URL opens that conversation in the Chat tab). The `<- Feed` button is removed; navigation back to feed is via the sidebar Feed tab icon.
+## What Changes (across the three slices)
 
-- **`frontend/src/components/MasterComposer.tsx`** — restyled as a **floating input** (centered, pill-shaped, elevated with shadow) instead of a full-width fixed bar. Stays in the feed's main area.
-
-- **Selected conversation state** — lives in `TabContext` or a separate `ChatContext`: `{ selectedConvId, setSelectedConvId }`. The sidebar sets it, `ChatView` reads it.
+- **`frontend/src/hooks/useConversations.ts`** (new, slice a) — fetches the
+  conversation list. Not added to `useBriefing`, which fetches feed data the
+  Chat panel has no use for.
+- **`frontend/src/components/feed/ConversationsList.tsx`** (slice a) —
+  repurposed into a panel-shaped list.
+- **`frontend/src/components/Sidebar.tsx`** (slices a, b) — Chat panel renders
+  the list, `New chat`, and wires selection.
+- **`frontend/src/components/ChatView.tsx`** (new, slice b) — conversation view
+  for the main area, composing `MessageList` + `ChatInput`. No `← Feed` button.
+- **`frontend/src/components/TabContext.tsx`** (slice b) — gains
+  `selectedConvId`. A second `ChatContext` was considered and rejected.
+- **`frontend/src/components/TabContent.tsx`** (slice b) — renders `ChatView`
+  for the Chat tab.
+- **`frontend/src/app/feed/page.tsx`** (slice c) — "Talk about this" switches
+  tabs instead of routing.
+- **`frontend/src/app/c/[id]/page.tsx`** (slice c) — becomes a deep-link
+  wrapper; `← Feed` removed.
+- **`frontend/src/hooks/useConversation.ts`** — **unchanged across all three
+  slices.** Markdown rendering and pending feedback already made it
+  conversation-view-ready.
 
 ## Capabilities
 
 ### Modified Capabilities
 
-- `ui-feed-conversations`: chat navigation. Conversations are listed in the Chat tab's sidebar panel. Clicking one opens it in the main area. "Talk about this" on feed cards creates a conversation and switches to the Chat tab. Deep-linking to `/c/[id]` auto-switches to the Chat tab. Navigation back to feed is via the sidebar Feed tab icon (no `<- Feed` button).
+- `ui-feed-conversations`: conversations are listed in the Chat tab's sidebar
+  panel; selecting one opens it in the main area; "Talk about this" on a feed
+  card creates a conversation and opens it in the Chat tab without leaving the
+  feed; `/c/[id]` deep links open in the Chat tab; returning to the feed is via
+  the sidebar Feed icon.
 
 ## Not In Scope
 
-- Journal functionality (slice 3).
-- Books tab (deferred).
-- Conversation search or filtering (list is short, no need yet).
-- Conversation deletion or renaming (not in current API).
+- Journal functionality — the journal slices are separate and gated on an
+  `intent.md` amendment.
+- Books tab — deferred; single-book dogfood.
+- Conversation search, filtering, renaming, deletion — not in the API, and the
+  list is short.
+- Collapsing the conversation list — see slice a's open question.
+- Chat token streaming — still unspecced. See KANBAN "Future (deferred)".
 
-## Done Criterion
+## Open questions for the human
 
-1. `npm run build` and `npm run lint` pass in `frontend/`.
-2. Clicking the Chat icon in the sidebar shows the conversation list in the panel.
-3. Clicking a conversation opens it in the main area with messages and input.
-4. "Talk about this" on a feed card creates a new conversation and switches to the Chat tab with that conversation open.
-5. Pasting a `/c/[id]` URL in a new tab opens that conversation in the Chat tab.
-6. The MasterComposer is restyled as a floating input in the feed.
-7. The conversation list in the sidebar shows conversation titles and dates (reuses existing `ConversationsList` styling).
-8. Hovering over the "Chat" panel title shows a `+` icon to start a new chat.
-9. The `<- Feed` button is removed from the conversation view; navigation back to feed is via the sidebar Feed tab icon.
-10. `uv run pytest` shows no new failures beyond the known `test_split_dyl_pdf` (BACKLOG P2).
-11. `docs/product/STATUS.md` updated in the same change.
+**`MasterComposer` is dead code.** This document originally asked for it to be
+restyled as a floating pill in the feed. It is not rendered anywhere, so that is
+polish on dead code. Three options: wire it up (it is the only path to an
+*unseeded* chat — "New chat" in slice a creates a `composer`-seeded
+conversation, but nothing lets you type the first message without a card), delete
+it, or leave it. **Recommend deciding this before slice a**, because if the
+composer comes back it belongs in the feed's main area and is a natural pair
+with slice c's entry-point work.
 
-## Suggested split (to be approved, not yet written up)
+**Collapsible list.** This document asks for a collapsible conversation list.
+On a list of a handful of items that is state and chrome for nothing. Slice a
+proposes to skip it. Reverse that if the panel will genuinely overflow.
 
-| Slice | Scope | Why it stands alone |
-|-------|-------|--------------------|
-| a — conversation list | `useBriefing.listConversations` + `ConversationsList` in the Chat panel, plus "New chat" / hover-`+`. Panel-only; main area still says "Coming soon." | No main-area component, no new context, no routing change. Testable by looking at the panel. |
-| b — ChatView + selection | `selectedConvId` in `TabContext`, new `ChatView.tsx`, `TabContent` renders it. | Self-contained: nothing outside the chat path changes. |
-| c — entry points | "Talk about this" switches tabs instead of routing; `/c/[id]` becomes the deep-link wrapper; the `← Feed` button goes. | Only slice that touches feed pages and routing. |
+## Ordering
 
-Ordering: markdown rendering and pending feedback first (independent), then a,
-b, c.
+Markdown rendering and pending feedback shipped first (independent, and both
+give `ChatView` final-shaped children). Then a → b → c: panel-only, then the
+main-area view, then the entry points and routing that depend on both.

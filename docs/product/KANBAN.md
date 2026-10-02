@@ -11,18 +11,21 @@ Ordered by dependency, then by value-per-unit-work. Everything here is
 
 | # | Slice | Proposal | Depends On | Status |
 |---|-------|----------|------------|--------|
-| 1 | Chat Tab **a** — conversation list | `openspec/changes/chat-tab-sidebar/` (split not yet written) | — | Awaiting approval |
-| 2 | Chat Tab **b** — ChatView + selection | same | #1 | Awaiting approval |
-| 3 | Chat Tab **c** — entry points + deep links | same | #1, #2 | Awaiting approval |
+| 1 | Chat Tab **a** — conversation list | `chat-tab-sidebar-a-conversation-list/` | — | Awaiting approval |
+| 2 | Chat Tab **b** — ChatView + selection | `chat-tab-sidebar-b-chatview/` | #1 | Awaiting approval |
+| 3 | Chat Tab **c** — entry points + deep links | `chat-tab-sidebar-c-entry-points/` | #1, #2 | Awaiting approval |
 
 **Why this order.** `MessageList` and `ChatInput` now have their final shape —
-Markdown rendering (2026-10-01) and the pending state both landed, and the
-Chat Tab **b** slice introduces `ChatView.tsx` on top of them. #1 → #2 → #3 is
-the natural build order within the Chat Tab: panel-only, then the main-area
-view, then the feed-page and routing changes that depend on both.
+Markdown rendering and the pending state both landed 2026-10-01, so slice b
+introduces `ChatView.tsx` on top of components that are not about to change
+again. #1 → #2 → #3 is the build order within the Chat Tab: panel-only, then
+the main-area view, then the entry points and routing that depend on both.
 
-The a/b/c proposals are **not written yet** — the split is documented at the
-bottom of `chat-tab-sidebar/proposal.md`. Write them before starting #1.
+Umbrella rationale and two open questions (`MasterComposer` is dead code —
+wire, delete, or leave? and whether the list needs a collapse control) are at
+`openspec/changes/chat-tab-sidebar/proposal.md`. **The `MasterComposer` question
+is worth answering before #1** — if the composer comes back it belongs in the
+feed and pairs naturally with #3.
 
 ## Deferred
 
