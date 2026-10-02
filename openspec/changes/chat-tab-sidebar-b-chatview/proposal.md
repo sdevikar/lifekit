@@ -44,8 +44,10 @@ duplicates what the sidebar already shows.
   `activeTab === "chat"` instead of `Coming soon.`. Journal and settings keep
   their placeholder.
 
-- **`frontend/src/components/Sidebar.tsx`** — wire the `onOpen` handler left
-  dangling in slice a to `setSelectedConvId(id)`. Delete the `TODO`.
+- **`frontend/src/components/Sidebar.tsx`** — `ConversationsList` gets its
+  `onOpen(id)` prop back, wired to `setSelectedConvId(id)`, and its rows become
+  `<button>`. Slice a shipped them as non-interactive content precisely because
+  there was nothing to open yet; this is the slice that gives them a purpose.
 
 - **`app/c/[id]/page.tsx`** — **untouched in this slice.** It keeps working as a
   standalone page until slice c converts it to a deep-link wrapper. Deleting the

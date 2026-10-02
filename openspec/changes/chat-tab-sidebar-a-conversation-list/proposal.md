@@ -27,9 +27,13 @@ conversation is always one click away.
 ## What Changes
 
 - **`frontend/src/hooks/useConversations.ts`** (new) — fetches
-  `GET /api/conversations` and exposes `{ conversations, loading, error, refresh }`.
-  It re-fetches when the Chat tab becomes active, so a conversation created
-  elsewhere is there the next time the user opens the panel.
+  `GET /api/conversations` and exposes `{ conversations, loading, error }`.
+
+  No `refresh` and no "refetch when the Chat tab activates" logic. The Chat
+  panel is behind an `activeTab === "chat"` conditional (`Sidebar.tsx:81`), so
+  it unmounts when the user leaves the tab and a plain mount-effect already
+  refetches when they come back. A `refresh` in the return would have exactly
+  one caller — `New chat`, which already gets the new id back and appends it.
 
   Deliberately **not** added to `useBriefing`. That hook fetches
   `/api/briefing/today`; the Chat panel needs no briefing, and mounting it
@@ -40,8 +44,8 @@ conversation is always one click away.
   extend. This component is **currently unreferenced** (nothing imports it since
   `e6da69c`), and its chrome is feed-shaped: an `lk-card` wrapper
   (`ConversationsList.tsx:14`) and a `Coaching` badge (`:19`) that are wrong in a
-  `w-70` sidebar panel (`Sidebar.tsx:70`). Strip both, keep the row markup and
-  the `onOpen(id)` contract, add an empty state.
+  `w-70` sidebar panel (`Sidebar.tsx:70`). Strip both, keep the row markup, add
+  an empty state, and drop the `onOpen` prop.
 
   Repurposing beats a `variant` prop: there is exactly one caller after this
   slice, and a variant flag with one value is a boolean pretending to be a
@@ -54,7 +58,7 @@ conversation is always one click away.
   conversation list. The `New chat` control is the trailing `+` on the **Chat
   nav row**, which `../sidebar-nav-model/` already builds the hover/focus slot
   for — this slice only supplies the handler: POST a `seed_kind: "composer"`
-  conversation, then `onOpen` the new id so it appears in the list immediately.
+  conversation, append it to the list, and select it.
 
   `useBriefing.createConversation` (`:53-60`) already does this POST, but it
   lives in a hook that fetches the briefing. The panel calls `apiPost` from
@@ -65,6 +69,18 @@ conversation is always one click away.
   That was fighting the old two-column layout: the panel's collapse toggle
   already owns that row's top-right (`Sidebar.tsx:87`), so the `+` had nowhere
   to go. On a nav row there is a trailing slot by construction.
+
+- **`frontend/src/components/feed/ConversationsList.tsx`** — rows render as
+  **non-interactive content in this slice**, not as `<button>` with a dead
+  `onClick`. Slice b turns them into buttons when there is something to open.
+
+  An earlier draft shipped a `<button>` whose `onClick` was a no-op behind a
+  `TODO`. That is worse than not shipping the click: the user clicks a
+  conversation, nothing happens, and they cannot tell whether the click missed
+  or the feature is unfinished. The alternative of wiring `onClick` to
+  `setActiveTab("chat")` is worse still — the row already lives inside the Chat
+  panel, so that button would set the tab it is already on. A row that reads as
+  a row is honest; a button that does nothing is a lie.
 
 ## Capabilities
 
@@ -78,10 +94,9 @@ conversation is always one click away.
 - **Collapsing the list.** The parent proposal asks for a collapsible list; on
   a list of a handful of items a collapse control is state and chrome for
   nothing. Add it when the list is demonstrably taller than the panel.
-- **Opening a conversation.** This slice renders the list; clicking a row has
-  nowhere to go until slice b introduces `selectedConvId`. The `onOpen` handler
-  is wired to a no-op with a `TODO` naming slice b — the panel is not
-  shippable as a *destination* yet, only as a surface.
+- **Opening a conversation.** This slice renders the list; rows are not clickable
+  until slice b introduces `selectedConvId`. Slice b adds `onOpen(id)` back and
+  wraps the rows in `<button>`.
 - **Search, filtering, renaming, deletion.** Not in the API; list is short.
 - Anything in the main area, on the feed, or in routing — slices b and c.
 - Restyling `MasterComposer` — see the parent proposal's open questions.
@@ -97,8 +112,11 @@ conversation is always one click away.
    reload.
 5. `New chat` is the trailing `+` on the Chat nav row, revealed on hover and on
    keyboard focus, and operable by keyboard alone with an `aria-label`.
-6. The list renders in both light and dark themes — the panel background is
+6. Conversation rows are **not** focusable and show no pointer cursor — they
+   read as content, not as controls that are broken. Slice b makes them
+   buttons.
+7. The list renders in both light and dark themes — the panel background is
    `--lk-card` in both, so check that hover and border states read.
-7. The feed page is unchanged and still builds.
-8. `uv run pytest tests/ -v` shows no new failures beyond `test_split_dyl_pdf`.
-9. `docs/product/STATUS.md` updated in the same change.
+8. The feed page is unchanged and still builds.
+9. `uv run pytest tests/ -v` shows no new failures beyond `test_split_dyl_pdf`.
+10. `docs/product/STATUS.md` updated in the same change.
