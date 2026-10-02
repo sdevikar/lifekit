@@ -1,9 +1,18 @@
 "use client";
 
 import { useState, ReactNode } from "react";
-import { useTab } from "./TabContext";
+import { useTab, Tab } from "./TabContext";
 
 const COLLAPSE_KEY = "lifekit-sidebar-collapsed";
+
+// Tabs that own a list of items get a trailing "+" on hover/focus. Chat's
+// becomes a real control in chat-tab-a; Journal's is inert until the journal
+// slices land, which is why it is `aria-disabled` and not focusable rather
+// than a second button pretending to work.
+const TRAILING_PLUS: Partial<Record<Tab, { inert: boolean }>> = {
+  chat: { inert: false },
+  journal: { inert: true },
+};
 
 export function Sidebar() {
   const { activeTab, setActiveTab } = useTab();
@@ -31,93 +40,135 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="flex flex-row shrink-0 sticky top-0 h-screen" suppressHydrationWarning>
-      {/* Icon strip */}
-      <div className="flex flex-col items-center w-14 border-r border-lk-border bg-lk-card py-3 gap-1">
-        {collapsed && <div className="flex justify-end w-full px-1">{toggle}</div>}
-        <IconTab
+    <aside
+      className={`flex flex-col shrink-0 sticky top-0 h-screen border-r border-lk-border bg-lk-card ${
+        collapsed ? "w-10" : "w-70"
+      }`}
+      suppressHydrationWarning
+    >
+      {/* Header — collapse toggle sits top-right expanded, alone when collapsed. */}
+      <div className="flex items-center justify-between gap-2 px-2 py-3 shrink-0">
+        {collapsed ? (
+          <div className="flex justify-center w-full">{toggle}</div>
+        ) : (
+          toggle
+        )}
+      </div>
+
+      <nav className="flex flex-col gap-0.5 px-2 shrink-0">
+        <NavRow
+          tab="feed"
           label="Feed"
           active={activeTab === "feed"}
+          collapsed={collapsed}
           onClick={() => setActiveTab("feed")}
         >
           <FeedIcon />
-        </IconTab>
-        <IconTab
+        </NavRow>
+        <NavRow
+          tab="journal"
           label="Journal"
           active={activeTab === "journal"}
+          collapsed={collapsed}
           onClick={() => setActiveTab("journal")}
         >
           <JournalIcon />
-        </IconTab>
-        <IconTab
+        </NavRow>
+        <NavRow
+          tab="chat"
           label="Chat"
           active={activeTab === "chat"}
+          collapsed={collapsed}
           onClick={() => setActiveTab("chat")}
         >
           <ChatIcon />
-        </IconTab>
-        <div className="flex-1" />
-        <IconTab
+        </NavRow>
+        <div className="flex-1 min-h-4" />
+        <NavRow
+          tab="settings"
           label="Settings"
           active={activeTab === "settings"}
+          collapsed={collapsed}
           onClick={() => setActiveTab("settings")}
         >
           <SettingsIcon />
-        </IconTab>
-      </div>
-      {/* Panel */}
+        </NavRow>
+      </nav>
+
+      {/* Tab content — below the rows, same column, hidden entirely collapsed. */}
       {!collapsed && (
-        <div className="w-70 border-r border-lk-border bg-lk-card p-4 overflow-y-auto">
-          <div className="flex items-start justify-between gap-2">
-            {activeTab === "feed" && (
-              <div>
-                <h2 className="text-sm font-semibold text-lk-fg">LifeKit</h2>
-                <p className="text-xs text-lk-muted mt-1">Today</p>
-              </div>
-            )}
-            {activeTab === "journal" && (
-              <p className="text-sm text-lk-muted">Coming soon.</p>
-            )}
-            {activeTab === "chat" && (
-              <p className="text-sm text-lk-muted">Coming soon.</p>
-            )}
-            {activeTab === "settings" && (
-              <p className="text-sm text-lk-muted">Coming soon.</p>
-            )}
-            <div className="shrink-0 -mt-1 -mr-1">{toggle}</div>
-          </div>
+        <div className="flex-1 overflow-y-auto px-2 pb-4">
+          {activeTab === "chat" && (
+            <p className="text-sm text-lk-muted">Coming soon.</p>
+          )}
+          {activeTab === "journal" && (
+            <p className="text-sm text-lk-muted">Coming soon.</p>
+          )}
+          {activeTab === "settings" && (
+            <p className="text-sm text-lk-muted">Coming soon.</p>
+          )}
         </div>
       )}
     </aside>
   );
 }
 
-function IconTab({
+function NavRow({
+  tab,
   label,
   active,
+  collapsed,
   onClick,
   children,
 }: {
+  tab: Tab;
   label: string;
   active: boolean;
+  collapsed: boolean;
   onClick: () => void;
   children: ReactNode;
 }) {
+  const plus = TRAILING_PLUS[tab];
+  const newLabel = `New ${tab === "journal" ? "entry" : "chat"}`;
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex flex-col items-center gap-1 w-12 py-2 rounded-md text-xs ${
-        active
-          ? "bg-lk-user-msg text-lk-fg"
-          : "text-lk-muted hover:text-lk-fg hover:bg-lk-user-msg"
-      }`}
-      aria-label={label}
-      title={label}
-    >
-      {children}
-      <span className="text-[10px]">{label}</span>
-    </button>
+    <div className="group relative flex items-center">
+      <button
+        type="button"
+        onClick={onClick}
+        className={`flex items-center gap-2.5 w-full rounded-md text-sm transition-colors ${
+          collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
+        } ${
+          active
+            ? "bg-lk-user-msg text-lk-fg"
+            : "text-lk-muted hover:text-lk-fg hover:bg-lk-user-msg"
+        }`}
+        aria-label={label}
+        title={label}
+      >
+        <span className="shrink-0 flex items-center">{children}</span>
+        {/* Not rendered when collapsed — no shrunk or clipped labels. The
+            button keeps aria-label and title, so the strip stays labelled. */}
+        {!collapsed && <span className="truncate">{label}</span>}
+      </button>
+
+      {plus && !collapsed && (
+        <button
+          type="button"
+          disabled={plus.inert}
+          aria-disabled={plus.inert || undefined}
+          aria-label={plus.inert ? `${newLabel} (not available yet)` : newLabel}
+          title={plus.inert ? "Not available yet" : newLabel}
+          className={`absolute right-2 flex items-center justify-center w-5 h-5 rounded text-lk-muted hover:text-lk-fg hover:bg-lk-border disabled:cursor-not-allowed disabled:opacity-40 ${
+            // Hidden by default, revealed on row hover or keyboard focus
+            // within it. focus-visible makes this reachable without a mouse.
+            "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+          }`}
+        >
+          <PlusIcon />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -192,6 +243,25 @@ function SettingsIcon() {
     >
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
   );
 }

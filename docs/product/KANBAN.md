@@ -11,33 +11,28 @@ Ordered by dependency, then by value-per-unit-work. Everything here is
 
 | # | Slice | Proposal | Depends On | Status |
 |---|-------|----------|------------|--------|
-| 1 | Sidebar nav model (single column) | `sidebar-nav-model/` | — | Awaiting approval |
-| 2 | Chat Tab **a** — conversation list | `chat-tab-sidebar-a-conversation-list/` | #1 | Awaiting approval |
-| 3 | Chat Tab **b** — ChatView + selection | `chat-tab-sidebar-b-chatview/` | #2 | Awaiting approval |
-| 4 | Chat Tab **c** — entry points + deep links | `chat-tab-sidebar-c-entry-points/` | #2, #3 | Awaiting approval |
+| 1 | Chat Tab **a** — conversation list | `chat-tab-sidebar-a-conversation-list/` | — | Awaiting approval |
+| 2 | Chat Tab **b** — ChatView + selection | `chat-tab-sidebar-b-chatview/` | #1 | Awaiting approval |
+| 3 | Chat Tab **c** — entry points + deep links | `chat-tab-sidebar-c-entry-points/` | #1, #2 | Awaiting approval |
 
-**Why this order.** `MessageList` and `ChatInput` now have their final shape —
-Markdown rendering and the pending state both landed 2026-10-01, so slice b
-introduces `ChatView.tsx` on top of components that are not about to change
-again. #1 comes first because the sidebar is currently **two columns** and
-prints icon labels in both states; a nav row — icon, label, and a trailing `+`
-that appears on hover — is the unit slice a needs for `New chat`, and the
-current layout cannot express it. #2 → #3 → #4 then follows the Chat Tab's
-natural order: panel-only, then the main-area view, then entry points and
-routing that depend on both.
+**Why this order.** The sidebar nav model shipped 2026-10-01, so the nav row —
+icon, label, and a trailing `+` that appears on hover — now exists and slice a
+can hang `New chat` on it. `MessageList` and `ChatInput` also have their final
+shape, so slice b introduces `ChatView.tsx` on top of components that are not
+about to change again. #1 → #2 → #3 is the Chat Tab's natural order: panel-only,
+then the main-area view, then entry points and routing that depend on both.
 
 Umbrella rationale for the Chat Tab is at
 `openspec/changes/chat-tab-sidebar/proposal.md`.
 
-**Two open questions remain**, both in `chat-tab-sidebar/proposal.md`:
+**One open question remains**, in `chat-tab-sidebar/proposal.md`:
 `MasterComposer` is dead code — wire it up, delete it, or leave it. The composer
 is the only path to an *unseeded* chat, so if it comes back it belongs in the
-feed and pairs naturally with #4.
+feed and pairs naturally with #3.
 
-Resolved 2026-10-01 in `sidebar-nav-model`: Journal's `+` is **shown and
-inert** (`aria-disabled` with a tooltip, not a working control) until the
-journal slices land, and the Feed panel's `LifeKit / Today` block is
-**dropped** as redundant once nav rows carry labels.
+Resolved 2026-10-01 in `sidebar-nav-model`: collapsed `w-10` / expanded `w-70`;
+Journal's `+` shown and inert (not focusable); Feed's `LifeKit / Today` title
+dropped; nav ordering kept.
 
 ## Deferred
 
@@ -68,3 +63,4 @@ Journal slices are sequenced A → B → C and gated on a human-approved
 | Settings icon + lucide panel icons | 2026-10-01 | Gear tab at strip bottom (placeholder page); collapse/expand now `panel-left-open`/`panel-left-close`. |
 | Chat markdown rendering | 2026-10-01 | `react-markdown` + `remark-gfm` for coach replies, hand-rolled `.lk-prose` against the existing tokens; prompt now asks for Markdown. |
 | Chat pending feedback | 2026-10-01 | Optimistic user message before the await + a dashed "Thinking…" status row. Client-state only — the server's reply-before-persist ordering is what makes the rollback correct and did not move. |
+| Sidebar nav model | 2026-10-01 | Two columns → one. `IconTab` → `NavRow` with an optional trailing `+` on hover/focus; Chat and Journal only, Journal's inert. Collapsed `w-10`, expanded `w-70`. |
