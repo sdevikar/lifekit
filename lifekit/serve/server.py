@@ -243,7 +243,9 @@ def _coach_reply(c, book_id, conv_id, message_text):
         "content": (
             f"You are LifeKit's grounded coach for the book "
             f"'{book_id}'. Answer the user's question using only the book "
-            f"context below. Keep replies concise and actionable."
+            f"context below. Keep replies concise and actionable. "
+            f"Answer in Markdown: bulleted lists for steps or options, "
+            f"**bold** for the key term, short paragraphs."
             f"\n\nBook context:\n{context}"
         ),
     }

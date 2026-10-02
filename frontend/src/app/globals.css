@@ -225,3 +225,145 @@ body {
   border-color: var(--lk-fg);
   box-shadow: 0 0 0 1px var(--lk-fg);
 }
+
+/* Coach prose — rendered Markdown inside a message bubble.
+   Hand-rolled against the --lk-* tokens rather than @tailwindcss/typography:
+   the surface is six elements and a plugin's `prose` vocabulary would fight
+   the existing token set. Colors are light-dark() pairs, so dark mode needs
+   no rules here. */
+.lk-prose {
+  overflow-wrap: anywhere;
+}
+
+.lk-prose > *:first-child {
+  margin-top: 0;
+}
+
+.lk-prose > *:last-child {
+  margin-bottom: 0;
+}
+
+/* No white-space: pre-wrap — Markdown already decides where breaks belong,
+   and pre-wrap would double them (a soft line break would render literally). */
+.lk-prose p {
+  margin: 0 0 0.6em;
+}
+
+.lk-prose ul,
+.lk-prose ol {
+  margin: 0 0 0.6em;
+  padding-left: 1.25em;
+}
+
+.lk-prose ul {
+  list-style: disc;
+}
+
+.lk-prose ol {
+  list-style: decimal;
+}
+
+.lk-prose li {
+  margin: 0.15em 0;
+}
+
+.lk-prose li > ul,
+.lk-prose li > ol {
+  margin: 0.15em 0 0.15em;
+}
+
+.lk-prose strong {
+  font-weight: 600;
+  color: var(--lk-fg);
+}
+
+.lk-prose em {
+  font-style: italic;
+}
+
+.lk-prose h1,
+.lk-prose h2,
+.lk-prose h3,
+.lk-prose h4,
+.lk-prose h5,
+.lk-prose h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0.8em 0 0.4em;
+}
+
+.lk-prose h1 { font-size: 1.2em; }
+.lk-prose h2 { font-size: 1.1em; }
+.lk-prose h3,
+.lk-prose h4,
+.lk-prose h5,
+.lk-prose h6 { font-size: 1em; }
+
+.lk-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--lk-badge-bg);
+  border: 1px solid var(--lk-border);
+  border-radius: var(--radius-sm);
+  padding: 0.05em 0.3em;
+}
+
+.lk-prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  line-height: 1.5;
+  background: var(--lk-bg);
+  border: 1px solid var(--lk-border);
+  border-radius: var(--radius-md);
+  padding: 0.75em;
+  margin: 0 0 0.6em;
+  overflow-x: auto;
+}
+
+/* Inside a pre the inline-code chrome would double up. */
+.lk-prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1em;
+}
+
+.lk-prose blockquote {
+  margin: 0 0 0.6em;
+  padding-left: 0.9em;
+  border-left: 2px solid var(--lk-brand-clay);
+  color: var(--lk-secondary);
+  font-style: italic;
+}
+
+.lk-prose a {
+  color: var(--lk-accent-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lk-prose hr {
+  border: none;
+  border-top: 1px solid var(--lk-border);
+  margin: 0.9em 0;
+}
+
+.lk-prose table {
+  border-collapse: collapse;
+  margin: 0 0 0.6em;
+  font-size: 0.95em;
+  display: block;
+  overflow-x: auto;
+}
+
+.lk-prose th,
+.lk-prose td {
+  border: 1px solid var(--lk-border);
+  padding: 0.3em 0.6em;
+  text-align: left;
+}
+
+.lk-prose th {
+  background: var(--lk-badge-bg);
+  font-weight: 600;
+}

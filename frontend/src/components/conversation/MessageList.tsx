@@ -1,3 +1,7 @@
+"use client";
+
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Message } from "@/types/api";
 
 interface MessageListProps {
@@ -45,7 +49,16 @@ export function MessageList({ messages }: MessageListProps) {
                   : "bg-lk-user-msg border border-lk-border/60 text-lk-fg"
               }`}
             >
-              <p className="whitespace-pre-wrap">{msg.text}</p>
+              {isCoach ? (
+                // react-markdown escapes by default — no dangerouslySetInnerHTML,
+                // so a reply containing `<script>` renders as visible text.
+                <div className="lk-prose">
+                  <Markdown remarkPlugins={[remarkGfm]}>{msg.text}</Markdown>
+                </div>
+              ) : (
+                // User text is typed by the human and is never interpreted.
+                <p className="whitespace-pre-wrap">{msg.text}</p>
+              )}
             </div>
           </div>
         );
