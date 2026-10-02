@@ -18,7 +18,7 @@ decisions.
 | Plan forge | `python -m lifekit.plan_forge.forge --intent "..."` | Or `make forge INTENT="..."`. |
 | Init DB | `python -m lifekit.db.schema` or `init_db()` | `~/.lifekit/lifekit.db` (`$LIFEKIT_DB`). Idempotent + migrates. |
 | LLM provider config | `lifekit config` | Ollama default + OpenRouter. Never stores keys. Order: CLI > env > `~/.lifekit/config.json` > defaults. |
-| Tests | `uv run pytest tests/ -v` | Or `make test`. 120 green, 1 pre-existing fail (`test_split_dyl_pdf`). See Verification. |
+| Tests | `uv run pytest tests/ -v` | Or `make test`. 117 tests, 1 pre-existing fail (`test_split_dyl_pdf`). See Verification. |
 
 **Python entrypoint:** `lifekit = lifekit.__main__:main` (subcommands `ui`,
 `config`); other tools run as `python -m lifekit.<submodule>`. The codebase is
@@ -44,9 +44,7 @@ straight to OpenSpec proposals, checked against `.agents/intent.md`.
    `.agents/intent.md` (non-negotiables, never-build list, stages). If the
    human asks for something contradicting it, surface the conflict before
    doing anything else.
-4. **The human approves.** Aent commits changes. The human alone approves proposals and makes all
-   product decisions; the agent (Atlas) is product owner / PM / chief of
-   staff and never self-approves.
+4. **The human approves.** The agent commits changes after approval. The agent never self-approves.
 5. **`.agents/intent.md` changes only on human approval.** Propose the exact
    diff and wait for explicit approval; never amend it unilaterally. If work
    reveals it is stale, flag it and propose an update — do not silently drift.
@@ -56,9 +54,6 @@ At the start of every task or session: read `.agents/intent.md` first, then
 
 ## Working agreements
 
-- **Spec-first:** OpenSpec proposals before code; tests and done criteria
-  defined before implementation. One slice per proposal (a/b/c/d for UI work,
-  as in Step 13) — see rule 2 above.
 - **Minimal diffs:** the smallest change that satisfies the spec. No
   speculative generality, no drive-by refactors.
 - **Docs stay true:** keep `docs/product/STATUS.md`, `docs/product/ROADMAP.md`, `docs/product/ASSUMPTIONS.md`,
@@ -73,19 +68,15 @@ At the start of every task or session: read `.agents/intent.md` first, then
   the dark-theme change, where a throwaway probe page and repeated
   screenshot-flag guesswork produced nothing the human could not have confirmed
   in ten seconds by opening http://127.0.0.1:3783.
-- **Use serena for code work.** Call `serena.initial_instructions` once per
-  session, then `read_memory` for `conventions` and `tech_stack` (and
-  `backend/core` / `frontend/core` for that side) before editing. Prefer
-  `find_symbol`, `find_referencing_symbols`, and `search_for_pattern` over
-  blind `read` + grep; use `replace_symbol_body` / `replace_content` for
-  edits that land inside a symbol.
+- **Use serena for code work.** Call `tools.serena.initial_instructions()` once per session, then `read_memory` for `conventions` and `tech_stack` (plus `backend/core` / `frontend/core` as relevant). Prefer `find_symbol`, `find_referencing_symbols`, and `search_for_pattern` over blind `read` + grep; use `replace_symbol_body` / `replace_content` for edits inside a symbol.
+- **Serena index maintenance.** Do all edits through Serena tools to keep the index in sync. After external changes (git pull/merge/rebase), re-run `tools.serena.onboarding()` to refresh. If symbol lookups return stale results, refresh the index.
 - **Local-first:** long evals run on the home workstation's Ollama, never
   on this VM. Never commit secrets.
 
 ## Verification
 
 - **Tests:** `uv run pytest tests/ -v` (or `make test` = `python -m pytest
-  tests/ -v`). **120 checks, 1 pre-existing failure** (`test_split_dyl_pdf`,
+  tests/ -v`). **117 tests, 1 pre-existing failure** (`test_split_dyl_pdf`,
   hardcoded VM path — BACKLOG P2). Run a single file with
   `uv run pytest tests/test_coach.py -v`.
 - **No conftest.py.** Tests skip gracefully when fixtures are absent.
@@ -93,7 +84,7 @@ At the start of every task or session: read `.agents/intent.md` first, then
   suite proves the pipeline is *plumbed*, not that it *extracts*. The real-
   model eval (`qwen3.8:27b-q8_0` on home Ollama, ≥90% recall) is the quality
   gate (results in `evals/`).
-- **Lint:** `make lint` runs `py_compile` over `lifekit/{db,store,plan_forge,mcp}/*.py`.
+- **Lint:** `make lint` runs `py_compile` over `lifekit/**/*.py`.
   There is **no ruff/black/typecheck** configured — don't invent them.
 - **Frontend:** `cd frontend && npx next build` / `npx eslint`. The
   `useConversation` regression test runs via
@@ -132,7 +123,8 @@ At the start of every task or session: read `.agents/intent.md` first, then
 
 ## Push discipline
 
-Plan individual commits before implementing  changes
-Fetch `origin/main` first; one consolidated commit per unit of work; verify the
-remote tree after pushing. The coding harness chokes on large proposals — never
-hand it a whole step at once; ship one independently testable slice.
+- **Plan commits:** Plan individual commits before implementing changes
+- **Fetch first:** Fetch `origin/main` first; one consolidated commit per unit of work; verify the
+  remote tree after pushing
+- **Review after each commit:** Run `ponytail-review` on the commit diff. Apply worthwhile simplifications in a follow-up commit.
+- **Hooks (recommended):** Add a local `post-commit` hook to remind about ponytail-review. Since `.git/hooks/` are local, document this as a recommended practice.

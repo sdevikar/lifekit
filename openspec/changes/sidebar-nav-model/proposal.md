@@ -76,23 +76,27 @@ hover target for that tab's "new item" action. Build the unit once, here.
   expanded, icon strip top when collapsed (`sidebar-refinements`). That part
   works and matches the reference's own top-right control.
 
-## Design decisions this leaves open
+## Design decisions
 
-The reference is a visual one, and pixel values are the human's call. What needs
-answering before implementation, not during:
+Two were resolved by the human on 2026-10-01:
 
-- **Journal's `+` will not work yet.** Journal is deferred behind an
-  `intent.md` amendment (`journal-tab/`), so there is no journal entry to
-  create. Options: render the Journal `+` disabled or hidden until Journal
-  slice C lands, or show it and have it do nothing. **Recommend hidden** — a
-  control that does nothing is worse than no control. See open questions.
+- **Journal's `+`: shown and inert.** It appears on hover/focus like Chat's, and
+  does nothing until the journal slices land. Accepted over hiding it, so the
+  nav row does not need a second visual state later. It must not be focusable
+  as if it worked — render it `aria-disabled` with a tooltip saying it is not
+  available yet, so it is visible without being a control that lies.
+- **The Feed panel's `LifeKit / Today` block is dropped** (`Sidebar.tsx:74-76`).
+  Once nav rows carry labels, a title block repeating the app name above them
+  is redundant chrome.
+
+Still the human's call, and a look rather than a guess:
+
 - **Widths.** Collapsed ≈ 56px, expanded ≈ 260px. The reference's panel is
-  proportionally wider than ours. Needs a look, not a guess.
+  proportionally wider than ours.
 - **Active-row treatment.** The reference uses a filled background on the active
   row (`bg-lk-user-msg` is already the token for this, `IconTab:112`). Keep it.
-- **What the panel shows per tab.** Chat: the conversation list. Feed: nothing —
-  the feed is the main area, so a title block is decoration. Journal and
-  Settings: their placeholder until those tabs ship.
+- **What the panel shows per tab.** Chat: the conversation list (slice a). Feed:
+  nothing. Journal and Settings: their placeholder until those tabs ship.
 
 ## Capabilities
 
@@ -115,14 +119,10 @@ answering before implementation, not during:
 
 ## Open questions for the human
 
-1. **Journal's `+`** — hidden until Journal lands, or shown-and-inert? Recommend
-   hidden.
-2. **Does Feed get a panel section?** With nav labels in the column, the Feed
-   tab's current `LifeKit / Today` title block (`Sidebar.tsx:74-76`) is
-   redundant chrome. Recommend dropping it. Confirm.
-3. **Is `localStorage` persistence of the collapsed state kept?** Currently
-   `COLLAPSE_KEY` (`:6`). Recommend yes, unchanged — no reason to make the user
-   re-collapse on every load.
+None outstanding. Both were answered on 2026-10-01: Journal's `+` is shown and
+inert, and the Feed title block goes. `localStorage` persistence of the
+collapsed state is kept unchanged (`COLLAPSE_KEY`, `:6`) — no reason to make
+the user re-collapse on every load.
 
 ## Done Criterion
 
@@ -137,10 +137,14 @@ answering before implementation, not during:
 6. Hovering the Chat row reveals a `+`; tabbing to it reveals it too, and it is
    operable by keyboard.
 7. The Chat and Journal rows reveal `+`; the Feed and Settings rows do not.
-8. Chat panel content (once slice a lands) renders below the nav rows in the
+   Journal's `+` is visibly present but inert — `aria-disabled`, not
+   focusable as a working control, with a tooltip saying it is not available
+   yet. Chat's creates a conversation (once slice a lands).
+8. The Feed tab's panel shows no `LifeKit / Today` block — the title is gone.
+9. Chat panel content (once slice a lands) renders below the nav rows in the
    same column, and is hidden entirely when collapsed.
-9. Ask the human to eyeball collapsed and expanded in both light and dark
-   themes — this is a visual change, so the check is theirs, not a screenshot.
-10. `uv run pytest tests/ -v` shows no new failures beyond `test_split_dyl_pdf`.
-11. `docs/product/STATUS.md` and `docs/product/KANBAN.md` updated in the same
+10. Ask the human to eyeball collapsed and expanded in both light and dark
+    themes — this is a visual change, so the check is theirs, not a screenshot.
+11. `uv run pytest tests/ -v` shows no new failures beyond `test_split_dyl_pdf`.
+12. `docs/product/STATUS.md` and `docs/product/KANBAN.md` updated in the same
     change.

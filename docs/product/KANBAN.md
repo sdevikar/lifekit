@@ -29,12 +29,15 @@ routing that depend on both.
 Umbrella rationale for the Chat Tab is at
 `openspec/changes/chat-tab-sidebar/proposal.md`.
 
-**Two open questions worth answering before #1**, both in
-`sidebar-nav-model/proposal.md` and `chat-tab-sidebar/proposal.md`: Journal's
-`+` will have nothing to create until the journal slices land (recommend hiding
-it), and `MasterComposer` is dead code — wire it up, delete it, or leave it. The
-composer is the only path to an *unseeded* chat, so if it comes back it belongs
-in the feed and pairs naturally with #4.
+**Two open questions remain**, both in `chat-tab-sidebar/proposal.md`:
+`MasterComposer` is dead code — wire it up, delete it, or leave it. The composer
+is the only path to an *unseeded* chat, so if it comes back it belongs in the
+feed and pairs naturally with #4.
+
+Resolved 2026-10-01 in `sidebar-nav-model`: Journal's `+` is **shown and
+inert** (`aria-disabled` with a tooltip, not a working control) until the
+journal slices land, and the Feed panel's `LifeKit / Today` block is
+**dropped** as redundant once nav rows carry labels.
 
 ## Deferred
 
