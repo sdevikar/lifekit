@@ -55,7 +55,9 @@ export function Sidebar() {
         )}
       </div>
 
-      <nav className="flex flex-col gap-0.5 px-2 shrink-0">
+      {/* flex-1, not shrink-0: the spacer below needs a height to expand into,
+          otherwise Settings sits directly under Chat instead of at the bottom. */}
+      <nav className="flex flex-col gap-0.5 px-2 flex-1 min-h-0">
         <NavRow
           tab="feed"
           label="Feed"
@@ -159,11 +161,11 @@ function NavRow({
           aria-disabled={plus.inert || undefined}
           aria-label={plus.inert ? `${newLabel} (not available yet)` : newLabel}
           title={plus.inert ? "Not available yet" : newLabel}
-          className={`absolute right-2 flex items-center justify-center w-5 h-5 rounded text-lk-muted hover:text-lk-fg hover:bg-lk-border disabled:cursor-not-allowed disabled:opacity-40 ${
+          className={`absolute right-2 flex items-center justify-center w-5 h-5 rounded disabled:cursor-not-allowed ${
             // Hidden by default, revealed on row hover or keyboard focus
             // within it. focus-visible makes this reachable without a mouse.
             "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
-          }`}
+          } ${plus.inert ? "text-lk-muted/50" : "text-lk-muted hover:text-lk-fg hover:bg-lk-border"}`}
         >
           <PlusIcon />
         </button>
