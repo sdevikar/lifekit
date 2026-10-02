@@ -65,6 +65,5 @@ Candidate steps from the coaching plan (`~/workspace/self-help-exercises/lifekit
 
 - LLM provider config (2026-09-16): pluggable model backends (`../../lifekit/llm/` — Ollama default, OpenRouter via `OPENROUTER_API_KEY`), layered config (CLI > env > `~/.lifekit/config.json` > defaults), `lifekit config` CLI, portable eval script. Archived spec: `../../openspec/archives/llm-provider-config/`.
 
-## Shipped infra (not numbered MVP steps)
-
-- LLM provider config: pluggable model backends (`../../lifekit/llm/` — Ollama default, OpenRouter via `OPENROUTER_API_KEY`), layered config (CLI > env > `~/.lifekit/config.json` > defaults), `lifekit config` CLI, portable eval script. Archived spec: `../../openspec/archives/llm-provider-config/`.
+- Dark theme (2026-09-29): `--lk-*` tokens are `light-dark()` pairs, `ThemeToggle` pins the scheme per-app. Archived spec: `../../openspec/archives/dark-theme/`.
+- UI design language overhaul (2026-09-30): every component rebuilt against the token set; no colour literals left in the UI. Archived spec: `../../openspec/archives/ui-design-language-overhaul/`.

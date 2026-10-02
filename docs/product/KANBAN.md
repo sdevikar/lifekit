@@ -30,7 +30,8 @@ Umbrella rationale for the Chat Tab is at
 is the only path to an *unseeded* chat, so if it comes back it belongs in the
 feed and pairs naturally with #3.
 
-Resolved 2026-10-01 in `sidebar-nav-model`: collapsed `w-10` / expanded `w-70`;
+Resolved 2026-10-01 in `sidebar-nav-model` (now archived at
+`openspec/archives/sidebar-nav-model/`): collapsed `w-10` / expanded `w-70`;
 Journal's `+` shown and inert (not focusable); Feed's `LifeKit / Today` title
 dropped; nav ordering kept.
 
@@ -59,8 +60,18 @@ Journal slices are sequenced A → B → C and gated on a human-approved
 | Slice | Shipped | Notes |
 |-------|---------|-------|
 | Sidebar Layout Shell | 2026-09-30 | Icon strip (Feed/Journal/Chat) + collapsible panel. Spec archived at `../../openspec/archives/sidebar-layout-shell/`. |
-| Sidebar refinements | 2026-10-01 | Collapse toggle moved to the panel's top-right (icon strip top when collapsed). |
+| Sidebar refinements | 2026-10-01 | Collapse toggle moved to the panel's top-right (icon strip top when collapsed). Spec archived at `../../openspec/archives/sidebar-refinements/`. |
+| UI design language overhaul | 2026-09-30 | Every component rebuilt against the `--lk-*` tokens; zero hex/`rgb()` literals left in the UI. Spec archived at `../../openspec/archives/ui-design-language-overhaul/`. |
+| Dark theme | 2026-09-29 | Tokens became `light-dark()` pairs; `ThemeToggle` pins the scheme per-app, pre-paint script avoids the wrong-theme flash. Spec archived at `../../openspec/archives/dark-theme/`. |
 | Settings icon + lucide panel icons | 2026-10-01 | Gear tab at strip bottom (placeholder page); collapse/expand now `panel-left-open`/`panel-left-close`. |
-| Chat markdown rendering | 2026-10-01 | `react-markdown` + `remark-gfm` for coach replies, hand-rolled `.lk-prose` against the existing tokens; prompt now asks for Markdown. |
-| Chat pending feedback | 2026-10-01 | Optimistic user message before the await + a dashed "Thinking…" status row. Client-state only — the server's reply-before-persist ordering is what makes the rollback correct and did not move. |
-| Sidebar nav model | 2026-10-01 | Two columns → one. `IconTab` → `NavRow` with an optional trailing `+` on hover/focus; Chat and Journal only, Journal's inert. Collapsed `w-10`, expanded `w-70`. |
+| Chat markdown rendering | 2026-10-01 | `react-markdown` + `remark-gfm` for coach replies, hand-rolled `.lk-prose` against the existing tokens; prompt now asks for Markdown. Spec archived at `../../openspec/archives/chat-markdown-rendering/`. |
+| Chat pending feedback | 2026-10-01 | Optimistic user message before the await + a dashed "Thinking…" status row. Client-state only — the server's reply-before-persist ordering is what makes the rollback correct and did not move. Spec archived at `../../openspec/archives/chat-pending-feedback/`. |
+| Sidebar nav model | 2026-10-01 | Two columns → one. `IconTab` → `NavRow` with an optional trailing `+` on hover/focus; Chat and Journal only, Journal's inert. Collapsed `w-10`, expanded `w-70`. Spec archived at `../../openspec/archives/sidebar-nav-model/`. |
+
+**Next up: slice #1, Chat Tab a — the conversation list.** It is the first
+surface in the app that calls `GET /api/conversations` (implemented and tested
+since Step 13a, never wired to anything), it revives the orphaned
+`ConversationsList`, and it gives the Chat nav row's `+` a real handler. Two
+open questions for the human before it starts: should `+` create an empty
+`composer`-seeded conversation even though nothing can type a first message
+into it until slice b, and is `MasterComposer` wired up, deleted, or left.

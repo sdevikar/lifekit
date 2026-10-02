@@ -1,6 +1,6 @@
 # LifeKit MVP: What We're Building
 
-**MVP Scope:** Book ingestion → Ollama-powered SMART plan generation → SQLite persistence → MCP tools for task management. Everything beyond this is explicitly deferred with phase tags in [design.md](../../openspec/changes/lifekit-mvp-core-loop/design.md).
+**MVP Scope:** Book ingestion → Ollama-powered SMART plan generation → SQLite persistence → MCP tools for task management. Everything beyond this is explicitly deferred with phase tags in [design.md](../../openspec/archives/lifekit-mvp-core-loop/design.md).
 
 ---
 

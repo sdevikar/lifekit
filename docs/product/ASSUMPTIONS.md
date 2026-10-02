@@ -22,7 +22,7 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A6 | Books are chapter-detectable; fixed-size sections as fallback. | locked |
 | A7 | Extraction need not be perfect — misses fine; systemic failures flagged, not silently shipped. | locked |
 
-## Step 1 — chapter splitter (`../../openspec/changes/step-1-chapter-splitter/`)
+## Step 1 — chapter splitter (`../../openspec/archives/step-1-chapter-splitter/`)
 
 | ID | Assumption | Status | Revisit trigger |
 |----|------------|--------|-----------------|
@@ -35,7 +35,7 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A15 | Fixed-size fallback granularity: 15 pages per section (`FALLBACK_SECTION_PAGES`). | active | If Step 2 extraction quality suffers on section-split chapters, tune granularity. |
 | A16 | `chapters.book_id` has no FK to `books` — the splitter stays decoupled from ingestion; book_id defaults to sha256(path)[:16]. | active | If referential integrity is needed later, add the FK + migration. |
 
-## Step 2 — extraction map (`../../openspec/changes/step-2-extraction-map/`)
+## Step 2 — extraction map (`../../openspec/archives/step-2-extraction-map/`)
 
 | ID | Assumption | Status | Revisit trigger |
 |----|------------|--------|-----------------|
@@ -44,7 +44,7 @@ Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
 | A19 | `extract_chapter` backfills missing `chapter_title` from the known `Chapter.title` instead of failing/retriing when the model omits it (observed on front matter). Strict Pydantic schema unchanged for model output. | active | If backfill masks real model confusion, remove it and require the field. |
 | A20 | Full-book extraction recall eval runs on the user's local dev setup with their own model. | retired 2026-09-17 | Eval ran 2026-09-17 on home Ollama (`qwen3.8:27b-q8_0`): 17/17 chapters, recall 19/20 (95%), conditional pass. Results in `../../evals/step2-recall-qwen3.8-27b-q8_0/`. |
 | A22 | Long-running model evals run against the user's home workstation Ollama (`qwen3.8:27b-q8_0`) over Tailscale — the VM runs only the eval harness; no model runs here (directed 2026-09-17). Sectioned extraction (4000/3000-char sections) is required over the tunnel because full-chapter requests time out; socket timeout 600 s, per-request deadline 900 s; sequential chapters with 15 s pacing (user's home GPU). | active | If evals need parallelism or a different model, revisit with the user. |
-| A23 | `validate_quotes` uses exact-substring comparison; the 2026-09-17 eval proved this false-fails ~90% of genuine quotes (10% exact vs 56% whitespace-normalized grounding). Whitespace normalization before comparison is a required fix, not optional polish. | active | Fix proposal: `../../openspec/changes/step-4-quote-whitespace-normalization/`. |
+| A23 | `validate_quotes` uses exact-substring comparison; the 2026-09-17 eval proved this false-fails ~90% of genuine quotes (10% exact vs 56% whitespace-normalized grounding). Whitespace normalization before comparison is a required fix, not optional polish. | active | Fix proposal: `../../openspec/archives/step-4-quote-whitespace-normalization/`. |
 
 ## Infra — LLM provider config (`../../openspec/archives/llm-provider-config/`)
 
