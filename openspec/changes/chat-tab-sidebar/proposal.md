@@ -1,5 +1,19 @@
 # Chat Tab — Proposal
 
+> **Needs splitting before implementation.** This is a 7-file, 11-criterion
+> proposal; `AGENTS.md` asks for one independently testable slice each and warns
+> the harness chokes on large ones. Two problems found while reviewing it are
+> already split out and are independent of this work:
+>
+> - [`../chat-markdown-rendering/`](../chat-markdown-rendering/) — coach replies
+>   emit Markdown that `MessageList.tsx:48` does not render.
+> - [`../chat-pending-feedback/`](../chat-pending-feedback/) — the user's own
+>   message does not appear until the coach finishes replying.
+>
+> Landing those two first makes this slice smaller and is real dogfood value on
+> its own. The remaining work here is still too big for one proposal — see the
+> "Suggested split" section at the bottom.
+
 ## Why
 
 Conversations are currently separate pages at `/c/[id]`, and the "Recent Conversations" card sits at the bottom of the feed. In the new sidebar layout, conversations belong in the Chat tab: a collapsible list of recent chats in the sidebar panel, with the active conversation shown in the main area. This matches the DeepTutor/ChatGPT pattern and makes conversations always one click away.
@@ -51,3 +65,14 @@ Conversations are currently separate pages at `/c/[id]`, and the "Recent Convers
 9. The `<- Feed` button is removed from the conversation view; navigation back to feed is via the sidebar Feed tab icon.
 10. `uv run pytest` shows no new failures beyond the known `test_split_dyl_pdf` (BACKLOG P2).
 11. `docs/product/STATUS.md` updated in the same change.
+
+## Suggested split (to be approved, not yet written up)
+
+| Slice | Scope | Why it stands alone |
+|-------|-------|--------------------|
+| a — conversation list | `useBriefing.listConversations` + `ConversationsList` in the Chat panel, plus "New chat" / hover-`+`. Panel-only; main area still says "Coming soon." | No main-area component, no new context, no routing change. Testable by looking at the panel. |
+| b — ChatView + selection | `selectedConvId` in `TabContext`, new `ChatView.tsx`, `TabContent` renders it. | Self-contained: nothing outside the chat path changes. |
+| c — entry points | "Talk about this" switches tabs instead of routing; `/c/[id]` becomes the deep-link wrapper; the `← Feed` button goes. | Only slice that touches feed pages and routing. |
+
+Ordering: markdown rendering and pending feedback first (independent), then a,
+b, c.

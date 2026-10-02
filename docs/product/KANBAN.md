@@ -8,8 +8,10 @@
 
 | # | Slice | Proposal | Depends On | Status |
 |---|-------|----------|------------|--------|
-| 1 | Chat Tab | `openspec/changes/chat-tab-sidebar/` | — | Awaiting approval |
-| 2 | Journal Tab | `openspec/changes/journal-tab/` | — | Awaiting approval |
+| 1 | Chat markdown rendering | `openspec/changes/chat-markdown-rendering/` | — | Awaiting approval |
+| 2 | Chat pending feedback | `openspec/changes/chat-pending-feedback/` | — | Awaiting approval |
+| 3 | Chat Tab (needs a/b/c split) | `openspec/changes/chat-tab-sidebar/` | #1, #2 | Awaiting approval |
+| — | Journal Tab A/B/C | `openspec/changes/journal-tab-a-storage-api/`, `-b-editor/`, `-c-toc-navigation/` | — | **Deferred** — needs an `intent.md` amendment |
 
 ## Future (deferred)
 
@@ -17,6 +19,8 @@
 |------|--------|
 | Books tab | Single-book dogfood, no switching need yet. Add when book #2 exists. |
 | LLM-generated journal titles | Cheap tasking model later. First-line truncation for now. |
+| Chat token streaming | SSE + partial-flush persistence + client reader. Decide after the pending state is dogfooded — the screen may already feel responsive without it. |
+| Journal TipTap vs textarea | Deliberate dependency decision, carried in `journal-tab-b-editor`. |
 
 ## Done
 
