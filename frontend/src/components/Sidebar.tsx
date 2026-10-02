@@ -55,9 +55,7 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* flex-1, not shrink-0: the spacer below needs a height to expand into,
-          otherwise Settings sits directly under Chat instead of at the bottom. */}
-      <nav className="flex flex-col gap-0.5 px-2 flex-1 min-h-0">
+      <nav className="flex flex-col gap-0.5 px-2 shrink-0">
         <NavRow
           tab="feed"
           label="Feed"
@@ -85,7 +83,25 @@ export function Sidebar() {
         >
           <ChatIcon />
         </NavRow>
-        <div className="flex-1 min-h-4" />
+      </nav>
+
+      {/* Tab content owns the leftover height — flex-1 here, and only here, so
+          Settings below it gets pinned to the bottom of the column. When two
+          siblings are flex-1 they split the space and Settings floats in the
+          middle. Also acts as the spacer, so it must render even collapsed. */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-2">
+        {!collapsed && activeTab === "chat" && (
+          <p className="text-sm text-lk-muted">Coming soon.</p>
+        )}
+        {!collapsed && activeTab === "journal" && (
+          <p className="text-sm text-lk-muted">Coming soon.</p>
+        )}
+        {!collapsed && activeTab === "settings" && (
+          <p className="text-sm text-lk-muted">Coming soon.</p>
+        )}
+      </div>
+
+      <nav className="flex flex-col gap-0.5 px-2 py-2 shrink-0 border-t border-lk-border">
         <NavRow
           tab="settings"
           label="Settings"
@@ -96,21 +112,6 @@ export function Sidebar() {
           <SettingsIcon />
         </NavRow>
       </nav>
-
-      {/* Tab content — below the rows, same column, hidden entirely collapsed. */}
-      {!collapsed && (
-        <div className="flex-1 overflow-y-auto px-2 pb-4">
-          {activeTab === "chat" && (
-            <p className="text-sm text-lk-muted">Coming soon.</p>
-          )}
-          {activeTab === "journal" && (
-            <p className="text-sm text-lk-muted">Coming soon.</p>
-          )}
-          {activeTab === "settings" && (
-            <p className="text-sm text-lk-muted">Coming soon.</p>
-          )}
-        </div>
-      )}
     </aside>
   );
 }
