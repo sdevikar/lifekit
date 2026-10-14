@@ -1,21 +1,15 @@
 "use client";
 
 import { useState, ReactNode } from "react";
-import { useTab, Tab } from "./TabContext";
+import { useRouter } from "next/navigation";
+import { useTab } from "./TabContext";
+import { RecentConversations } from "./sidebar/RecentConversations";
 
 const COLLAPSE_KEY = "lifekit-sidebar-collapsed";
 
-// Tabs that own a list of items get a trailing "+" on hover/focus. Chat's
-// becomes a real control in chat-tab-a; Journal's is inert until the journal
-// slices land, which is why it is `aria-disabled` and not focusable rather
-// than a second button pretending to work.
-const TRAILING_PLUS: Partial<Record<Tab, { inert: boolean }>> = {
-  chat: { inert: false },
-  journal: { inert: true },
-};
-
 export function Sidebar() {
   const { activeTab, setActiveTab } = useTab();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem(COLLAPSE_KEY) === "true";
@@ -57,29 +51,26 @@ export function Sidebar() {
 
       <nav className="flex flex-col gap-0.5 px-2 shrink-0">
         <NavRow
-          tab="feed"
           label="Feed"
           active={activeTab === "feed"}
           collapsed={collapsed}
-          onClick={() => setActiveTab("feed")}
+          onClick={() => router.push("/feed")}
         >
           <FeedIcon />
         </NavRow>
         <NavRow
-          tab="journal"
           label="Journal"
           active={activeTab === "journal"}
           collapsed={collapsed}
-          onClick={() => setActiveTab("journal")}
+          onClick={() => router.push("/journal")}
         >
           <JournalIcon />
         </NavRow>
         <NavRow
-          tab="chat"
           label="Chat"
           active={activeTab === "chat"}
           collapsed={collapsed}
-          onClick={() => setActiveTab("chat")}
+          onClick={() => router.push("/chat")}
         >
           <ChatIcon />
         </NavRow>
@@ -90,12 +81,7 @@ export function Sidebar() {
           siblings are flex-1 they split the space and Settings floats in the
           middle. Also acts as the spacer, so it must render even collapsed. */}
       <div className="flex-1 min-h-0 overflow-y-auto px-2">
-        {!collapsed && activeTab === "chat" && (
-          <p className="text-sm text-lk-muted">Coming soon.</p>
-        )}
-        {!collapsed && activeTab === "journal" && (
-          <p className="text-sm text-lk-muted">Coming soon.</p>
-        )}
+        {!collapsed && activeTab === "chat" && <RecentConversations />}
         {!collapsed && activeTab === "settings" && (
           <p className="text-sm text-lk-muted">Coming soon.</p>
         )}
@@ -103,7 +89,6 @@ export function Sidebar() {
 
       <nav className="flex flex-col gap-0.5 px-2 py-2 shrink-0 border-t border-lk-border">
         <NavRow
-          tab="settings"
           label="Settings"
           active={activeTab === "settings"}
           collapsed={collapsed}
@@ -117,23 +102,18 @@ export function Sidebar() {
 }
 
 function NavRow({
-  tab,
   label,
   active,
   collapsed,
   onClick,
   children,
 }: {
-  tab: Tab;
   label: string;
   active: boolean;
   collapsed: boolean;
   onClick: () => void;
   children: ReactNode;
 }) {
-  const plus = TRAILING_PLUS[tab];
-  const newLabel = `New ${tab === "journal" ? "entry" : "chat"}`;
-
   return (
     <div className="group relative flex items-center">
       <button
@@ -154,23 +134,6 @@ function NavRow({
             button keeps aria-label and title, so the strip stays labelled. */}
         {!collapsed && <span className="truncate">{label}</span>}
       </button>
-
-      {plus && !collapsed && (
-        <button
-          type="button"
-          disabled={plus.inert}
-          aria-disabled={plus.inert || undefined}
-          aria-label={plus.inert ? `${newLabel} (not available yet)` : newLabel}
-          title={plus.inert ? "Not available yet" : newLabel}
-          className={`absolute right-2 flex items-center justify-center w-5 h-5 rounded disabled:cursor-not-allowed ${
-            // Hidden by default, revealed on row hover or keyboard focus
-            // within it. focus-visible makes this reachable without a mouse.
-            "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
-          } ${plus.inert ? "text-lk-muted/50" : "text-lk-muted hover:text-lk-fg hover:bg-lk-border"}`}
-        >
-          <PlusIcon />
-        </button>
-      )}
     </div>
   );
 }
@@ -246,25 +209,6 @@ function SettingsIcon() {
     >
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  );
-}
-
-function PlusIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
   );
 }
