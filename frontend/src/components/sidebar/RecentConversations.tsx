@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useConversations } from "@/hooks/useConversations";
-import { apiPatch, apiDelete } from "@/types/api";
+import { apiPatch, apiDelete, apiPost } from "@/types/api";
 
 function getDayGroup(dateStr: string): string {
   const date = new Date(dateStr);
@@ -90,6 +90,28 @@ export function RecentConversations() {
 
       {!collapsed && (
         <div className="space-y-2">
+          <button
+            type="button"
+            onClick={() => router.push("/chat")}
+            className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-xs text-lk-muted hover:text-lk-fg hover:bg-lk-user-msg transition-colors"
+            aria-label="New chat"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>New chat</span>
+          </button>
           {GROUP_ORDER.filter((g) => groups[g]).map((group) => (
             <div key={group}>
               <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-lk-muted/70">
