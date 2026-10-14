@@ -35,6 +35,7 @@ export function useConversation(convId: string) {
   }, [convId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load]);
 

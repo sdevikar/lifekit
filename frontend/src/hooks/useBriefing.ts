@@ -8,12 +8,6 @@ export function useBriefing() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadData();
-    // Allow parent to refresh by re-calling loadData
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const loadData = async () => {
     setLoading(true);
     setError(null);
@@ -26,6 +20,11 @@ export function useBriefing() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadData();
+  }, []);
 
   const markDone = async (exerciseId: number) => {
     const resp = await apiPost<{ ok: boolean; completion_id?: number }>(
