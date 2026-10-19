@@ -65,4 +65,4 @@ detail.
 4. An entry with no title gets one from the first line, truncated at 50 chars.
 5. A manually set title is not overwritten by later autosaves.
 6. `uv run pytest tests/ -v` shows no new failures beyond `test_split_dyl_pdf`.
-7. `docs/product/STATUS.md` updated in the same change.
+7. `docs/product/KANBAN.md` updated in the same change.

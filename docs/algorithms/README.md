@@ -1,8 +1,8 @@
 # Algorithms
 
 The math LifeKit uses — and deliberately doesn't. Plain-English version; the
-borrow rationale lives in [research/lifekit-borrow-report.md](../research/lifekit-borrow-report.md)
-and [product/PHILOSOPHY.md](../product/PHILOSOPHY.md).
+borrow rationale lives in
+[research/lifekit-borrow-report.md](../research/lifekit-borrow-report.md).
 
 ## What we use
 
@@ -19,7 +19,8 @@ and [product/PHILOSOPHY.md](../product/PHILOSOPHY.md).
 
 ## What we reject
 
-See the borrow/reject table in [product/PHILOSOPHY.md](../product/PHILOSOPHY.md).
+See the borrow/reject table in
+[research/lifekit-borrow-report.md](../research/lifekit-borrow-report.md).
 BKT/KST prerequisite graphs, learner-as-latent-profile modeling, string-match
 grading, standalone SM-2 drills, and DeepTutor's pseudo-FSRS scheduler are all
 rejected.

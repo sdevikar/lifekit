@@ -12,5 +12,5 @@
   (+ optional self-grade) map to FSRS ratings
 - [ ] 9.5 Wire MCP tools (`get_momentum`, `get_momentum_brief`,
   `get_due_nudges`, `update_nudge_policy`)
-- [ ] 9.6 Update ../../../docs/product/ROADMAP.md, ../../../docs/product/STATUS.md, ../../../docs/product/ASSUMPTIONS.md in the same commit;
+- [ ] 9.6 Update ../../../docs/product/KANBAN.md, ../../../docs/product/ASSUMPTIONS.md in the same commit;
   archive this change on completion

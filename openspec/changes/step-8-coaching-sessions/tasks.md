@@ -11,7 +11,7 @@
 - [ ] 8.4 Wire MCP tools (`start_coaching_session`, `get_coaching_context`,
   `next_coached_exercise`, `record_attempt`, `end_coaching_session`,
   `list_intentions`, `resolve_intention`) into `../../../lifekit/mcp/server.py`
-  (also resolves BACKLOG H1 for the Step 5 tools)
+  (also resolves KANBAN H1 for the Step 5 tools)
 - [ ] 8.5 CLI: `lifekit session start/end`
-- [ ] 8.6 Update ../../../docs/product/ROADMAP.md, ../../../docs/product/STATUS.md, ../../../docs/product/ASSUMPTIONS.md in the same commit;
+- [ ] 8.6 Update ../../../docs/product/KANBAN.md, ../../../docs/product/ASSUMPTIONS.md in the same commit;
   archive this change on completion

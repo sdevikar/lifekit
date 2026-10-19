@@ -9,5 +9,5 @@
   with scalar relevance boost in `next_coached_exercise` ordering
 - [ ] 10.4 Wire MCP tools (`interview_start`, `interview_answer`,
   `link_book_to_goal`)
-- [ ] 10.5 Update ../../../docs/product/ROADMAP.md, ../../../docs/product/STATUS.md, ../../../docs/product/ASSUMPTIONS.md in the same commit;
+- [ ] 10.5 Update ../../../docs/product/KANBAN.md, ../../../docs/product/ASSUMPTIONS.md in the same commit;
   archive this change on completion

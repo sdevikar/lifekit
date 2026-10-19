@@ -54,6 +54,6 @@ click away, which is what makes the surface usable rather than a curiosity.
 5. The TOC reflects a newly created or recently updated entry.
 6. `/j/<id>` opens that entry in the Journal tab in a fresh tab.
 7. `uv run pytest tests/ -v` shows no new failures beyond `test_split_dyl_pdf`.
-8. `docs/product/STATUS.md` updated in the same change.
+8. `docs/product/KANBAN.md` updated in the same change.
 9. `.agents/intent.md` amended — **human approval required**, this slice is the
    one that makes the journal a user-visible surface.

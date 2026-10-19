@@ -5,11 +5,9 @@
 | Document | Location | Purpose |
 |----------|----------|---------|
 | Intent (vision) | `.agents/intent.md` | Standing product vision; wins on conflict |
-| Status | `docs/product/STATUS.md` | Current state; update on every change |
-| Roadmap | `docs/product/ROADMAP.md` | What's next and why |
+| Tracker | `docs/product/KANBAN.md` | Current state, board, known issues, ideas; update on every change |
 | Assumptions | `docs/product/ASSUMPTIONS.md` | Standing assumptions with IDs |
-| Backlog | `docs/product/BACKLOG.md` | Known issues and spec-vs-reality notes |
-| Philosophy | `docs/product/PHILOSOPHY.md` | Rationale and borrow/reject decisions |
+| Research | `docs/research/` | Landscape surveys and borrow/reject decisions |
 | Architecture | `docs/arch/README.md` | Pillar blocks, connections, daily-loop data flow |
 | Book model | `docs/backend/BOOK_MODEL.md` | Book-model proposal (draft) |
 | Backend | `docs/backend/README.md` | Pipeline overview |

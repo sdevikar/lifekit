@@ -12,11 +12,11 @@
 
 | # | Gap | Impact | Recommended Action |
 |---|-----|--------|-------------------|
-| G4 | **No API specification** | Feed API endpoints are documented across STATUS.md and test files, but no single API reference | Create `docs/backend/API.md` with request/response schemas |
-| G5 | **No ADR (Architecture Decision Records)** | Decisions are scattered across PHILOSOPHY.md, BORROW-REPORT, and code comments | Create `docs/arch/adrs/` for each significant decision |
+| G4 | **No API specification** | Feed API endpoints are documented across KANBAN.md and test files, but no single API reference | Create `docs/backend/API.md` with request/response schemas |
+| G5 | **No ADR (Architecture Decision Records)** | Decisions are scattered across `docs/research/`, `KANBAN.md`, and code comments | Create `docs/arch/adrs/` for each significant decision |
 | G6 | **No data dictionary** | Schema is in code (`db/schema.py`) but not documented for humans | Create `docs/backend/DATA-DICTIONARY.md` |
-| G7 | **No deployment runbook** | Deployment is documented in STATUS.md fragments; no single ops guide | Create `docs/ops/RUNBOOK.md` |
-| G8 | **No testing strategy document** | Testing principles are in STATUS.md; no standalone strategy | Create `docs/backend/TESTING.md` |
+| G7 | **No deployment runbook** | Deployment is documented in KANBAN.md fragments; no single ops guide | Create `docs/ops/RUNBOOK.md` |
+| G8 | **No testing strategy document** | Testing principles live in `docs/arch/testing.md` (test map) and KANBAN.md; no standalone strategy | Create `docs/backend/TESTING.md` |
 | G9 | **No onboarding flow for new users** | User stories exist but no first-run experience design | Design onboarding when Stage 4 exit is proven |
 | G10 | **No backup/restore documentation** | Data backup is mentioned but no procedure | Add to `docs/ops/RUNBOOK.md` |
 

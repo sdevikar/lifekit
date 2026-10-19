@@ -21,8 +21,7 @@ Stage 4 of 6 (see `.agents/intent.md`): the venue is shipped — Next.js feed +
 conversations UI, feed API, `lifekit ui` boots both on localhost. Now
 dogfooding the daily loop.
 
-- Current state: `docs/product/STATUS.md`
-- What's next: `docs/product/ROADMAP.md`
+- Current state + what's next: `docs/product/KANBAN.md`
 - User stories: `requirements/user-stories.md`
 - Docs map: `docs/index.md`
 

@@ -36,10 +36,10 @@ TOC-first extraction — this is structuring, not new extraction.
 |---|---|---|
 | `exercise` | Prompt + steps + chapter ref + quote | Existing table (144 for DYL) |
 | `key_idea` | Distilled claim, quote-grounded | Existing table (875 — noisy, needs typing/filtering) |
-| `decision_rule` | "When X, do Y" conditional | BACKLOG F1 — structuring pass |
-| `anti_pattern` | "Don't do X" / common mistake + correction | BACKLOG F2 — structuring pass |
+| `decision_rule` | "When X, do Y" conditional | KANBAN F1 — structuring pass |
+| `anti_pattern` | "Don't do X" / common mistake + correction | KANBAN F2 — structuring pass |
 | `principle` | Durable claim the book makes (candidate) | Structuring pass over key ideas |
-| `faq` | Question the book answers (candidate) | BACKLOG F12 shape |
+| `faq` | Question the book answers (candidate) | KANBAN F12 shape |
 
 Per item: id, type, title, body, structure-node anchor, **≥1 verbatim quote**
 (enforced by the existing validation harness — an item without a quote is not

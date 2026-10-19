@@ -25,6 +25,13 @@ LifeKit is **not** a learning platform. The distinction is deliberate:
 LifeKit is an off-the-shelf, multi-book app. It is never an Agent Skill, a
 harness extension, or a feature of something else.
 
+**Inspiration.** LifeKit is inspired by DeepTutor (`HKUDS/DeepTutor`; local
+checkout `/home/swapnil/workspace/projects/DeepTutor`) — a tutor with a
+deterministic learning runtime and a workbench UI. LifeKit takes that shape and
+points it at **books**: turning any book into exercises and ideas, plus other
+self-improvement content to learn and practise. Borrow/reject decisions are
+recorded in `docs/research/`.
+
 ## How it works
 
 Three parts, in this order:
@@ -54,6 +61,8 @@ persona — that path would kill the project.
 - **Venue, not menu.** The app is where exercises are performed, not
   browsed. No dashboards, no browsing surfaces that turn doing back into
   browsing.
+- **UI is a first-class investment.** Design is not scaffolding; the venue
+  must look and feel like a place, not a demo.
 - **Deterministic runtime, generative surface.** Scheduling, surfacing, and
   state are code. The LLM owns conversational prose only.
 - **No quiz framing, ever.** No quizzes, visible grades, retention
@@ -92,31 +101,31 @@ Stage 4 is done.
   (the agent) is product owner, project manager, and chief of staff:
   refining ideas, writing specs and designs, monitoring progress, keeping
   the project aligned with this file.
-- **Docs stay true.** Whoever merges a change updates `docs/product/STATUS.md`,
-  `docs/product/ROADMAP.md`, `docs/product/ASSUMPTIONS.md`, and
-  `docs/product/BACKLOG.md` in the same commit.
+- **Docs stay true.** Whoever merges a change updates
+  `docs/product/KANBAN.md` (and `docs/product/ASSUMPTIONS.md` when its log
+  changes) in the same commit.
 - **Local-first execution.** Long model runs go to the home workstation's
   Ollama over Tailscale, never the sandbox. Never commit secrets.
-- **Push discipline.** Fetch `origin/main` first; one consolidated commit per
-  unit of work; verify the remote tree after pushing.
+
+Coding-agent mechanics — commands, verification, trace usage, git/push
+discipline — live in `AGENTS.md`.
 
 ## Where things live
 
 - **User stories** (what the user does, acceptance criteria):
   `requirements/user-stories.md`
-- **Current state:** `docs/product/STATUS.md`
-- **What's next and why:** `docs/product/ROADMAP.md`
-- **Standing assumptions:** `docs/product/ASSUMPTIONS.md`
-- **Known issues:** `docs/product/BACKLOG.md`
-- **Rationale and borrow/reject decisions:** `docs/product/PHILOSOPHY.md`
-- **Architecture:** `docs/arch/` (pillars, daily-loop data flow)
+- **Current state + what's next + known issues:** `docs/product/KANBAN.md`
+- **Assumptions log (IDs + revisit triggers):** `docs/product/ASSUMPTIONS.md`
+- **Surveys + borrow/reject decisions:** `docs/research/`
+- **Architecture:** `docs/arch/` (`README.md` for the pipeline diagram,
+  `testing.md` for the test map)
 - **Proposals:** `openspec/changes/<slug>/` (pending) →
   `openspec/archives/<slug>/` (done)
 - **Superseded docs:** `docs/archive/` (history only, not binding)
+- **Inspiration** Deeptutor lives on this machine at `/home/swapnil/workspace/projects/DeepTutor` and on github at `https://github.com/HKUDS/DeepTutor`
 
 ## Changing this file
 
-This file changes only on the human's explicit approval. If the human says
-something contradicting it, surface the conflict before doing anything else.
-If work reveals it is stale, flag it and propose the exact diff — do not
-silently drift.
+This file changes only on the human's explicit approval — propose the exact
+diff and wait; never amend it unilaterally or silently drift. If work reveals
+it is stale, flag it and propose the update.

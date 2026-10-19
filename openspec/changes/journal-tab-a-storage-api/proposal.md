@@ -60,9 +60,9 @@ over HTTP. Doing this slice alone yields a fully testable backend contract.
 
 1. `uv run pytest tests/test_feed_api.py -v` passes with the new cases.
 2. `uv run pytest tests/ -v` shows no new failures beyond the known
-   `test_split_dyl_pdf` (BACKLOG P2).
+   `test_split_dyl_pdf` (KANBAN P2).
 3. `GET /api/journal` returns `[]` on a fresh DB and is newest-first otherwise.
 4. `PUT /api/journal/<unknown>` returns 404.
 5. `make lint` passes.
-6. `docs/product/STATUS.md` updated in the same change — as *backend only, no
+6. `docs/product/KANBAN.md` updated in the same change — as *backend only, no
    user-visible surface yet*.

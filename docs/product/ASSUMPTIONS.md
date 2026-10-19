@@ -10,7 +10,8 @@ revisitable), `challenged` (evidence against it is being gathered),
 
 ## Step 0 — locked (2026-09-14)
 
-Canonical text lives in `ROADMAP.md`. One-liners here for traceability.
+Canonical text lives in `KANBAN.md` (Locked assumptions). One-liners here for
+traceability.
 
 | ID | Assumption | Status |
 |----|------------|--------|
