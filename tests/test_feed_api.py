@@ -404,6 +404,105 @@ class TestConversationMessages:
         resp = client.post(f"/api/conversations/{conv_id}/messages", json={"text": ""})
         assert resp.status_code == 400
 
+    def test_create_conversation_composer_sentinel_title(self, client):
+        """Composer conversations get 'New conversation' as a placeholder."""
+        resp = client.post("/api/conversations", json={"seed_kind": "composer"})
+        conv_id = resp.get_json()["id"]
+        r = client.get(f"/api/conversations/{conv_id}")
+        assert r.get_json()["conversation"]["title"] == "New conversation"
+
+    def test_create_conversation_card_uses_seed_text(self, client, db_path):
+        """Card conversations use the seed_ref text as the title."""
+        _, ids = db_path
+        seed_ref = str(ids["exercise_ids"][0])
+        resp = client.post("/api/conversations", json={
+            "seed_kind": "card",
+            "seed_ref": seed_ref,
+        })
+        conv_id = resp.get_json()["id"]
+        r = client.get(f"/api/conversations/{conv_id}")
+        assert r.get_json()["conversation"]["title"] == seed_ref
+
+    def test_create_conversation_ignores_client_title(self, client):
+        """Client-sent title is ignored — server always derives it."""
+        resp = client.post("/api/conversations", json={
+            "seed_kind": "composer",
+            "title": "Hacked Title",
+        })
+        conv_id = resp.get_json()["id"]
+        r = client.get(f"/api/conversations/{conv_id}")
+        assert r.get_json()["conversation"]["title"] == "New conversation"
+
+    @patch("lifekit.serve.server.get_provider")
+    def test_post_message_first_message_replaces_title(
+        self, mock_get_provider, client
+    ):
+        """First user message replaces the sentinel title with message text."""
+        mock_provider = MagicMock()
+        mock_provider.chat_json_schema.return_value = '{"reply": "ok"}'
+        mock_get_provider.return_value = mock_provider
+
+        resp = client.post("/api/conversations", json={"seed_kind": "composer"})
+        conv_id = resp.get_json()["id"]
+
+        # Before any message: sentinel title
+        r = client.get(f"/api/conversations/{conv_id}")
+        assert r.get_json()["conversation"]["title"] == "New conversation"
+
+        # Send first message
+        text = "What is design thinking?"
+        resp = client.post(f"/api/conversations/{conv_id}/messages", json={"text": text})
+        assert resp.status_code == 200
+
+        # Title should now be the message text
+        r = client.get(f"/api/conversations/{conv_id}")
+        assert r.get_json()["conversation"]["title"] == text
+
+    @patch("lifekit.serve.server.get_provider")
+    def test_post_message_first_message_truncates_long_title(
+        self, mock_get_provider, client
+    ):
+        """Titles longer than 60 chars are truncated with ellipsis."""
+        mock_provider = MagicMock()
+        mock_provider.chat_json_schema.return_value = '{"reply": "ok"}'
+        mock_get_provider.return_value = mock_provider
+
+        resp = client.post("/api/conversations", json={"seed_kind": "composer"})
+        conv_id = resp.get_json()["id"]
+
+        long_text = "This is a very long message that exceeds sixty characters in total length"
+        resp = client.post(f"/api/conversations/{conv_id}/messages", json={"text": long_text})
+        assert resp.status_code == 200
+
+        r = client.get(f"/api/conversations/{conv_id}")
+        title = r.get_json()["conversation"]["title"]
+        assert len(title) == 60
+        assert title.endswith("...")
+        assert title == long_text[:57] + "..."
+
+    @patch("lifekit.serve.server.get_provider")
+    def test_post_message_second_message_keeps_title(
+        self, mock_get_provider, client
+    ):
+        """Only the first message replaces the title — subsequent ones don't."""
+        mock_provider = MagicMock()
+        mock_provider.chat_json_schema.return_value = '{"reply": "ok"}'
+        mock_get_provider.return_value = mock_provider
+
+        resp = client.post("/api/conversations", json={"seed_kind": "composer"})
+        conv_id = resp.get_json()["id"]
+
+        # First message sets the title
+        client.post(f"/api/conversations/{conv_id}/messages", json={"text": "First question"})
+        r = client.get(f"/api/conversations/{conv_id}")
+        title_after_first = r.get_json()["conversation"]["title"]
+        assert title_after_first == "First question"
+
+        # Second message should NOT change the title
+        client.post(f"/api/conversations/{conv_id}/messages", json={"text": "Follow-up question"})
+        r = client.get(f"/api/conversations/{conv_id}")
+        assert r.get_json()["conversation"]["title"] == title_after_first
+
     @patch("lifekit.serve.server.get_provider")
     def test_post_message_with_punctuation_query_succeeds(
         self, mock_get_provider, client, db_path

@@ -5,7 +5,7 @@ import { useTab } from "./TabContext";
 export function TabContent({ children }: { children: React.ReactNode }) {
   const { activeTab } = useTab();
 
-  if (activeTab === "feed") {
+  if (activeTab === "feed" || activeTab === "chat") {
     return <>{children}</>;
   }
 

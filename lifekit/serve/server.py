@@ -40,6 +40,17 @@ def _conn(db_path: str):
     return c
 
 
+def _generate_title(seed_ref: str | None, seed_kind: str) -> str:
+    """Generate a conversation title from the seed reference (card content)."""
+    if seed_ref:
+        # seed_ref is the exercise/idea text — use it as the title
+        title = seed_ref.strip()
+        if len(title) > 60:
+            title = title[:57] + "..."
+        return title
+    return "New conversation"
+
+
 def _book_info(c, book_id):
     row = c.execute("SELECT id, title FROM books WHERE id = ?", (book_id,)).fetchone()
     return {"id": row["id"], "title": row["title"]} if row else None
@@ -373,9 +384,7 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
         c = _conn(app.config["db_path"])
         try:
             conv_id = uuid.uuid4().hex[:12]
-            title = data.get("title") or (
-                f"Idea: {seed_kind}" if seed_kind == "card" else "New conversation"
-            )
+            title = _generate_title(data.get("seed_ref", ""), seed_kind)
             c.execute(
                 """INSERT INTO conversations
                    (id, title, book_id, seed_kind, seed_ref)
@@ -414,6 +423,22 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
         finally:
             c.close()
 
+    @app.route("/api/conversations/<conv_id>", methods=["DELETE"])
+    def delete_conversation(conv_id):
+        c = _conn(app.config["db_path"])
+        try:
+            conv = c.execute(
+                "SELECT id FROM conversations WHERE id = ?", (conv_id,)
+            ).fetchone()
+            if not conv:
+                return jsonify({"error": "not found"}), 404
+            c.execute("DELETE FROM messages WHERE conversation_id = ?", (conv_id,))
+            c.execute("DELETE FROM conversations WHERE id = ?", (conv_id,))
+            c.commit()
+            return jsonify({"ok": True})
+        finally:
+            c.close()
+
     @app.route("/api/conversations/<conv_id>/messages", methods=["POST"])
     def post_message(conv_id):
         data = request.get_json(silent=True) or {}
@@ -447,6 +472,20 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
                 "INSERT INTO messages (conversation_id, role, text) VALUES (?, 'user', ?)",
                 (conv_id, text),
             )
+
+            # On the first message, replace the sentinel title with a
+            # truncated version of the message text.
+            count = c.execute(
+                "SELECT COUNT(*) FROM messages WHERE conversation_id = ?",
+                (conv_id,),
+            ).fetchone()[0]
+            if count == 1:
+                new_title = text[:57] + "..." if len(text) > 60 else text
+                c.execute(
+                    "UPDATE conversations SET title = ? WHERE id = ?",
+                    (new_title, conv_id),
+                )
+
             c.execute(
                 "INSERT INTO messages (conversation_id, role, text) VALUES (?, 'coach', ?)",
                 (conv_id, reply),

@@ -43,6 +43,21 @@ export function RecentConversations() {
   const handleDelete = async (id: string) => {
     await apiDelete(`/api/conversations/${id}`);
     refresh();
+    if (window.location.pathname === `/chat/${id}`) {
+      router.push("/chat");
+    }
+  };
+
+  const handleNewChat = async () => {
+    try {
+      const resp = await apiPost<{ id: string }>("/api/conversations", {
+        seed_kind: "composer",
+      });
+      refresh();
+      router.push(`/chat/${resp.id}`);
+    } catch {
+      // TODO: surface error
+    }
   };
 
   if (loading) {
@@ -92,7 +107,7 @@ export function RecentConversations() {
         <div className="space-y-2">
           <button
             type="button"
-            onClick={() => router.push("/chat")}
+            onClick={handleNewChat}
             className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-xs text-lk-muted hover:text-lk-fg hover:bg-lk-user-msg transition-colors"
             aria-label="New chat"
           >
