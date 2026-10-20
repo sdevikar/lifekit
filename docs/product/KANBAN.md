@@ -53,22 +53,43 @@ The venue is shipped; now dogfooding the daily loop.
 
 ## Now / In progress
 
-*(nothing in flight)*
+Exercise surface proposals drafted (7 proposals, see Upcoming). Not yet approved
+or committed.
 
 ## Upcoming
 
-Ordered by dependency, then by value-per-unit-work. The journal slices are
-sequenced A → B → tile layout, gated on a human-approved `intent.md` amendment
-(umbrella `journal-tab/`). The program layer (Steps 8–11) is proposed, not
-committed — unlocked only after the dogfood loop is proven.
+Ordered by dependency, then by value-per-unit-work.
+
+### Exercise surfaces (new — 2026-10-19)
+
+Master-detail routing model: tap a feed card → card animates into left pane →
+exercise component renders in right pane. A2UI protocol for declarative UI.
+Component registry keyed by exercise type. Completed exercises join recents.
+
+| # | Slice | Proposal | Depends on | Status |
+|---|-------|----------|------------|--------|
+| 1 | Exercise surface routing (master-detail) | `exercise-surface-routing/` | — | Proposed |
+| 2 | Exercise type system (schema + A2UI) | `exercise-type-system/` | — | Proposed |
+| 3 | Journal exercise surface | `exercise-surface-journal/` | 1, 2 | Proposed |
+| 4 | Tracking exercise surface | `exercise-surface-tracking/` | 1, 2 | Proposed |
+| 5 | Questionnaire exercise surface | `exercise-surface-questionnaire/` | 1, 2 | Proposed |
+| 6 | Concept check exercise surface | `exercise-surface-concept-check/` | 1, 2 | Proposed |
+| 7 | Worksheet exercise surface | `exercise-surface-worksheet/` | 1, 2 | Proposed |
+
+### Journal (deferred — gated on `intent.md` amendment)
 
 | # | Slice | Proposal | Depends on | Status |
 |---|-------|----------|------------|--------|
 | 1 | Journal tile layout — grid of entry cards | `journal-tile-layout/` | Journal A + B | Awaiting approval (journal still deferred) |
-| 2 | Coaching session model (Step 8) | `step-8-coaching-sessions/` | — | Proposed |
-| 3 | Momentum decay engine (Step 9) | `step-9-momentum-decay/` | Step 8 | Proposed |
-| 4 | User interviewer (Step 10) | `step-10-user-interviewer/` | Step 9 | Proposed |
-| 5 | Invite-to-coach UI (Step 11) | `step-11-invite-to-coach/` | coach relationship defined | Proposed |
+
+### Program layer (proposed — unlocked after dogfood loop proven)
+
+| # | Slice | Proposal | Depends on | Status |
+|---|-------|----------|------------|--------|
+| 1 | Coaching session model (Step 8) | `step-8-coaching-sessions/` | — | Proposed |
+| 2 | Momentum decay engine (Step 9) | `step-9-momentum-decay/` | Step 8 | Proposed |
+| 3 | User interviewer (Step 10) | `step-10-user-interviewer/` | Step 9 | Proposed |
+| 4 | Invite-to-coach UI (Step 11) | `step-11-invite-to-coach/` | coach relationship defined | Proposed |
 
 **Superseded proposals:**
 - `chat-surface-c-entry-points/` — superseded by `chat-layout-deeptutor-recent/`. The two-pane layout it assumed is being removed.
