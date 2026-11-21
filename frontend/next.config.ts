@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  allowedDevOrigins: ["127.0.0.1"],
   experimental: {
     // The rewrite proxy defaults to a 30s timeout, but a coach reply from a
     // local 27B model routinely takes 20-70s, so the proxy was cutting

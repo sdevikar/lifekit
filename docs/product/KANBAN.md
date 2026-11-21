@@ -40,7 +40,7 @@ The venue is shipped; now dogfooding the daily loop.
 | Dark theme | ✅ Shipped 2026-09-29 — `light-dark()` tokens, `ThemeToggle`, pre-paint script |
 | Sidebar (shell + refinements + nav model) | ✅ Shipped — single column, icon strip + panel, Chat/Journal destination rows, `localStorage` persistence |
 | UI design language overhaul | ✅ Shipped 2026-09-30 — every component on the `--lk-*` tokens, no colour literals |
-| Chat Surface | ✅ Shipped — `/chat` single-column, sidebar "Recent" (rename/delete/new-chat), deep links, coach replies rendered as Markdown |
+| Chat Surface | ✅ Shipped 2026-10-15 — `/chat` single-column, sidebar "Recent" (rename/delete), no new-chat button (start by typing), deep links, coach replies rendered as Markdown |
 | Chat pending feedback | ✅ Shipped 2026-10-01 — optimistic user message + dashed "Thinking…" row |
 | Chat placeholder title | ✅ Shipped 2026-10-15 — sentinel "New conversation", replaced by the first 60 chars of the first user message |
 | Journal Surface | 📋 Placeholder — `/journal` route only; functionality pending the journal slices |
