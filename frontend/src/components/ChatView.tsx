@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useConversation } from "@/hooks/useConversation";
 import { MessageList } from "./conversation/MessageList";
 import { ChatInput } from "./conversation/ChatInput";
@@ -8,11 +8,21 @@ import { apiPatch } from "@/types/api";
 
 interface ChatViewProps {
   convId: string;
+  initialMessage?: string;
 }
 
-export function ChatView({ convId }: ChatViewProps) {
-  const { conversation, messages, loading, sending, error, sendMessage, refresh } =
+export function ChatView({ convId, initialMessage }: ChatViewProps) {
+  const { conversation, messages, loading, sending, error, sendMessage, stop, refresh } =
     useConversation(convId);
+  const sentInitialRef = useRef(false);
+
+  // Send the composer's first message after the conversation has loaded, so
+  // the optimistic user bubble shows immediately while the LLM generates.
+  useEffect(() => {
+    if (loading || sentInitialRef.current || !initialMessage || messages.length > 0) return;
+    sentInitialRef.current = true;
+    void sendMessage(initialMessage);
+  }, [loading, initialMessage, messages.length, sendMessage]);
   const [editing, setEditing] = useState(false);
   const [titleDraft, setTitleDraft] = useState("");
   const [saving, setSaving] = useState(false);
@@ -138,13 +148,21 @@ export function ChatView({ convId }: ChatViewProps) {
       </header>
 
       <div className="flex-1 overflow-y-auto">
-        <MessageList messages={messages} pending={sending} />
+        <MessageList
+          messages={messages}
+          pending={
+            sending ||
+            (messages.length > 0 &&
+              messages[messages.length - 1].role === "user")
+          }
+        />
       </div>
 
       <ChatInput
         onSend={async (text) => {
           await sendMessage(text);
         }}
+        onStop={stop}
         disabled={sending}
       />
     </div>

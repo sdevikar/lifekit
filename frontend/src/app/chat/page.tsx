@@ -9,6 +9,7 @@ import { apiPost } from "@/types/api";
 export default function ChatPage() {
   const { conversations, refresh } = useConversations();
   const [selectedConvId, setSelectedConvId] = useState<string | null>(null);
+  const [initialMessage, setInitialMessage] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
 
   const handleComposerSubmit = async (text: string) => {
@@ -18,6 +19,9 @@ export default function ChatPage() {
         seed_kind: "composer",
         title: text,
       });
+      // Show the chat view immediately; the first message is sent after mount
+      // so the optimistic update is visible while the LLM generates.
+      setInitialMessage(text);
       setSelectedConvId(resp.id);
       refresh();
     } catch {
@@ -28,7 +32,12 @@ export default function ChatPage() {
   };
 
   if (selectedConvId) {
-    return <ChatView convId={selectedConvId} />;
+    return (
+      <ChatView
+        convId={selectedConvId}
+        initialMessage={initialMessage ?? undefined}
+      />
+    );
   }
 
   return (

@@ -5,10 +5,11 @@ import { SendIcon } from "@/components/feed/icons";
 
 interface ChatInputProps {
   onSend: (text: string) => Promise<void>;
+  onStop?: () => void;
   disabled?: boolean;
 }
 
-export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
+export function ChatInput({ onSend, onStop, disabled = false }: ChatInputProps) {
   const [text, setText] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,20 +40,26 @@ export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
           className="lk-input flex-1"
           disabled={disabled}
           maxLength={1000}
-          autoFocus
         />
-        <button
-          type="submit"
-          disabled={!text.trim() || disabled}
-          className="lk-btn"
-          aria-label="Send message"
-        >
-          {disabled ? (
-            <span className="text-xs">Thinking…</span>
-          ) : (
+        {disabled ? (
+          <button
+            type="button"
+            onClick={onStop}
+            className="lk-btn"
+            aria-label="Stop generating"
+          >
+            <span className="text-xs">■ Stop</span>
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={!text.trim()}
+            className="lk-btn"
+            aria-label="Send message"
+          >
             <SendIcon />
-          )}
-        </button>
+          </button>
+        )}
       </div>
     </form>
   );

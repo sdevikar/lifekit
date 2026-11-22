@@ -187,16 +187,29 @@ def run() -> int:
         print(f"   (Phone: workstation tailnet IP :{WEB_PORT})")
         print("   Ctrl-C to stop.\n")
 
-        # Wait indefinitely until killed
+        # Wait indefinitely until killed. If the feed API dies, restart it
+        # instead of tearing everything down (which left the app "down").
         while True:
-            for i, p in enumerate(procs):
-                rc = p.poll()
-                if rc is not None and rc != 0:
-                    label = "feed API" if i == 0 else "Next.js"
-                    print(f"⚠️  {label} process exited with code {rc}")
-                    shutdown()
-                    return rc
-            time.sleep(1)
+            # feed API (index 0): restart on crash
+            if procs and procs[0].poll() is not None:
+                print("⚠️  Feed API exited — restarting...")
+                try:
+                    procs[0].wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    procs[0].kill()
+                api_proc = _start_feed_api()
+                procs[0] = api_proc
+                if not _wait_for_port_with_proc(FEED_HOST, FEED_PORT, api_proc):
+                    print("❌ Feed API failed to restart")
+                else:
+                    print("  ✓ Feed API restarted")
+            # Next.js (index 1): shut down if it dies
+            if len(procs) > 1 and procs[1].poll() is not None:
+                rc = procs[1].poll()
+                print(f"⚠️  Next.js exited with code {rc}")
+                shutdown()
+                return rc if rc is not None else 0
+            time.sleep(2)
 
     finally:
         shutdown()

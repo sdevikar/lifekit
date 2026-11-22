@@ -25,6 +25,7 @@ from flask import Flask, jsonify, request
 from lifekit.db.schema import init_db
 from lifekit.llm import get_provider
 from lifekit.llm.config import resolve_config
+from lifekit.serve.openui_prompt import OPENUI_SYSTEM_PROMPT
 
 HOST = "127.0.0.1"
 PORT = 8765
@@ -252,11 +253,12 @@ def _coach_reply(c, book_id, conv_id, message_text):
     system_msg = {
         "role": "system",
         "content": (
-            f"You are LifeKit's grounded coach for the book "
-            f"'{book_id}'. Answer the user's question using only the book "
-            f"context below. Keep replies concise and actionable. "
-            f"Answer in Markdown: bulleted lists for steps or options, "
-            f"**bold** for the key term, short paragraphs."
+            OPENUI_SYSTEM_PROMPT
+            + "\n\n"
+            + f"You are LifeKit's grounded coach for the book '{book_id}'. "
+            f"Answer the user's question using only the book context below. "
+            f"Keep replies concise and actionable. Emit only OpenUI Lang "
+            f"(root = Card(...))."
             f"\n\nBook context:\n{context}"
         ),
     }
@@ -454,24 +456,14 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
             if not conv:
                 return jsonify({"error": "conversation not found"}), 404
 
-            # Generate the reply *before* persisting anything: if the LLM
-            # fails we must not leave a user message with no coach answer.
-            # _coach_reply appends `text` to the history itself, so the
-            # uncommitted insert is not needed for context.
-            try:
-                reply = _coach_reply(c, app.config["book_id"], conv_id, text)
-            except Exception as e:  # provider/network/model failure
-                c.rollback()
-                app.logger.exception("coach reply failed")
-                return (
-                    jsonify({"ok": False, "error": f"Coach unavailable: {e}"}),
-                    502,
-                )
-
+            # Persist the user message first so it survives a tab switch /
+            # remount while the (slow) LLM call is still in flight. On failure
+            # we delete it so no dangling user message is left behind.
             c.execute(
                 "INSERT INTO messages (conversation_id, role, text) VALUES (?, 'user', ?)",
                 (conv_id, text),
             )
+            c.commit()
 
             # On the first message, replace the sentinel title with a
             # truncated version of the message text.
@@ -484,6 +476,25 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
                 c.execute(
                     "UPDATE conversations SET title = ? WHERE id = ?",
                     (new_title, conv_id),
+                )
+                c.commit()
+
+            try:
+                reply = _coach_reply(c, app.config["book_id"], conv_id, text)
+            except Exception as e:  # provider/network/model failure
+                # Remove the just-persisted user message so the transcript
+                # stays consistent (no dangling user turn with no coach reply).
+                c.execute(
+                    "DELETE FROM messages WHERE conversation_id = ? AND role = 'user' "
+                    "AND text = ? AND id = (SELECT MAX(id) FROM messages "
+                    "WHERE conversation_id = ? AND role = 'user')",
+                    (conv_id, text, conv_id),
+                )
+                c.commit()
+                app.logger.exception("coach reply failed")
+                return (
+                    jsonify({"ok": False, "error": f"Coach unavailable: {e}"}),
+                    502,
                 )
 
             c.execute(

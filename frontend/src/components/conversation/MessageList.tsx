@@ -2,6 +2,8 @@
 
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Renderer } from "@openuidev/react-lang";
+import { library as openuiLibrary } from "@/lib/openui";
 import { Message } from "@/types/api";
 
 interface MessageListProps {
@@ -46,16 +48,24 @@ export function MessageList({ messages, pending = false }: MessageListProps) {
             <div
               className={`max-w-[85%] rounded-lg p-3.5 text-sm leading-relaxed ${
                 isCoach
-                  ? "bg-lk-card border border-lk-border shadow-xs text-lk-fg font-serif"
+                  ? "bg-lk-card border border-lk-border shadow-xs text-lk-fg"
                   : "bg-lk-user-msg border border-lk-border/60 text-lk-fg"
               }`}
             >
               {isCoach ? (
-                // react-markdown escapes by default — no dangerouslySetInnerHTML,
-                // so a reply containing `<script>` renders as visible text.
-                <div className="lk-prose">
-                  <Markdown remarkPlugins={[remarkGfm]}>{msg.text}</Markdown>
-                </div>
+                msg.text.trim().startsWith("root") ? (
+                  <Renderer
+                    response={msg.text}
+                    library={openuiLibrary}
+                    isStreaming={false}
+                  />
+                ) : (
+                  // Legacy messages stored before the OpenUI migration (markdown
+                  // or plain text). Render as markdown so they are not blank.
+                  <div className="lk-prose">
+                    <Markdown remarkPlugins={[remarkGfm]}>{msg.text}</Markdown>
+                  </div>
+                )
               ) : (
                 // User text is typed by the human and is never interpreted.
                 <p className="whitespace-pre-wrap">{msg.text}</p>
@@ -72,8 +82,10 @@ export function MessageList({ messages, pending = false }: MessageListProps) {
           <span className="text-xs font-medium text-lk-secondary font-semibold mb-1 px-1">
             Coach
           </span>
-          <div className="max-w-[85%] rounded-lg border border-dashed border-lk-border px-3.5 py-3 text-sm text-lk-muted">
-            Thinking…
+          <div className="max-w-[85%] rounded-lg border border-dashed border-lk-border px-3.5 py-3 text-sm text-lk-muted flex items-center gap-1.5">
+            <span className="inline-block h-2 w-2 rounded-full bg-lk-muted animate-bounce [animation-delay:-0.3s]" />
+            <span className="inline-block h-2 w-2 rounded-full bg-lk-muted animate-bounce [animation-delay:-0.15s]" />
+            <span className="inline-block h-2 w-2 rounded-full bg-lk-muted animate-bounce" />
           </div>
         </div>
       )}

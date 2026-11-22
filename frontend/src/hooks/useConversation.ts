@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ConversationResponse,
   ConversationDetail,
@@ -13,6 +13,7 @@ export function useConversation(convId: string) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const load = useCallback(async () => {
     // No id yet (route params are async) — fetching would hit the
@@ -44,6 +45,9 @@ export function useConversation(convId: string) {
     setSending(true);
     setError(null);
 
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     // Append the user's message now, not after the await. The local model
     // takes tens of seconds and an input that clears itself with no visible
     // change reads as a hang. Filtered by object identity on rollback below —
@@ -59,6 +63,7 @@ export function useConversation(convId: string) {
       const resp = await apiPost<{ reply: string }>(
         `/api/conversations/${convId}/messages`,
         { text },
+        { signal: controller.signal },
       );
       setMessages((prev) => [
         ...prev,
@@ -66,15 +71,25 @@ export function useConversation(convId: string) {
       ]);
       return resp.reply;
     } catch (err) {
+      if (controller.signal.aborted) {
+        // User interrupted: keep the user's message, drop nothing else.
+        setError(null);
+        return;
+      }
       // The server replies before it persists, so a failure means nothing was
       // stored. Drop the optimistic message — the transcript must match the DB.
       setMessages((prev) => prev.filter((m) => m !== optimistic));
       setError(err instanceof Error ? err.message : "Failed to send message");
       throw err;
     } finally {
+      abortRef.current = null;
       setSending(false);
     }
   };
+
+  const stop = useCallback(() => {
+    abortRef.current?.abort();
+  }, []);
 
   return {
     conversation,
@@ -83,6 +98,7 @@ export function useConversation(convId: string) {
     sending,
     error,
     sendMessage,
+    stop,
     refresh: load,
   };
 }

@@ -114,6 +114,9 @@ Package manager is `uv` (`uv.lock`); `poetry.lock` is vestigial.
   did. Reserve automation for what only a machine can confirm (contrast
   ratios, OS-preference resolution, build and test suites). Directed
   2026-09-29 after the dark-theme episode.
+- **No fallback scope creep.** Don't keep a second code path "just in case"
+  (e.g. a markdown fallback alongside a new renderer). One path, one source of
+  truth; if it breaks, fix the cause, not the fallback.
 - **Plan commits before implementing.** Then fetch `origin/main` first, one
   consolidated commit per unit of work, and verify the remote tree after pushing.
 - **Review after each commit:** run `ponytail-review` on the commit diff; apply

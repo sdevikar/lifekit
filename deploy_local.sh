@@ -42,9 +42,12 @@ set +e
 if [[ "${1:-}" == "--stop" ]]; then
     echo "🛑 Stopping LifeKit services..."
     for port in "$FEED_API_PORT" "$WEB_PORT"; do
-        local_pid=$(lsof -ti :"$port" 2>/dev/null) || true
-        if [ -n "$local_pid" ]; then
-            kill -9 "$local_pid" 2>/dev/null || true
+        pids="$(lsof -ti :"$port" 2>/dev/null) $(fuser "$port"/tcp 2>/dev/null)"
+        killed=false
+        for pid in $pids; do
+            if kill -9 "$pid" 2>/dev/null; then killed=true; fi
+        done
+        if [ "$killed" = true ]; then
             echo "  Killed process on port $port"
         fi
     done
@@ -82,7 +85,11 @@ fi
 
 # --- Start the Feed API (Flask on :8765) ---
 echo "→ Starting feed API on :$FEED_API_PORT..."
-lsof -ti :"$FEED_API_PORT" 2>/dev/null | xargs kill -9 2>/dev/null || true
+# Kill anything holding the port (lsof misses some; fuser is more reliable)
+for pid in $(lsof -ti :"$FEED_API_PORT" 2>/dev/null) $(fuser "$FEED_API_PORT"/tcp 2>/dev/null); do
+    [ -n "$pid" ] && kill -9 "$pid" 2>/dev/null || true
+done
+sleep 0.5
 uv run python -c "from lifekit.serve.server import FeedAPI; FeedAPI().run()" >"$FEED_API_LOG" 2>&1 &
 FEED_API_PID=$!
 
@@ -102,18 +109,21 @@ done
 
 # --- Start the Web UI (Next.js on :3000) ---
 echo "→ Starting web UI on :$WEB_PORT..."
-lsof -ti :"$WEB_PORT" 2>/dev/null | xargs kill -9 2>/dev/null || true
+for pid in $(lsof -ti :"$WEB_PORT" 2>/dev/null) $(fuser "$WEB_PORT"/tcp 2>/dev/null); do
+    [ -n "$pid" ] && kill -9 "$pid" 2>/dev/null || true
+done
+sleep 0.5
 
 if [ "$DEV_MODE" = true ]; then
     echo "  (dev mode: hot reload enabled)"
-    (cd frontend && npx next dev -p "$WEB_PORT" -H 127.0.0.1) >"$WEB_LOG" 2>&1 &
+    (cd frontend && node node_modules/next/dist/bin/next dev -p "$WEB_PORT" -H 127.0.0.1) >"$WEB_LOG" 2>&1 &
 else
-    # Ensure the production build exists
-    if [ ! -d "frontend/.next" ]; then
+    # Ensure the production build exists (rebuild if source is newer than build)
+    if [ ! -d "frontend/.next" ] || [ "frontend/src" -nt "frontend/.next" ]; then
         echo "→ Building Next.js production bundle..."
-        (cd frontend && npx next build)
+        (cd frontend && node node_modules/next/dist/bin/next build)
     fi
-    (cd frontend && npx next start -p "$WEB_PORT" -H 127.0.0.1) >"$WEB_LOG" 2>&1 &
+    (cd frontend && node node_modules/next/dist/bin/next start -p "$WEB_PORT" -H 127.0.0.1) >"$WEB_LOG" 2>&1 &
 fi
 WEB_PID=$!
 
@@ -143,6 +153,28 @@ echo "    Stop:  ./deploy_local.sh --stop  or  Ctrl-C"
 echo "=============================================="
 echo ""
 
-# Wait for either process to exit
-wait -n "$FEED_API_PID" "$WEB_PID" 2>/dev/null || true
+# --- Supervisor loop: keep the feed API alive if it crashes ---
+# The web UI keeps running; if the feed API dies we restart it instead of
+# tearing everything down (which is what left the app "down" before).
+while true; do
+    if ! kill -0 "$WEB_PID" 2>/dev/null; then
+        echo "🛑 Web UI exited. Shutting down..."
+        break
+    fi
+    if ! kill -0 "$FEED_API_PID" 2>/dev/null; then
+        echo "⚠ Feed API died — restarting..."
+        lsof -ti :"$FEED_API_PORT" 2>/dev/null | xargs kill -9 2>/dev/null || true
+        uv run python -c "from lifekit.serve.server import FeedAPI; FeedAPI().run()" >"$FEED_API_LOG" 2>&1 &
+        FEED_API_PID=$!
+        # wait briefly for it to come back
+        for i in $(seq 1 10); do
+            if curl -s "http://127.0.0.1:$FEED_API_PORT/api/briefing/today" >/dev/null 2>&1; then
+                echo "  ✓ Feed API restarted"
+                break
+            fi
+            sleep 1
+        done
+    fi
+    sleep 3
+done
 cleanup
