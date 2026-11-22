@@ -368,3 +368,59 @@ body {
   background: var(--lk-badge-bg);
   font-weight: 600;
 }
+
+/*
+ * Map OpenUI's --openui-* theme tokens onto LifeKit's --lk-* tokens so coach
+ * replies (charts, built-in components) match the shell and respect light/dark.
+ * Overrides openui-defaults.css (which ships its own fixed oklch palette and
+ * a prefers-color-scheme dark block) via !important; --lk-* are light-dark()
+ * pairs, so a single mapping covers both schemes.
+ */
+:root {
+  --openui-background: var(--lk-bg) !important;
+  --openui-foreground: var(--lk-card) !important;
+  --openui-popover-background: var(--lk-card) !important;
+  --openui-inverted-background: var(--lk-primary) !important;
+
+  --openui-sunk-light: var(--lk-badge-bg) !important;
+  --openui-sunk: var(--lk-badge-bg) !important;
+  --openui-sunk-deep: var(--lk-border) !important;
+  --openui-elevated-light: var(--lk-card) !important;
+  --openui-elevated: var(--lk-card) !important;
+  --openui-elevated-strong: var(--lk-card) !important;
+  --openui-elevated-intense: var(--lk-card) !important;
+  --openui-highlight-subtle: var(--lk-badge-bg) !important;
+  --openui-highlight: var(--lk-badge-bg) !important;
+  --openui-highlight-strong: var(--lk-border) !important;
+  --openui-highlight-intense: var(--lk-border-strong) !important;
+
+  --openui-text-neutral-primary: var(--lk-fg) !important;
+  --openui-text-neutral-secondary: var(--lk-subtle) !important;
+  --openui-text-neutral-tertiary: var(--lk-muted) !important;
+  --openui-text-neutral-link: var(--lk-accent-blue) !important;
+  --openui-text-brand: var(--lk-brand-clay) !important;
+  --openui-text-accent-primary: var(--lk-on-primary) !important;
+  --openui-text-accent-secondary: var(--lk-on-primary) !important;
+  --openui-text-accent-tertiary: var(--lk-on-primary) !important;
+
+  --openui-border-default: var(--lk-border) !important;
+  --openui-border-interactive: var(--lk-border-strong) !important;
+  --openui-border-interactive-emphasis: var(--lk-fg) !important;
+  --openui-border-interactive-selected: var(--lk-fg) !important;
+  --openui-border-accent: var(--lk-brand-clay) !important;
+  --openui-border-accent-emphasis: var(--lk-brand-clay) !important;
+
+  --openui-interactive-accent-default: var(--lk-brand-clay) !important;
+  --openui-interactive-accent-hover: var(--lk-brand-clay-hover) !important;
+  --openui-interactive-accent-pressed: var(--lk-brand-clay) !important;
+  --openui-interactive-accent-disabled: var(--lk-muted) !important;
+
+  --openui-chat-user-response-bg: var(--lk-user-msg) !important;
+  --openui-chat-user-response-text: var(--lk-fg) !important;
+
+  --openui-font-body: var(--font-sans) !important;
+  --openui-font-heading: var(--font-sans) !important;
+  --openui-font-label: var(--font-sans) !important;
+  --openui-font-numbers: var(--font-sans) !important;
+  --openui-font-code: var(--font-mono) !important;
+}
