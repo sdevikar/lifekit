@@ -1,0 +1,50 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - complementary [ref=f1e3]:
+      - button "Collapse sidebar" [ref=f1e5] [cursor=pointer]
+      - navigation [ref=f1e9]:
+        - button "Feed" [ref=f1e11]
+        - button "Journal" [ref=f1e18]
+        - button "Chat" [ref=f1e25]
+      - generic [ref=f1e32]:
+        - button "Recent" [ref=f1e33]
+        - generic [ref=f1e37]:
+          - generic [ref=f1e38]: Last 7 days
+          - list [ref=f1e39]:
+            - listitem [ref=f1e40]:
+              - button "hello" [ref=f1e41] [cursor=pointer]
+            - listitem [ref=f1e43]:
+              - button "New conversation" [ref=f1e44] [cursor=pointer]
+      - navigation [ref=f1e46]:
+        - button "Settings" [ref=f1e48]
+    - main [ref=f1e54]:
+      - generic [ref=f1e55]:
+        - button "hello" [ref=f1e59]
+        - generic [ref=f1e61]:
+          - generic [ref=f1e62]:
+            - generic [ref=f1e63]:
+              - generic [ref=f1e64]: You
+              - time [ref=f1e65]: 04:22 AM
+            - paragraph [ref=f1e67]: hello
+          - generic [ref=f1e68]:
+            - generic [ref=f1e69]:
+              - generic [ref=f1e70]: Coach
+              - time [ref=f1e71]: 04:22 AM
+            - generic [ref=f1e75]:
+              - paragraph [ref=f1e77]:
+                - text: Hey there! 👋 I'm your coach for
+                - strong [ref=f1e78]: Designing Your Life
+                - text: . Ready to help you prototype a life you love.
+              - paragraph [ref=f1e80]: Ask me anything about the book — from prototyping conversations to networking, reframing problems, or building your Odyssey Plan. What's on your mind?
+          - generic [ref=f1e89]:
+            - generic [ref=f1e90]:
+              - generic [ref=f1e91]: You
+              - time [ref=f1e92]: 11:23 PM
+            - paragraph [ref=f1e94]: test reactive
+          - status [ref=f1e95]:
+            - generic [ref=f1e96]: Coach
+        - generic [ref=f1e82]:
+          - textbox "Coach is thinking…" [disabled] [ref=f1e101]
+          - button "Stop generating" [active] [ref=f1e102] [cursor=pointer]:
+            - generic [ref=f1e103]: ■ Stop
+  - alert [ref=f1e88]

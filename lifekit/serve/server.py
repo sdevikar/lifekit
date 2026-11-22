@@ -243,10 +243,8 @@ def _search_chapters(c, book_id, query, limit=3, window=1200):
     return [text for _, text in scored[:limit]]
 
 
-def _coach_reply(c, book_id, conv_id, message_text):
-    """Grounded chat: retrieve context, call LLM for prose."""
-    config = resolve_config()
-    provider = get_provider(config)
+def _coach_messages(c, book_id, conv_id, message_text):
+    """Build the grounded chat message list for the LLM."""
     passages = _retrieve_passages(c, book_id, message_text, limit=3)
 
     context = "\n\n".join(passages) if passages else "No book context found."
@@ -272,25 +270,7 @@ def _coach_reply(c, book_id, conv_id, message_text):
         {"role": m["role"], "content": m["text"]} for m in history
     ]
 
-    messages = [system_msg, *history_msgs, {"role": "user", "content": message_text}]
-
-    json_schema = {
-        "type": "object",
-        "properties": {"reply": {"type": "string"}},
-        "required": ["reply"],
-    }
-
-    raw = provider.chat_json_schema(
-        model=config.model,
-        messages=messages,
-        json_schema=json_schema,
-        temperature=0.1,
-    )
-    try:
-        parsed = json.loads(raw)
-        return parsed.get("reply", "")
-    except (json.JSONDecodeError, TypeError):
-        return raw.strip()
+    return [system_msg, *history_msgs, {"role": "user", "content": message_text}]
 
 
 class FeedAPI:
@@ -479,31 +459,51 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
                 )
                 c.commit()
 
-            try:
-                reply = _coach_reply(c, app.config["book_id"], conv_id, text)
-            except Exception as e:  # provider/network/model failure
-                # Remove the just-persisted user message so the transcript
-                # stays consistent (no dangling user turn with no coach reply).
-                c.execute(
-                    "DELETE FROM messages WHERE conversation_id = ? AND role = 'user' "
-                    "AND text = ? AND id = (SELECT MAX(id) FROM messages "
-                    "WHERE conversation_id = ? AND role = 'user')",
-                    (conv_id, text, conv_id),
-                )
-                c.commit()
-                app.logger.exception("coach reply failed")
-                return (
-                    jsonify({"ok": False, "error": f"Coach unavailable: {e}"}),
-                    502,
-                )
+            from flask import Response, stream_with_context
 
-            c.execute(
-                "INSERT INTO messages (conversation_id, role, text) VALUES (?, 'coach', ?)",
-                (conv_id, reply),
-            )
-            c.commit()
+            config = resolve_config()
+            provider = get_provider(config)
+            messages = _coach_messages(c, app.config["book_id"], conv_id, text)
 
-            return jsonify({"reply": reply})
+            def generate():
+                accumulated = ""
+                try:
+                    for chunk in provider.chat_stream(
+                        model=config.model, messages=messages, temperature=0.1
+                    ):
+                        accumulated += chunk
+                        yield "data: " + json.dumps({"delta": chunk}) + "\n\n"
+                except Exception as e:  # provider/network/model failure
+                    # Remove the just-persisted user message so the transcript
+                    # stays consistent (no dangling user turn with no coach reply).
+                    c2 = _conn(app.config["db_path"])
+                    try:
+                        c2.execute(
+                            "DELETE FROM messages WHERE conversation_id = ? AND role = 'user' "
+                            "AND text = ? AND id = (SELECT MAX(id) FROM messages "
+                            "WHERE conversation_id = ? AND role = 'user')",
+                            (conv_id, text, conv_id),
+                        )
+                        c2.commit()
+                    finally:
+                        c2.close()
+                    app.logger.exception("coach reply failed")
+                    yield "data: " + json.dumps({"error": f"Coach unavailable: {e}"}) + "\n\n"
+                    return
+
+                c2 = _conn(app.config["db_path"])
+                try:
+                    c2.execute(
+                        "INSERT INTO messages (conversation_id, role, text) VALUES (?, 'coach', ?)",
+                        (conv_id, accumulated),
+                    )
+                    c2.commit()
+                finally:
+                    c2.close()
+
+                yield "data: " + json.dumps({"done": True, "reply": accumulated}) + "\n\n"
+
+            return Response(stream_with_context(generate()), mimetype="text/event-stream")
         finally:
             c.close()
 

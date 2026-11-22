@@ -1,0 +1,36 @@
+[      66ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/excess-args: TextContent takes 2 arg(s), got 9 (7 excess dropped)
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  695525ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  697785ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  697785ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  767600ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/excess-args: TextContent takes 2 arg(s), got 9 (7 excess dropped)
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  773326ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  773326ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  777315ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  782438ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  782438ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  786937ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59
+[  935181ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/parse-failed: Response could not be parsed as valid openui-lang
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59

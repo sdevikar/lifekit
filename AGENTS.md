@@ -157,3 +157,13 @@ IMPORTANT: For ANY code exploration task, ALWAYS use trace tools first. NEVER us
 Use host file-reading and grep tools ONLY for non-code files (.md, .json, .yaml, config) or before edit.
 Start sessions with `get_project_map` (summary_only=true).
 <!-- trace:end -->
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as GitHub issues in sdevikar/lifekit; operations use the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` at the repo root plus `docs/adr/`. See `docs/agents/domain.md`.

@@ -6,6 +6,7 @@ OpenRouter, …) implement this; callers never touch provider specifics.
 """
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import Any, Protocol, runtime_checkable
 
 
@@ -22,4 +23,14 @@ class LLMProvider(Protocol):
         temperature: float,
     ) -> str:
         """Return the assistant's content string for the given messages."""
+        ...
+
+    def chat_stream(
+        self,
+        *,
+        model: str,
+        messages: list[dict[str, str]],
+        temperature: float,
+    ) -> Iterator[str]:
+        """Yield assistant content chunks as they are generated."""
         ...

@@ -69,3 +69,43 @@ class OpenRouterProvider(LLMProvider):
         with urllib.request.urlopen(req, timeout=120) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
         return payload["choices"][0]["message"]["content"]
+
+    def chat_stream(
+        self,
+        *,
+        model: str,
+        messages: list[dict[str, str]],
+        temperature: float,
+    ):
+        body = {
+            "model": model,
+            "messages": messages,
+            "temperature": temperature,
+            "stream": True,
+        }
+        req = urllib.request.Request(
+            BASE_URL + CHAT_COMPLETIONS_PATH,
+            data=__import__("json").dumps(body).encode("utf-8"),
+            method="POST",
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self._api_key}",
+                "HTTP-Referer": APP_URL,
+                "X-Title": APP_NAME,
+            },
+        )
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            for raw in resp:
+                line = raw.decode("utf-8").strip()
+                if not line.startswith("data:"):
+                    continue
+                data = line[5:].strip()
+                if data == "[DONE]":
+                    break
+                try:
+                    obj = json.loads(data)
+                except json.JSONDecodeError:
+                    continue
+                delta = (obj.get("choices") or [{}])[0].get("delta", {}).get("content")
+                if delta:
+                    yield delta

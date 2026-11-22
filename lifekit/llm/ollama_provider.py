@@ -36,3 +36,23 @@ class OllamaProvider(LLMProvider):
             options={"temperature": temperature},
         )
         return resp["message"]["content"]
+
+    def chat_stream(
+        self,
+        *,
+        model: str,
+        messages: list[dict[str, str]],
+        temperature: float,
+    ) -> "Iterator[str]":
+        from collections.abc import Iterator
+
+        resp = self._client.chat(
+            model=model,
+            messages=messages,
+            options={"temperature": temperature},
+            stream=True,
+        )
+        for chunk in resp:
+            content = (chunk.get("message") or {}).get("content") or ""
+            if content:
+                yield content

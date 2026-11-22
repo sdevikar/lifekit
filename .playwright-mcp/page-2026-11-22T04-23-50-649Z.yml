@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - button "Collapse sidebar" [ref=e5] [cursor=pointer]
+      - navigation [ref=e9]:
+        - button "Feed" [ref=e11]
+        - button "Journal" [ref=e18]
+        - button "Chat" [ref=e25]
+      - generic [ref=e32]:
+        - button "Recent" [ref=e33]
+        - generic [ref=e37]:
+          - generic [ref=e38]: Last 7 days
+          - list [ref=e39]:
+            - listitem [ref=e40]:
+              - button "hello" [ref=e41] [cursor=pointer]
+            - listitem [ref=e43]:
+              - button "New conversation" [ref=e44] [cursor=pointer]
+      - navigation [ref=e46]:
+        - button "Settings" [ref=e48]
+    - main [ref=e54]
+  - alert [ref=e60]

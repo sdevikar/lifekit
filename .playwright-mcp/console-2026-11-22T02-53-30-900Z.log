@@ -1,0 +1,4 @@
+[      58ms] [ERROR] Failed to load resource: the server responded with a status of 404 (NOT FOUND) @ http://127.0.0.1:3783/api/conversations/884ba3615059:1
+[    2975ms] [ERROR] [openui] Rendered with 1 error:
+  - parser/excess-args: TextContent takes 2 arg(s), got 9 (7 excess dropped)
+See https://www.openui.com/docs/openui-lang/reliability for how to fix and prevent these errors. @ http://127.0.0.1:3783/_next/static/chunks/0r76t7d4gpm5x.js:59

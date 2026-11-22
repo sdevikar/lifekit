@@ -1,0 +1,28 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - complementary [ref=f2e3]:
+      - button "Collapse sidebar" [ref=f2e5] [cursor=pointer]
+      - navigation [ref=f2e9]:
+        - button "Feed" [ref=f2e11]
+        - button "Journal" [ref=f2e18]
+        - button "Chat" [ref=f2e25]
+      - generic [ref=f2e32]:
+        - button "Recent" [ref=f2e33]
+        - generic [ref=f2e37]:
+          - generic [ref=f2e38]: Last 7 days
+          - list [ref=f2e39]:
+            - listitem [ref=f2e40]:
+              - button "Who are the authors of this book?" [ref=f2e41] [cursor=pointer]
+      - navigation [ref=f2e43]:
+        - button "Settings" [ref=f2e45]
+    - main [ref=f2e51]:
+      - generic [ref=f2e52]:
+        - heading "Chat" [level=1] [ref=f2e55]
+        - main [ref=f2e56]:
+          - paragraph [ref=f2e57]: Start a conversation or pick one from the sidebar.
+        - generic [ref=f2e59]:
+          - generic [ref=f2e60]:
+            - textbox "Ask about an exercise or start a coach conversation…" [ref=f2e61]
+            - button [disabled] [ref=f2e62]
+          - paragraph [ref=f2e66]: Opens a grounded coach conversation anchored in book knowledge.
+  - alert [ref=f2e67]

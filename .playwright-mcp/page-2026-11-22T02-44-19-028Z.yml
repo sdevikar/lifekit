@@ -1,0 +1,82 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - button "Collapse sidebar" [ref=e5] [cursor=pointer]
+      - navigation [ref=e9]:
+        - button "Feed" [ref=e11]
+        - button "Journal" [ref=e18]
+        - button "Chat" [ref=e25]
+      - generic [ref=e32]:
+        - button "Recent" [ref=e33]
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - generic [ref=e38]: Last 7 days
+            - list [ref=e39]:
+              - listitem [ref=e40]:
+                - button "what is this book all about?" [ref=e41] [cursor=pointer]
+              - listitem [ref=e43]:
+                - button "what is one idea to remember?" [ref=e44] [cursor=pointer]
+              - listitem [ref=e46]:
+                - button "tell me more about the odessey activity" [ref=e47] [cursor=pointer]
+              - listitem [ref=e49]:
+                - button "what is this book all about?" [ref=e50] [cursor=pointer]
+          - generic [ref=e52]:
+            - generic [ref=e53]: Earlier
+            - list [ref=e54]:
+              - listitem [ref=e55]:
+                - 'button "Idea: card" [ref=e56] [cursor=pointer]'
+              - listitem [ref=e58]:
+                - button "Dark theme check" [ref=e59] [cursor=pointer]
+              - listitem [ref=e61]:
+                - 'button "Idea: card" [ref=e62] [cursor=pointer]'
+              - listitem [ref=e64]:
+                - 'button "Idea: card" [ref=e65] [cursor=pointer]'
+              - listitem [ref=e67]:
+                - 'button "Idea: card" [ref=e68] [cursor=pointer]'
+              - listitem [ref=e70]:
+                - 'button "Idea: card" [ref=e71] [cursor=pointer]'
+              - listitem [ref=e73]:
+                - button "New conversation" [ref=e74] [cursor=pointer]
+      - navigation [ref=e76]:
+        - button "Settings" [ref=e78]
+    - main [ref=e84]:
+      - generic [ref=e85]:
+        - button "what is one idea to remember?" [ref=e89]
+        - generic [ref=e91]:
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - generic [ref=e94]: You
+              - time [ref=e95]: 01:35 AM
+            - paragraph [ref=e97]: what is one idea to remember?
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - generic [ref=e100]: Coach
+              - time [ref=e101]: 01:35 AM
+            - generic [ref=e105]:
+              - paragraph [ref=e107]:
+                - strong [ref=e108]: One Idea to Remember
+              - generic [ref=e109]:
+                - paragraph [ref=e110]: "\"You can't know what you want until you know what you might want.\""
+                - paragraph [ref=e111]:
+                  - text: Stop chasing the single perfect answer.
+                  - strong [ref=e112]: Get stuck. Get over it. Ideate, ideate, ideate.
+                  - text: Generate wild, crazy, unrealistic options first — then narrow. Parallel thinking (three Odyssey Plans) consistently beats refining one idea in a straight line.
+              - paragraph [ref=e114]:
+                - strong [ref=e115]: "Do this now:"
+                - text: Spend 30 minutes writing a
+                - emphasis [ref=e116]: Workview
+                - text: — not a job description, but your honest definition of what work
+                - emphasis [ref=e117]: means
+                - text: to you. Why work? What makes it worthwhile? What does money, growth, and fulfillment have to do with it? Aim for ~250 words. Write it down; don't just think it.
+          - generic [ref=e126]:
+            - generic [ref=e127]:
+              - generic [ref=e128]: You
+              - time [ref=e129]: 09:44 PM
+            - paragraph [ref=e131]: give me one small exercise
+          - status [ref=e132]:
+            - generic [ref=e133]: Coach
+        - generic [ref=e119]:
+          - textbox "Coach is thinking…" [disabled] [ref=e138]
+          - button "Stop generating" [active] [ref=e139] [cursor=pointer]:
+            - generic [ref=e140]: ■ Stop
+  - alert [ref=e125]

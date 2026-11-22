@@ -353,8 +353,8 @@ class TestConversationMessages:
         """POST /conversations/:id/messages → {reply} with grounded LLM."""
         # Mock the LLM provider
         mock_provider = MagicMock()
-        mock_provider.chat_json_schema.return_value = (
-            '{"reply": "Design thinking starts with empathy."}'
+        mock_provider.chat_stream.return_value = iter(
+            ["Design thinking starts with empathy."]
         )
         mock_get_provider.return_value = mock_provider
 
@@ -367,10 +367,22 @@ class TestConversationMessages:
             "text": "What is design thinking?",
         })
         assert resp.status_code == 200
-        data = resp.get_json()
-        assert "reply" in data
-        assert isinstance(data["reply"], str)
-        assert len(data["reply"]) > 0
+        # SSE stream: collect final reply from the "done" event.
+        text = resp.get_data(as_text=True)
+        final_reply = ""
+        for line in text.splitlines():
+            line = line.strip()
+            if not line.startswith("data:"):
+                continue
+            import json as _json
+            try:
+                payload = _json.loads(line[5:].strip())
+            except Exception:
+                continue
+            if payload.get("done"):
+                final_reply = payload.get("reply", "")
+        assert isinstance(final_reply, str)
+        assert len(final_reply) > 0
 
         # Verify the message + reply persisted
         r = client.get(f"/api/conversations/{conv_id}")
@@ -381,8 +393,8 @@ class TestConversationMessages:
         assert "coach" in roles
 
         # Verify LLM was called with grounded context
-        mock_provider.chat_json_schema.assert_called_once()
-        call_kwargs = mock_provider.chat_json_schema.call_args.kwargs
+        mock_provider.chat_stream.assert_called_once()
+        call_kwargs = mock_provider.chat_stream.call_args.kwargs
         # Messages should include system prompt with book context
         assert any("book" in str(m).lower() for m in call_kwargs["messages"])
 
@@ -439,7 +451,7 @@ class TestConversationMessages:
     ):
         """First user message replaces the sentinel title with message text."""
         mock_provider = MagicMock()
-        mock_provider.chat_json_schema.return_value = '{"reply": "ok"}'
+        mock_provider.chat_stream.return_value = iter(["ok"])
         mock_get_provider.return_value = mock_provider
 
         resp = client.post("/api/conversations", json={"seed_kind": "composer"})
@@ -464,7 +476,7 @@ class TestConversationMessages:
     ):
         """Titles longer than 60 chars are truncated with ellipsis."""
         mock_provider = MagicMock()
-        mock_provider.chat_json_schema.return_value = '{"reply": "ok"}'
+        mock_provider.chat_stream.return_value = iter(["ok"])
         mock_get_provider.return_value = mock_provider
 
         resp = client.post("/api/conversations", json={"seed_kind": "composer"})
@@ -486,7 +498,7 @@ class TestConversationMessages:
     ):
         """Only the first message replaces the title — subsequent ones don't."""
         mock_provider = MagicMock()
-        mock_provider.chat_json_schema.return_value = '{"reply": "ok"}'
+        mock_provider.chat_stream.return_value = iter(["ok"])
         mock_get_provider.return_value = mock_provider
 
         resp = client.post("/api/conversations", json={"seed_kind": "composer"})
@@ -513,7 +525,7 @@ class TestConversationMessages:
         FTS5 raises on sentence punctuation ("What is design thinking?").
         """
         mock_provider = MagicMock()
-        mock_provider.chat_json_schema.return_value = '{"reply": "ok"}'
+        mock_provider.chat_stream.return_value = iter(["ok"])
         mock_get_provider.return_value = mock_provider
 
         resp = client.post("/api/conversations", json={"seed_kind": "composer"})
@@ -577,7 +589,7 @@ class TestConversationMessages:
         500, which the UI could only render as "INTERNAL SERVER ERROR".
         """
         mock_provider = MagicMock()
-        mock_provider.chat_json_schema.side_effect = RuntimeError(
+        mock_provider.chat_stream.side_effect = RuntimeError(
             "model 'qwen3.6:latest' not found (status code: 404)"
         )
         mock_get_provider.return_value = mock_provider
@@ -589,12 +601,22 @@ class TestConversationMessages:
             f"/api/conversations/{conv_id}/messages", json={"text": "hi"}
         )
 
-        assert resp.status_code == 502
-        assert resp.is_json
-        body = resp.get_json()
-        assert body["ok"] is False
-        # The model name is the actionable part — it must reach the user.
-        assert "qwen3.6:latest" in body["error"]
+        # SSE stream: error is delivered as an event, status stays 200.
+        assert resp.status_code == 200
+        text = resp.get_data(as_text=True)
+        err = ""
+        for line in text.splitlines():
+            line = line.strip()
+            if not line.startswith("data:"):
+                continue
+            import json as _json
+            try:
+                payload = _json.loads(line[5:].strip())
+            except Exception:
+                continue
+            if payload.get("error"):
+                err = payload["error"]
+        assert "qwen3.6:latest" in err
 
     @patch("lifekit.serve.server.get_provider")
     def test_retrieve_passages_ranks_by_query_not_insertion_order(
@@ -656,7 +678,7 @@ class TestConversationMessages:
     def test_conversation_round_trip(self, mock_get_provider, client, db_path):
         """Full round-trip: create → message → reply → reload."""
         mock_provider = MagicMock()
-        mock_provider.chat_json_schema.return_value = '{"reply": "Your reframe is strong."}'
+        mock_provider.chat_stream.return_value = iter(["Your reframe is strong."])
         mock_get_provider.return_value = mock_provider
 
         # 1. Create
@@ -669,7 +691,19 @@ class TestConversationMessages:
             "text": "Tell me about belief reframing.",
         })
         assert resp.status_code == 200
-        reply = resp.get_json()["reply"]
+        text = resp.get_data(as_text=True)
+        reply = ""
+        for line in text.splitlines():
+            line = line.strip()
+            if not line.startswith("data:"):
+                continue
+            import json as _json
+            try:
+                payload = _json.loads(line[5:].strip())
+            except Exception:
+                continue
+            if payload.get("done"):
+                reply = payload.get("reply", "")
         assert len(reply) > 0
 
         # 3. Reload (separate request — tests persistence)
