@@ -1,56 +1,53 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ExerciseCard } from "@/components/feed/ExerciseCard";
 import { FadingIdeasCard } from "@/components/feed/FadingIdeasCard";
 import { ResurfacedIdeaCard } from "@/components/feed/ResurfacedIdeaCard";
 import { TodayHeader } from "@/components/feed/TodayHeader";
 import { useBriefing } from "@/hooks/useBriefing";
+import { ActivityDrawer, DrawerCard } from "@/components/ActivityDrawer";
 
 export default function FeedPage() {
-  const router = useRouter();
   const {
     briefing,
     loading,
     error,
     markDone,
     signalIdea,
-    createConversation,
   } = useBriefing();
 
   const [actionPending, setActionPending] = useState(false);
+  const [drawerCard, setDrawerCard] = useState<DrawerCard | null>(null);
 
-  const handleTalkAboutExercise = async () => {
+  const handleTalkAboutExercise = () => {
     if (!briefing) return;
-    setActionPending(true);
-    try {
-      const convId = await createConversation("card", String(briefing.exercise.id));
-      router.push(`/c/${convId}`);
-    } finally {
-      setActionPending(false);
-    }
+    setDrawerCard({
+      kind: "exercise",
+      id: briefing.exercise.id,
+      title: briefing.exercise.title,
+      text: briefing.exercise.text,
+    });
   };
 
-  const handleTalkAboutIdea = async (ideaId: number) => {
-    setActionPending(true);
-    try {
-      const convId = await createConversation("card", String(ideaId));
-      router.push(`/c/${convId}`);
-    } finally {
-      setActionPending(false);
-    }
+  const handleTalkAboutIdea = (ideaId: number, text: string) => {
+    setDrawerCard({ kind: "idea", id: ideaId, title: "", text });
   };
 
-  const handleTalkAboutResurfaced = async () => {
+  const handleTalkAboutResurfaced = () => {
     if (!briefing) return;
+    setDrawerCard({
+      kind: "resurfaced",
+      id: briefing.resurfaced_idea.id,
+      title: "",
+      text: briefing.resurfaced_idea.text,
+    });
+  };
+
+  const handleMarkDone = async (exerciseId: number) => {
     setActionPending(true);
     try {
-      const convId = await createConversation(
-        "card",
-        String(briefing.resurfaced_idea.id),
-      );
-      router.push(`/c/${convId}`);
+      await markDone(exerciseId);
     } finally {
       setActionPending(false);
     }
@@ -99,8 +96,8 @@ export default function FeedPage() {
   }
 
   return (
+    <>
     <div className="lk-shell">
-      {/* 1. Today header + stage strip */}
       <TodayHeader
         book={briefing.book}
         day={briefing.day}
@@ -128,9 +125,20 @@ export default function FeedPage() {
       {/* 4. Fading ideas card */}
       <FadingIdeasCard
         ideas={briefing.fading_ideas}
-        onTalkAbout={handleTalkAboutIdea}
+        onTalkAbout={(id) => {
+          const idea = briefing.fading_ideas.find((i) => i.id === id);
+          handleTalkAboutIdea(id, idea?.text ?? "");
+        }}
       />
 
     </div>
+
+    <ActivityDrawer
+      card={drawerCard}
+      onClose={() => setDrawerCard(null)}
+      onMarkDone={handleMarkDone}
+      markingDone={actionPending}
+    />
+    </>
   );
 }
