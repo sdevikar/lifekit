@@ -96,49 +96,60 @@ export default function FeedPage() {
   }
 
   return (
-    <>
-    <div className="lk-shell">
-      <TodayHeader
-        book={briefing.book}
-        day={briefing.day}
-        stages={briefing.stages}
-      />
+    <div className="flex h-screen min-h-screen">
+      <div
+        className={
+          drawerCard
+            ? "w-1/2 h-full overflow-y-auto border-r border-lk-border"
+            : "w-full h-full overflow-y-auto"
+        }
+      >
+        <div className="lk-shell">
+          <TodayHeader
+            book={briefing.book}
+            day={briefing.day}
+            stages={briefing.stages}
+          />
 
-      {/* 2. Today's exercise card */}
-      <ExerciseCard
-        exercise={briefing.exercise}
-        onMarkDone={async () => {
-          await markDone(briefing.exercise.id);
-        }}
-        onTalkAbout={handleTalkAboutExercise}
-        markingDone={actionPending}
-      />
+          {/* 2. Today's exercise card */}
+          <ExerciseCard
+            exercise={briefing.exercise}
+            onMarkDone={async () => {
+              await markDone(briefing.exercise.id);
+            }}
+            onTalkAbout={handleTalkAboutExercise}
+            markingDone={actionPending}
+          />
 
-      {/* 3. Resurfaced idea card */}
-      <ResurfacedIdeaCard
-        idea={briefing.resurfaced_idea}
-        onStillWithMe={handleStillWithMe}
-        onTalkAbout={handleTalkAboutResurfaced}
-        signaling={actionPending}
-      />
+          {/* 3. Resurfaced idea card */}
+          <ResurfacedIdeaCard
+            idea={briefing.resurfaced_idea}
+            onStillWithMe={handleStillWithMe}
+            onTalkAbout={handleTalkAboutResurfaced}
+            signaling={actionPending}
+          />
 
-      {/* 4. Fading ideas card */}
-      <FadingIdeasCard
-        ideas={briefing.fading_ideas}
-        onTalkAbout={(id) => {
-          const idea = briefing.fading_ideas.find((i) => i.id === id);
-          handleTalkAboutIdea(id, idea?.text ?? "");
-        }}
-      />
+          {/* 4. Fading ideas card */}
+          <FadingIdeasCard
+            ideas={briefing.fading_ideas}
+            onTalkAbout={(id) => {
+              const idea = briefing.fading_ideas.find((i) => i.id === id);
+              handleTalkAboutIdea(id, idea?.text ?? "");
+            }}
+          />
+        </div>
+      </div>
 
+      {drawerCard && (
+        <div className="w-1/2 h-full">
+          <ActivityDrawer
+            card={drawerCard}
+            onClose={() => setDrawerCard(null)}
+            onMarkDone={handleMarkDone}
+            markingDone={actionPending}
+          />
+        </div>
+      )}
     </div>
-
-    <ActivityDrawer
-      card={drawerCard}
-      onClose={() => setDrawerCard(null)}
-      onMarkDone={handleMarkDone}
-      markingDone={actionPending}
-    />
-    </>
   );
 }

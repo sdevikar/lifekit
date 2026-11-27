@@ -59,53 +59,46 @@ export function ActivityDrawer({
   if (!card) return null;
 
   return (
-    <>
-      <div
-        className="fixed inset-0 bg-black/30 z-30"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <aside className="fixed top-0 right-0 h-full w-full sm:w-[440px] bg-lk-bg border-l border-lk-border shadow-panel z-40 flex flex-col">
-        <header className="flex items-center justify-between gap-2 px-4 py-3 border-b border-lk-border shrink-0">
-          <h2 className="text-sm font-semibold text-lk-fg truncate">
-            {card.title || "Card"}
-          </h2>
+    <aside className="h-full w-full bg-lk-bg flex flex-col">
+      <header className="flex items-center justify-between gap-2 px-4 py-3 border-b border-lk-border shrink-0">
+        <h2 className="text-sm font-semibold text-lk-fg truncate">
+          {card.title || "Card"}
+        </h2>
+        <button
+          type="button"
+          onClick={onClose}
+          className="lk-btn lk-btn-sm lk-btn-ghost px-2"
+          aria-label="Close"
+        >
+          ✕
+        </button>
+      </header>
+      <div className="px-4 py-3 border-b border-lk-border shrink-0">
+        <p className="text-sm text-lk-fg">{card.text}</p>
+        {card.kind === "exercise" && onMarkDone && (
           <button
             type="button"
-            onClick={onClose}
-            className="lk-btn lk-btn-sm lk-btn-ghost px-2"
-            aria-label="Close"
+            onClick={() => onMarkDone(card.id)}
+            disabled={markingDone}
+            className="lk-btn lk-btn-sm mt-3"
           >
-            ✕
+            {markingDone ? "Saving…" : "Mark done"}
           </button>
-        </header>
-        <div className="px-4 py-3 border-b border-lk-border shrink-0">
-          <p className="text-sm text-lk-fg">{card.text}</p>
-          {card.kind === "exercise" && onMarkDone && (
-            <button
-              type="button"
-              onClick={() => onMarkDone(card.id)}
-              disabled={markingDone}
-              className="lk-btn lk-btn-sm mt-3"
-            >
-              {markingDone ? "Saving…" : "Mark done"}
-            </button>
-          )}
-        </div>
-        <div className="flex-1 min-h-0">
-          {creating && (
-            <div className="flex items-center justify-center h-full text-sm text-lk-muted">
-              Opening…
-            </div>
-          )}
-          {error && (
-            <div className="flex items-center justify-center h-full text-sm text-lk-primary">
-              {error}
-            </div>
-          )}
-          {convId && <ChatView convId={convId} />}
-        </div>
-      </aside>
-    </>
+        )}
+      </div>
+      <div className="flex-1 min-h-0">
+        {creating && (
+          <div className="flex items-center justify-center h-full text-sm text-lk-muted">
+            Opening…
+          </div>
+        )}
+        {error && (
+          <div className="flex items-center justify-center h-full text-sm text-lk-primary">
+            {error}
+          </div>
+        )}
+        {convId && <ChatView convId={convId} />}
+      </div>
+    </aside>
   );
 }
