@@ -15,7 +15,7 @@ traceability.
 
 | ID | Assumption | Status |
 |----|------------|--------|
-| A1 | PDF only. No EPUB, audio, YouTube. | locked |
+| A1 | PDF only. No EPUB, audio, YouTube. | retired 2026-11-27 — replaced by A25 |
 | A2 | Text-layer PDFs only; scanned/image PDFs refused with a clear error, never silently ingested. | locked |
 | A3 | PDFs are well-formed with an embedded TOC; splitter reads TOC first, heuristics only as fallback. Pathological PDFs out of scope. | locked |
 | A4 | English-language self-help books. | locked |
@@ -58,3 +58,14 @@ traceability.
 | ID | Assumption | Status | Revisit trigger |
 |----|------------|--------|-----------------|
 | A24 | Product interface is a local single-user web UI (feed of cards + conversation view) served on localhost; no auth, no cloud, no sync. Built with Next.js (decided 2026-09-21), visually faithful to the approved mock. | active | If multi-user or remote access is wanted, revisit auth/sync then. |
+
+## Roadmap v2 — v1 card feed (2026-11-27)
+
+| ID | Assumption | Status | Revisit trigger |
+|----|------------|--------|-----------------|
+| A25 | PDF and EPUB are both accepted. PyMuPDF opens both, and `get_toc()` works on EPUB; `split_chapters()` split a synthetic two-chapter EPUB unchanged. No audio or YouTube. | active | An EPUB with no usable TOC appears. |
+| A26 | SQLite is the only source of truth for the book model (sections, passages, items, cards). No JSON-LD/RDF/graph store in v1. | active | A second consumer needs an export. |
+| A27 | Card content and card UI are generated once at ingest time, validated by the OpenUI parser, and stored. Nothing is generated at view time. A card that fails validation after retries is rejected — no template fallback. | active | Rejection rate above 10% of items. |
+| A28 | Card ids are UUIDv5 of `(book_id, card type, normalized quote)`, so a re-run keeps the same ids and the user's work stays attached. | active | Quote edits across re-runs orphan user work. |
+| A29 | The feed shows every non-hidden, non-done card of one book in reading order. No scheduling. | active | The feed feels too long in dogfood. |
+| A30 | Questions are self-checks: the user writes an answer, then sees the author's answer and quote. No score is computed or stored. | active | Never — scoring conflicts with intent.md. |

@@ -25,8 +25,11 @@ retired items move to their section with a reason and date.
 
 ## Current state
 
-Stage 4 of 6 (dogfood & harden) — see `.agents/intent.md` for the stage table.
-The venue is shipped; now dogfooding the daily loop.
+Roadmap v2 (2026-11-27). Stage 1 of `.agents/intent.md` → Roadmap: **v1 — a
+card feed for one book.** The PoC pipeline and venue below are shipped. The
+feed itself is not useful yet: it shows the same front-matter ideas every day,
+875 ideas is too many, and the exercises contain duplicates (see the v1
+problem statement under Upcoming).
 
 | Area | State |
 |------|-------|
@@ -53,59 +56,85 @@ The venue is shipped; now dogfooding the daily loop.
 
 ## Now / In progress
 
-Exercise surface proposals drafted (7 proposals, see Upcoming). Not yet approved
-or committed.
+Roadmap v2 and the six v1 proposals are drafted on branch `docs/roadmap-v2`.
+Awaiting the human's approval.
 
 ## Upcoming
 
-Ordered by dependency, then by value-per-unit-work.
+### v1 — card feed for one book (roadmap v2, 2026-11-27)
 
-### Exercise surfaces (new — 2026-10-19)
+**Problem.** The dogfood feed for `dyl` is not useful:
 
-Master-detail routing model: tap a feed card → card animates into left pane →
-exercise component renders in right pane. A2UI protocol for declarative UI.
-Component registry keyed by exercise type. Completed exercises join recents.
+- `_resurfaced_idea` and `_fading_ideas` select `ORDER BY id LIMIT …`, so the
+  feed always shows the Dedication and Contents ideas.
+- Front matter and back matter are extracted like chapters (Dedication 3
+  ideas, Contents 2, Notes 12, Acknowledgments 10).
+- 875 key ideas and 144 exercises exist for one book. Many exercises repeat
+  (Odyssey Plans about 8 times, Good Time Journal about 10 times), because
+  sectioned extraction (A22) splits a chapter into 3000-char sections and
+  dedupe compares titles only.
+- Some "exercises" come from anecdotes, not from instructions.
 
-| # | Slice | Proposal | Depends on | Status |
-|---|-------|----------|------------|--------|
-| 1 | Exercise surface routing (master-detail) | `exercise-surface-routing/` | — | Proposed |
-| 2 | Exercise type system (schema + A2UI) | `exercise-type-system/` | — | Proposed |
-| 3 | Journal exercise surface | `exercise-surface-journal/` | 1, 2 | Proposed |
-| 4 | Tracking exercise surface | `exercise-surface-tracking/` | 1, 2 | Proposed |
-| 5 | Questionnaire exercise surface | `exercise-surface-questionnaire/` | 1, 2 | Proposed |
-| 6 | Concept check exercise surface | `exercise-surface-concept-check/` | 1, 2 | Proposed |
-| 7 | Worksheet exercise surface | `exercise-surface-worksheet/` | 1, 2 | Proposed |
+**v1 goal.** One book. Every card in the feed is useful, has a type, and opens
+the right surface in a side drawer. Work done in the drawer persists on the
+card.
 
-### Journal (deferred — gated on `intent.md` amendment)
-
-| # | Slice | Proposal | Depends on | Status |
-|---|-------|----------|------------|--------|
-| 1 | Journal tile layout — grid of entry cards | `journal-tile-layout/` | Journal A + B | Awaiting approval (journal still deferred) |
-
-### Program layer (proposed — unlocked after dogfood loop proven)
+Build order — each slice is independently testable:
 
 | # | Slice | Proposal | Depends on | Status |
 |---|-------|----------|------------|--------|
-| 1 | Coaching session model (Step 8) | `step-8-coaching-sessions/` | — | Proposed |
-| 2 | Momentum decay engine (Step 9) | `step-9-momentum-decay/` | Step 8 | Proposed |
-| 3 | User interviewer (Step 10) | `step-10-user-interviewer/` | Step 9 | Proposed |
-| 4 | Invite-to-coach UI (Step 11) | `step-11-invite-to-coach/` | coach relationship defined | Proposed |
+| 1 | Card types — the six types, their fields, surfaces, and "done" rules | `card-types-v1/` | — | Proposed |
+| 2 | Book model v1 — PDF + EPUB → sections tree (front/body/back) + passages with offsets; `lifekit ingest` | `book-model-v1/` | — | Proposed |
+| 3 | Item extraction v2 — typed items with stance, per-chapter consolidation, passage anchors, usefulness gate + golden set | `item-extraction-v2/` | 1, 2 | Proposed |
+| 4 | Card generation — item → card; model writes `card_ui` + `surface_ui` in OpenUI Lang; parser-validated; stable UUIDs | `card-generation/` | 1, 3 | Proposed |
+| 5 | Feed v1 — list stored cards in reading order; render `card_ui`; "Open" and "Not useful" actions | `feed-v1/` | 4 | Proposed |
+| 6 | Card activity drawer — per-type surface from `surface_ui`; persisted surface state; one conversation per card | `card-activity-drawer/` | 5 | Proposed |
 
-**Superseded proposals:**
-- `chat-surface-c-entry-points/` — superseded by `chat-layout-deeptutor-recent/`. The two-pane layout it assumed is being removed.
-- `journal-tab-c-toc-navigation/` — superseded by `journal-tile-layout/`. The sidebar TOC is replaced by a tile grid.
+Slices 1 and 2 can run in parallel.
+
+### Superseded by roadmap v2 (2026-11-27)
+
+Each of these is replaced by the v1 slices above. The folders stay for
+history; do not apply them.
+
+| Proposal | Replaced by | Reason |
+|----------|-------------|--------|
+| `exercise-type-system/` | `card-types-v1/` | Typed cards cover exercises and ideas together. A2UI is replaced by OpenUI (already in the chat). |
+| `exercise-surface-routing/` | `feed-v1/`, `card-activity-drawer/` | The drawer on `feat/card-first-feed` replaces the master-detail route. |
+| `exercise-surface-journal/` | `card-activity-drawer/` (reflect) | One drawer, one surface per card type. |
+| `exercise-surface-tracking/` | `card-activity-drawer/` (habit) | Same. |
+| `exercise-surface-questionnaire/` | `card-activity-drawer/` (worksheet) | Same. |
+| `exercise-surface-concept-check/` | `card-activity-drawer/` (question) | Same; unscored. |
+| `exercise-surface-worksheet/` | `card-activity-drawer/` (worksheet) | Same. |
+| `openui-exercise-surfaces/` | `card-generation/` | Surfaces are generated offline and validated, not at view time. |
+| `card-associated-activity/`, `card-discovery/` (on `feat/card-first-feed`) | `card-activity-drawer/`, `feed-v1/` | Folded into the v1 slices. |
+
+## Parked (roadmap v2, 2026-11-27)
+
+Parked means "not designed until v1 dogfood passes". Each item has a reason.
+
+| Item | Reason |
+|------|--------|
+| Spaced repetition, daily selection, learning loop (FSRS on cards) | Brute force first: the feed shows every useful card. FSRS code stays but the feed stops reading it. |
+| Tags + semantic search (by book, topic, hashtag) | One book does not need search. Needs embeddings — L3 of the book model. |
+| Long-term user memory (what the user read, did, wants) | v1 card history is the only memory. Design after dogfood. |
+| Rich card history (recents, journal destination of all entries) | v1 persists work per card; browsing across cards comes later. |
+| Multi-book feed | The book model is multi-book ready; the feed shows one book in v1. |
+| Program layer — `step-8-coaching-sessions/` … `step-11-invite-to-coach/` | Unchanged: after the core loop is proven. |
+| Journal slices (`journal-tab*`, `journal-tile-layout/`) | The reflect card surface covers journaling in v1. Revisit as a destination later. |
+| AKBF as a public format / export (JSON-LD, Web Annotation) | SQLite is the only source of truth in v1. An export is a view, add it when a consumer exists. |
+| Knowledge graph / concept layer | Moved from never-build to PoC limit (intent.md). Revisit with tags + search. |
+| Notifications / nudges | After the core loop is proven. |
+| RAG quality upgrade (F9) | After dogfood. Passages from the book model are the base for it. |
+| Old content tables (`exercises`, `key_ideas`, `fsrs_cards`, `completions`, `idea_signals`) and the scheduler | Frozen in v1: no new reads from the feed. A cleanup proposal decides deletion after v1. |
 
 ## Deferred / Future
 
 | Item | Reason |
 |------|--------|
-| Journal slices A → B → tile layout | Deferred; gated on a human-approved `intent.md` amendment. A carries an open TipTap-vs-textarea decision. |
 | Books tab | Single-book dogfood, no switching need yet. Add when book #2 exists. |
 | LLM-generated journal titles | Cheap tasking model later; first-line truncation for now. |
-| Chat token streaming | SSE + partial-flush persistence + client reader. No proposal yet — `chat-pending-feedback/` explicitly deferred it. Decide after the pending state is dogfooded: if the wait is tolerable once the screen responds, streaming may not be worth it. |
 | Journal TipTap vs textarea | Deliberate dependency decision, carried in `journal-tab-b-editor`. |
-| Notifications / nudges | Deferred until the core loop is proven (intent never-build). |
-| RAG quality upgrade | Concrete plan is F9 (hybrid dense+sparse → rerank → answer); build post-dogfood. |
 
 ## Known issues
 
@@ -287,6 +316,7 @@ channels, and Langfuse observability were deliberately excluded.
 
 | Slice | Shipped | Notes |
 |-------|---------|-------|
+| Chat token streaming (SSE) | 2026-11-22 | Commit `072297a`. Moved from Deferred by roadmap v2. |
 | Chat layout — DeepTutor-style single-column + sidebar Recent | 2026-10-15 | `/chat` single-column, sidebar collapsible "Recent" with recency grouping, rename/delete, "New chat"; `/chat/<id>` deep links, `/c/<id>` redirects. Fixed `TabContext` route sync. Spec archived at `../../openspec/archives/chat-layout-deeptutor-recent/`. |
 | Chat placeholder title | 2026-10-15 | Sentinel "New conversation"; replaced by the first 60 chars of the first user message (once). Spec at `../../openspec/changes/chat-placeholder-title/`. |
 | Chat Surface **b** — open conversation + composer | 2026-10-07 | `ChatView` composes `MessageList` + `ChatInput` + title header; `MasterComposer` → `POST /api/conversations`. |
@@ -312,24 +342,28 @@ Journal follows the same pattern (`/journal`).
 ## Open questions
 
 1. Learning runtime: evolve `lifekit/mcp/server.py` in place, or a second server
-   beside it? (Stage 5 — not before the dogfood loop is proven.)
-2. What is the dogfood exit criterion for the core loop? (Needed before any
-   program-layer work is unlocked.)
+   beside it? (Parked with the program layer.)
+2. v1 dogfood exit criterion. Proposed (needs the human's approval): use the
+   feed on at least 10 of 14 days, and mark "Not useful" on at most 20% of the
+   cards opened.
+3. Usefulness precision target for item extraction v2. Proposed: at least 80%
+   of cards in the golden set labelled useful by the human
+   (`item-extraction-v2/`).
 
 ## Locked assumptions
 
 Step 0 (locked 2026-09-14) — canonical text. One-liners with IDs live in
 [`ASSUMPTIONS.md`](ASSUMPTIONS.md).
 
-- PDF only. No EPUB, audio, YouTube.
+- PDF and EPUB (EPUB added by roadmap v2, 2026-11-27 — same PyMuPDF splitter).
+  No audio, YouTube.
 - Text-layer PDFs only: scanned/image PDFs refused with a clear error, never
   silently ingested.
 - PDFs are well-formed with an embedded TOC; the splitter reads the TOC first,
   heuristics only as fallback. Pathological PDFs (corrupt files, no TOC +
   undetectable headings, exotic layouts) are out of scope for MVP.
 - English-language self-help books.
-- Single user, local machine, Ollama running (`qwen3.6:latest` or configured
-  model).
+- Single user, local machine, Ollama running (configured model; see D9).
 - Books are chapter-detectable; fixed-size sections as fallback.
 - Extraction need not be perfect — misses are fine; systemic failures get
   flagged, not silently shipped.
