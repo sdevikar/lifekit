@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Turn every kept item of a book into a stored card whose feed UI and drawer
-surface are written by the model in OpenUI Lang, validated before storage, and
-kept under a stable id across pipeline runs.
+Turn every kept item of a book into a stored card whose OpenUI program is built
+by code, derive one self-check question card per chapter, and keep cards under
+a stable id across pipeline runs.
 
 ## ADDED Requirements
 
@@ -22,54 +22,47 @@ any other status MUST produce no card.
 - **WHEN** an item has status `rejected_not_useful`
 - **THEN** no card is made for it
 
+### Requirement: Card program built by code
+
+The stage SHALL build each card's `card_ui` in OpenUI Lang from a fixed layout
+for the card's type, using only the card library. No model call SHALL write any
+part of a card program. Facts in the program (title, quote, steps, author's
+answer) MUST come from the card's content.
+
+#### Scenario: Steps match the content
+- **WHEN** a practice card has 4 steps in its content
+- **THEN** its program has one `Steps` component with those 4 steps in order
+
+### Requirement: Programs parse
+
+Every program a layout can produce SHALL parse with the OpenUI parser against
+the card library with no errors and with `FeedCard` as the root, including text
+that holds quotes, backslashes, newlines, and non-ASCII characters.
+
+#### Scenario: Quote with escapes
+- **WHEN** an insight card's quote holds a double quote, a backslash, and an em dash
+- **THEN** its program parses with no errors and shows the quote unchanged
+
 ### Requirement: Derived question cards
 
 For each top-level body section that has at least one kept insight item, the
 stage SHALL make one `question` card from the highest-rated such item. The
-question card MUST have stance `inferred`, its own question text, and an
-author's answer built from the item's content and quote.
+model MUST write only the question and the author's answer. The card MUST have
+stance `inferred` and the quote of its source item.
 
 #### Scenario: Question for a chapter
 - **WHEN** chapter 3 has kept insight items rated 5, 4, and 4
 - **THEN** one question card is made from the item rated 5, labelled "LifeKit question"
 
-### Requirement: Generated card and surface UI
+### Requirement: Question failure without fallback
 
-For each card, the model SHALL write a feed card program and a drawer surface
-program in OpenUI Lang, using only the card library and surface library. Facts
-(title, quote, steps, worksheet fields, author's answer) MUST come from the
-card's content, not from new model text.
+A question whose content still fails validation after two retries SHALL produce
+no card. The stage MUST record the item key and the last errors in the run's
+stats and MUST NOT store a template-made question in its place.
 
-#### Scenario: Steps match the content
-- **WHEN** a practice card has 4 steps in its content
-- **THEN** its surface program has one Checklist with those 4 steps in order
-
-### Requirement: Validation before storage
-
-Both programs SHALL be parsed with the OpenUI parser against their library and
-MUST have no parse errors, the correct root, and only known components. The
-feed card MUST hold exactly one Open button. The surface MUST hold the parts its
-card type needs (see card-ui-library). A failed program MUST be retried at most
-twice with the errors in the prompt.
-
-#### Scenario: Unknown component retried
-- **WHEN** the model's surface uses a component named `Slider`
-- **THEN** the stage retries with the error "unknown component Slider" in the prompt
-
-#### Scenario: Two Open buttons
-- **WHEN** a feed card program holds two Open buttons
-- **THEN** validation fails
-
-### Requirement: Rejection without fallback
-
-A card that still fails validation after the retries SHALL be rejected: it is
-not stored as a card, and a rejection record with the item, the run, and the
-last errors MUST be stored. The stage MUST NOT store a template-made card in its
-place.
-
-#### Scenario: Rejected after three tries
-- **WHEN** all three attempts for an item fail validation
-- **THEN** the item has a rejection record, no card exists for it, and the stage summary counts one rejection
+#### Scenario: Question fails three times
+- **WHEN** all three attempts for chapter 5's question fail validation
+- **THEN** chapter 5 has no question card, and the run stats list the item key with the errors
 
 ### Requirement: Stable card id
 
@@ -89,17 +82,17 @@ later run produces again MUST become active again with its user state.
 
 #### Scenario: Item merged away
 - **WHEN** a re-run merges the item behind card X into another item
-- **THEN** card X is retired, and its user state and conversation stay in the database
+- **THEN** card X is retired, and its reactions and comments stay in the database
 
-### Requirement: Reuse unchanged cards
+### Requirement: Reuse unchanged questions
 
-The stage SHALL skip the model call for a card whose content and prompt hash
-equal those of its stored version, unless forced. A forced run MUST regenerate
-every card.
+The stage SHALL skip the model call for a question card whose source content
+hash and prompt hash equal those of its stored version, unless forced. A forced
+run MUST regenerate every question.
 
 #### Scenario: Second run without changes
 - **WHEN** the cards stage runs twice with no item or prompt change
-- **THEN** the second run makes no model calls and reports all cards as reused
+- **THEN** the second run makes no model calls and reports every question as reused
 
 ### Requirement: Reading-order position
 
@@ -112,10 +105,10 @@ A derived question card MUST sort after the last other card of its chapter.
 
 ### Requirement: Stage summary
 
-The cards stage SHALL report counts of cards made, reused, retired, and
-rejected, counts per card type, and the number of model calls, in its run
-record and in the ingest output.
+The cards stage SHALL report counts of cards made, retired, and collided,
+counts per card type, questions made, reused, and failed, and the number of
+model calls, in its run record and in the ingest output.
 
 #### Scenario: Summary line
 - **WHEN** the cards stage finishes
-- **THEN** the output shows a line such as "made 180 · reused 40 · retired 3 · rejected 5"
+- **THEN** the output shows a line such as "cards 196 · retired 3 · questions 16 (reused 0, failed 1) · model calls 19"

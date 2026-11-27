@@ -66,12 +66,12 @@ label_sample = 60
 
 ### D3. One flat extraction schema, validated per type in code
 
-Ollama's `format=<json schema>` handles flat object lists well. A union of six
+Ollama's `format=<json schema>` handles flat object lists well. A union of five
 content shapes per item is harder for the model. So the window call returns
 `{"items": [ItemCandidate]}` where `ItemCandidate` has `kind`, `stance`,
 `title`, `quote`, `summary`, and every content field as optional (`body`,
-`why_it_matters`, `coach_questions`, `purpose`, `steps`, `behavior`, `cadence`,
-`how_to_start`, `prompt`, `followups`, `instructions`, `fields`). Code maps
+`why_it_matters`, `purpose`, `steps`, `behavior`, `cadence`, `how_to_start`,
+`prompt`, `followups`). Code maps
 `kind` to the card type, picks that type's fields, and validates them with the
 card-types-v1 content model. Failures become `rejected_invalid` with the
 Pydantic error text.
@@ -84,6 +84,7 @@ teaching the eval answers). It says:
   activities.
 - `habit` means the author says to repeat it (daily, each week, every time X).
 - `template` means the author gives a form, scale, or set of fields to fill in.
+  Write its goal as `purpose` and each field as one step (card-types-v1 D3).
 - Do not extract statements about the book itself ("in this chapter…").
 - Quote a verbatim sentence or two that best grounds the item.
 - Write `summary`, `body`, and steps in plain words a fresh reader understands

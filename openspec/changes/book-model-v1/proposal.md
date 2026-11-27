@@ -69,7 +69,7 @@ None. `openspec/specs/` holds no capabilities yet.
   `content_hash`), `lifekit/store/chapter_splitter.py` (expose the page and
   TOC readers for reuse; delete the dead loop P3).
 - Unchanged and frozen: `chapters`, `book_chunks`, and the old
-  `python -m lifekit.store` path. card-activity-drawer moves chat grounding to
+  `python -m lifekit.store` path. card-comments moves coach grounding to
   passages and removes the old path.
 - Docs: `docs/arch/README.md` data-flow diagram, `AGENTS.md` quick reference,
   `ASSUMPTIONS.md` A25 (already added by roadmap v2).

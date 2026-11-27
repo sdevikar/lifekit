@@ -42,7 +42,7 @@ fails the card type's validation MUST be stored with status `rejected_invalid`.
 
 #### Scenario: Exercise without steps
 - **WHEN** the model returns an `exercise` item with an empty steps list
-- **THEN** the item is stored with status `rejected_invalid` and the reason "steps: 1 to 10 items"
+- **THEN** the item is stored with status `rejected_invalid` and the reason "steps: 1 to 12 items"
 
 ### Requirement: No activities from stories
 

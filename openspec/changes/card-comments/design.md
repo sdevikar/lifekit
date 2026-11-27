@@ -1,189 +1,176 @@
-# Design — card-activity-drawer
+# Design — card-comments
 
 ## Context
 
-- feed-v1 gives `card_state(card_id, status, prev_status, updated_at)`,
-  `card_events`, `lifekit/serve/feed.py`, and an `ActivityDrawer` that renders
-  `surface_ui` with the surface library and keeps `?card=<id>` in the URL.
-- card-generation fixes the surface state keys: input values under their
-  `name`, `steps` as a list of booleans, `revealed: true` after a reveal
-  (card-types-v1 design, "surface-state keys").
-- card-types-v1 gives `next_status(current, target, previous=None)` (raises
-  `InvalidTransition`),
-  `can_finish(type, content, surface_state) -> (ok, missing)`, and
+- `conversations(id, title, book_id, seed_kind, seed_ref, …)` and
+  `messages(id, conversation_id, role, text, created_at)` exist
+  (`lifekit/db/schema.py`).
+- `post_message` in `lifekit/serve/server.py` streams SSE events
+  `{"delta"}`, then `{"done": true, "reply"}`, or `{"error"}`. The frontend hook
+  `useConversation.ts` reads them.
+- feed-v1 provides `card_state.responded_at`, `FeedCardView` with a thread
+  slot, and `CardContext`.
+- card-types-v1 provides `spec(type).comment_hint` and
   `spec(type).coach_instruction`.
-- book-model-v1 gives `passages(id, book_id, section_idx, n, text)` and the
-  plain FTS5 table `passages_fts(book_id UNINDEXED, passage_id UNINDEXED,
-  text)`.
-- OpenUI 1.2 `Renderer` props: `initialState` (restore), `onStateUpdate`
-  (every change), `onAction` (custom actions and `ToAssistant`).
-- Today `conversations` has `seed_kind IN ('card','composer')` and a free-form
-  `seed_ref`. Old card conversations hold refs such as `exercise:3`.
-- Today `post_message` calls `_coach_messages(c, app.config["book_id"], …)`, so
-  every reply is grounded on the server's pinned book.
+- book-model-v1 provides `passages(id, book_id, section_id, ord, text, …)` and
+  `passages_fts`.
 
 ## Goals / Non-Goals
 
 **Goals:**
-- Nothing the user writes in a drawer is lost.
-- The card's status follows what the user does, with no manual status UI
-  (intent never-build: manual scheduling UI).
-- The coach answers about this card, this book, and what the user wrote.
+- A comment is saved before anything else happens, and nothing deletes it.
+- Every comment gets a grounded reply that fits it.
+- The thread reads like a comment thread, not a chat window.
 
 **Non-Goals:**
-- No long-term user memory across cards (parked).
-- No search or tags (parked).
-- No journal page. `/journal` stays "Coming soon"; reflect entries live on
-  their cards.
+- No posts without a card (the "+" button, v2, ROADMAP D13).
+- No reply that is only a reaction (v2, ROADMAP D4).
+- No editing or deleting of comments in v1.
+- No reactions on the user's own comments.
 
 ## Decisions
 
-### D1. Schema migration
+### D1. Migration
 
 ```sql
-ALTER TABLE card_state ADD COLUMN surface_state TEXT;   -- JSON, ≤ 64 KB
 ALTER TABLE conversations ADD COLUMN card_id TEXT;
-CREATE UNIQUE INDEX IF NOT EXISTS conversations_card ON conversations(card_id);
+CREATE UNIQUE INDEX IF NOT EXISTS conversations_card ON conversations(card_id)
+    WHERE card_id IS NOT NULL;
+ALTER TABLE messages ADD COLUMN reaction TEXT
+    CHECK(reaction IN ('like','dislike'));
 ```
 
-Added as a `_migrate_*` function in `lifekit/db/schema.py`, guarded by a
-`PRAGMA table_info` check like the existing migrations. SQLite allows many
-NULLs in a unique index, so old conversations need no change.
+`init_db()` adds each column only when `PRAGMA table_info` lacks it, as the
+existing migrations do. A card thread uses `seed_kind = 'card'`,
+`seed_ref = card_id`, the card's `book_id`, and the card title as its title.
+The existing CHECK on `seed_kind` already allows `'card'`.
 
-Alternative: reuse `seed_ref` for the card id. Rejected: old rows already use
-`seed_ref` for other refs, so a unique index on it would fail on real data.
+Get-or-create: `INSERT OR IGNORE` on the unique index, then `SELECT`. Two
+quick posts on a new card cannot make two threads.
 
-### D2. Endpoints
-
-| Method | Path | Body | Result |
-|--------|------|------|--------|
-| GET | `/api/cards/<id>` | – | `{id, book_id, type, title, card_ui, surface_ui, status, surface_state, retired}`; 404 if unknown |
-| POST | `/api/cards/<id>/open` | – | `{status}` |
-| PUT | `/api/cards/<id>/surface-state` | state JSON | `{status}`; 413 over 64 KB; 400 if not an object |
-| POST | `/api/cards/<id>/done` | – | `{status: "done"}` or 409 `{missing: [labels]}` |
-| POST | `/api/cards/<id>/checkin` | `{date: "YYYY-MM-DD"}` | `{checked_in: true, new: bool}` |
-| GET | `/api/cards/<id>/conversation` | – | `{id}` |
-
-`GET /api/cards/<id>` replaces feed-v1's `/surface` endpoint (one card lookup,
-not two). The client sends the local date for check-ins, because the server
-does not know the user's time zone; the server checks for an existing
-`checkin` event with the same `payload.date` before it inserts.
-
-Each route names its target status and calls `next_status(current, target)`:
-open → `opened`, save → `in_progress`, done → `done`. Open and save catch
-`InvalidTransition` and keep the current status, so a reopened `done` card
-stays `done`. Done on a card that is already `done` returns 200 with no change.
-
-`done` calls `can_finish(type, content, surface_state)`; when `ok` is false the
-response lists the missing field labels, and the drawer shows "Fill in: …" or,
-for a question, "Reveal the author's answer first".
-
-### D3. Get-or-create conversation
-
-```python
-c.execute(
-    "INSERT OR IGNORE INTO conversations (id, title, book_id, seed_kind, seed_ref, card_id)"
-    " VALUES (?, ?, ?, 'card', ?, ?)",
-    (uuid4().hex[:12], card.title, card.book_id, card.id, card.id),
-)
-row = c.execute("SELECT id FROM conversations WHERE card_id = ?", (card.id,)).fetchone()
-```
-
-The unique index makes the two-requests case safe without a lock. The title is
-the card title, so the sidebar shows it, and the first-message retitle in
-`post_message` is skipped when `card_id` is set.
-
-### D4. Grounding
-
-Move `_fts_query` and `_coach_messages` into `lifekit/serve/coach.py` and
-rewrite the message builder:
-
-```mermaid
-flowchart TD
-  M[user message] --> F[passages_fts MATCH, book = conversation.book_id, top 3]
-  C{conversation.card_id?} -- yes --> K[card content + quote]
-  K --> N[card passage n-1, n, n+1]
-  K --> S[surface_state, first 2000 chars]
-  K --> I[coach_instruction for the type]
-  F --> P[system prompt]
-  N --> P
-  S --> P
-  I --> P
-  C -- no --> P
-```
-
-System prompt order: OpenUI chat prompt; role line ("You are LifeKit's coach
-for the book '<title>'. Use only the book text below. Do not interpret the
-user's personality."); the type's `coach_instruction`; "The card:" with title,
-content JSON, and quote; "The user's work so far:" with the state; "Book text:"
-with the passages, each tagged `[<section title>]`, the card passages first and
-search hits after, with duplicates removed. Then the history and the message.
-
-The state goes in as `json.dumps(state, ensure_ascii=False)[:2000]`. For a
-practice card, the `steps` booleans are turned into "done: step text" lines
-first, so the model sees words instead of `[true, false]`.
-
-When a card's `passage_id` no longer exists (re-ingest), the card quote alone
-stands in for the passage block.
-
-### D5. Drawer
+### D2. Post flow
 
 ```mermaid
 sequenceDiagram
-  participant U as User
-  participant D as ActivityDrawer
-  participant A as API
-  D->>A: GET /api/cards/:id
-  D->>A: POST /open
-  D->>A: GET /conversation
-  U->>D: types
-  D-->>D: debounce 800 ms
-  D->>A: PUT /surface-state
-  U->>D: taps DoneButton
-  D->>A: PUT /surface-state (flush)
-  D->>A: POST /done
+  participant UI as CommentBox
+  participant API as POST /comments
+  participant DB
+  participant M as Ollama
+  UI->>API: {text}
+  API->>DB: get-or-create thread, insert user message, set responded_at
+  API-->>UI: {"comment": {...}}
+  API->>M: coach prompt (D3)
+  loop stream
+    M-->>API: chunk
+    API-->>UI: {"delta"}
+  end
+  API->>DB: insert coach message
+  API-->>UI: {"done": true, "reply": {...}}
 ```
 
-- `initialState` = saved `surface_state`. `onStateUpdate` stores the latest
-  state in a ref and restarts an 800 ms timer. Closing the drawer, switching
-  cards, and the `done` action flush the timer first.
-- `onAction`: `MarkDone` → flush, then `POST /done`; on 409 show the missing
-  list inside the drawer. `CheckIn` → `POST /checkin` with the local date.
-  `ToAssistant` (from `AskCoach`) → send the text through `useConversation` for
-  the card's conversation.
-- Layout: the surface on top; `ChatView` for the card's conversation below it,
-  in one scroll area on phones and two stacked panes on desktop.
-- A failed save shows "Not saved — retrying" and retries on the next change or
-  on close; it does not drop the state.
-- A done card leaves the feed list at once (feed-v1 `useFeed` gets a
-  `remove(id)`), and the drawer stays open on it until the user closes it.
+- The first SSE event carries the stored user comment with its id, so the UI
+  swaps its pending bubble for the stored one.
+- On a model failure, the server sends `{"error": "The coach could not
+  reply."}` and stores nothing more. The user comment stays.
+- `POST /api/cards/<id>/comments/retry` finds the last user message with no
+  coach message after it, builds the same prompt, and streams the same events
+  without the first one. With no such message, it returns HTTP 409.
+- Text is trimmed. Empty text returns HTTP 400. Text longer than 8,000
+  characters returns HTTP 413 (a journal entry fits; a pasted chapter does
+  not).
 
-### D6. Removing the old grounding path
+### D3. Coach prompt and grounding (`lifekit/serve/coach.py`)
 
-Delete `_retrieve_passages` and `_search_chapters`. Delete the
-`python -m lifekit.store` ingest entry and the `book_chunks` writers in
-`pdf_ingester.py` and `epub_ingester.py` if nothing else uses them (check with
-`find_usages`). Point `make ingest` at `lifekit ingest` if book-model-v1 did not
-already. Keep the `book_chunks` and `chapters` tables: dropping them buys
-nothing for dogfood.
+`build_messages(c, card_id, thread_id) -> list[dict]`:
+
+1. System: `OPENUI_SYSTEM_PROMPT`, then the coach rules, then the type's
+   `coach_instruction`, then the context block.
+2. Coach rules (fixed text):
+   - Reply to every comment.
+   - Match the comment: for a journal entry or a check-in, a few warm words
+     about what the user wrote and at most one question; for a direct
+     question, a real answer.
+   - Use only the context. Quote the book with `Quote` when it helps.
+   - Never grade the user. On a question card, compare with the author's
+     answer without saying right or wrong.
+3. Context block, in order:
+   - The card: type, title, content JSON, quote.
+   - The card's passage and the passages at `ord ± 1` in the same section.
+     When `passage_id` no longer exists, use the quote only.
+   - The top 3 `passages_fts` hits for the latest user comment, in the card's
+     book, minus passages already listed.
+4. The thread history, oldest first, read **after** the user message is stored.
+   No message is appended a second time.
+
+The context block is capped at 6,000 characters; the FTS hits are cut first.
+
+### D4. Reactions on coach replies
+
+`PUT /api/messages/<id>/reaction {value}` with `like`, `dislike`, or null. It
+updates `messages.reaction` where `role = 'coach'`. A user message returns HTTP
+400; an unknown id, HTTP 404. It adds no `card_events` row. The dogfood check
+counts disliked replies straight from `messages`.
+
+### D5. Feed entry delta
+
+feed-v1's entry gains:
+- `comment_count`: user and coach messages in the card's thread.
+- `recent`: the last 2 messages, each `{id, role, text, reaction,
+  created_at}`, oldest first.
+- `answered`: true when the thread holds a user message.
+
+One query per page joins the threads and uses a window function to pick the
+last 2 messages per thread.
+
+### D6. Frontend
+
+- `useComments(cardId, initial)`: holds the thread. `expand()` loads the whole
+  thread with `GET`. `post(text)` adds a pending user bubble, reads the SSE
+  stream, and fills a coach bubble from the deltas. `retry()` and
+  `react(messageId, value)` work the same way.
+- `CommentThread`: shows `recent`; "View all N comments" expands in place.
+  User comments render with `react-markdown`, `remark-gfm`, and the `lk-prose`
+  class, as `MessageList.tsx` does today. Coach replies render with the OpenUI
+  `Renderer` and the chat library. A streaming reply shows "Coach is writing…"
+  until the first delta. A failed reply shows "The coach could not reply." and
+  a Retry button. Each coach reply has like and dislike, the same
+  `ReactionBar` as cards.
+- `CommentBox`: a `textarea` that grows to about 12 lines, then scrolls. The
+  placeholder is the card's `comment_hint`. Post is disabled while empty or
+  while a reply streams. Ctrl/Cmd+Enter posts. The text stays in the box until
+  the server confirms the stored comment.
+- `FeedCardView` sets `CardContext.answered` from the thread, so the question
+  card's `AuthorAnswer` opens after the first comment without a reload.
+
+The old chat had a bug that showed a reply twice while streaming (fixed in
+commits `52ffe1c` and `dba5644` on the abandoned branch). `useComments` keeps
+one coach bubble per stream and replaces it with the stored reply on `done`.
+A test covers it (tasks 2.3).
+
+### D7. Removals
+
+Remove `_retrieve_passages`, `_search_chapters`, and `_coach_messages` from
+`server.py`; the chat routes call `coach.build_messages` with no card until
+retire-free-chat deletes them. Remove the `python -m lifekit.store` ingest
+path and its `book_chunks` writer; point the Makefile `ingest` target at
+`lifekit ingest`.
 
 ## Risks / Trade-offs
 
-- [Lost typing on a crash in the 800 ms window] → Acceptable: at most a few
-  words. The flush on close covers the normal path.
-- [A 2000-character cap cuts long worksheets] → The cap keeps the prompt within
-  the model's context with history. If dogfood shows the coach missing parts
-  of the user's work, raise it then.
-- [Composer chat loses the chapter fallback] → `passages_fts` covers the whole
-  book text, which the fallback only did badly. A book with no passages has no
-  cards either, so the app shows the empty state.
+- [A reply on every comment costs one model call and some waiting] → Accepted
+  (ROADMAP D4). Measured by dislikes on replies.
+- [A short "Done!" check-in gets a long reply] → The coach rules ask the reply
+  to match the comment. Tune the rules in dogfood; no code change.
+- [The home GPU is off] → Comments still save; replies fail with Retry.
+- [The context block grows with long threads] → The 6,000-character cap
+  applies to the context, not the history. Revisit if threads get long.
 
 ## Migration Plan
 
-1. Run `init_db()`; the migration adds the columns and the index.
-2. Existing composer and old card conversations keep working with
-   `card_id = NULL`; old card conversations show as plain conversations.
-3. Rollback: revert the commit. The new columns stay and are ignored.
+1. Land the migration, the routes, the coach module, and the frontend in one
+   commit with the removals.
+2. On the workstation, `init_db()` runs on start and adds the columns.
+3. Rollback: revert the commit. The new columns can stay.
 
 ## Open Questions
 

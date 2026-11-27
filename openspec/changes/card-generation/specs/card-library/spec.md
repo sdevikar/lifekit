@@ -1,86 +1,57 @@
-# Spec — card-ui-library
+# Spec — card-library
 
 ## Purpose
 
-Define the OpenUI components and custom actions that generated feed cards and
-drawer surfaces may use, what each one shows, and which state keys and events
-it produces, so that code can save the user's work and react to actions.
+Define the OpenUI components that card programs may use and what each one
+shows, so that every card renders through the same renderer as coach replies.
 
 ## ADDED Requirements
 
-### Requirement: Separate libraries
+### Requirement: Card library
 
-The frontend SHALL define three OpenUI libraries: the existing chat library,
-a card library with root `FeedCard`, and a surface library with root `Surface`.
-Each library MUST generate its own system prompt for the model.
+The frontend SHALL define a card library with root `FeedCard` next to the
+existing chat library. It MUST hold `FeedCard(type, children)`,
+`SourceLabel(label, locator)`, `TextContent(text, size)`,
+`Quote(text, locator)`, `Steps(items)`, and `AuthorAnswer(text, quote,
+locator)`, and no actions or buttons.
 
-#### Scenario: Card prompt lists only card components
-- **WHEN** the card library prompt is generated
-- **THEN** it lists FeedCard, TextContent, Quote, SourceLabel, and OpenButton, and no surface input components
+#### Scenario: Schema lists only card components
+- **WHEN** the card library schema is generated
+- **THEN** it lists exactly FeedCard, SourceLabel, TextContent, Quote, Steps, and AuthorAnswer
 
-### Requirement: Feed card components
+### Requirement: Shared text components
 
-The card library SHALL offer `FeedCard(children)`, `TextContent(text, size)`,
-`Quote(text)`, `SourceLabel(label)`, and `OpenButton(label, action)`. The
-custom action `@OpenActivity()` MUST send an `OpenActivity` event to the host
-and do nothing else.
+`TextContent` and `Quote` SHALL live in one shared file used by both the card
+library and the chat library, so a quote in a coach reply looks the same as a
+quote on a card.
 
-#### Scenario: Open button event
-- **WHEN** the user taps `OpenButton("Try it", @OpenActivity())` on a card
-- **THEN** the host receives one event of type `OpenActivity`
+#### Scenario: Coach quotes the book
+- **WHEN** a coach reply program holds `Quote("…", "p. 41")`
+- **THEN** it renders with the same component as a card quote
 
-### Requirement: Surface input components
+### Requirement: Card frame owned by code
 
-The surface library SHALL offer `Checklist(name, items)`, `TextArea(name,
-label, placeholder)`, `Scale(name, label, min, max, minLabel, maxLabel)`, and
-`Choice(name, label, options, multiple)`. Each MUST store its value in the
-renderer state under its `name`.
+`FeedCard` SHALL draw the frame, padding, and a type badge for the given card
+type. The badge text MUST come from the type, not from the program's children.
 
-#### Scenario: Checklist state
-- **WHEN** the user ticks steps 1 and 3 of `Checklist("steps", [...4 steps])`
-- **THEN** the state holds `steps` = `[true, false, true, false]`
+#### Scenario: Badge for a habit
+- **WHEN** a program has root `FeedCard("habit", [...])`
+- **THEN** the card shows the "Habit" badge
 
-#### Scenario: Restore state
-- **WHEN** a surface renders with saved state `{"entry": "Draft text"}`
-- **THEN** `TextArea("entry", …)` shows "Draft text"
+### Requirement: Author's answer after the user answers
 
-### Requirement: Surface action components
+`AuthorAnswer` SHALL hide the author's answer and quote while the host says the
+user has not commented on the card, and show the hint "Post your answer to see
+the author's answer." After the user's first comment it MUST show the answer
+and the quote with no right or wrong mark.
 
-The surface library SHALL offer `CheckIn(label)` with the custom action
-`@CheckIn()`, `DoneButton(label)` with the custom action `@MarkDone()`,
-`AskCoach(prompt)` which sends the prompt to the card's conversation, and
-`Reveal(label, requires, children)` which hides its children until tapped and
-stays disabled while the state field named by `requires` is empty. Revealing
-MUST set the state key `revealed` to true.
+#### Scenario: Before the first comment
+- **WHEN** a question card renders and the user has no comment on it
+- **THEN** the author's answer is hidden and the hint shows
 
-#### Scenario: Reveal blocked until the user answers
-- **WHEN** `Reveal("Show the author's answer", "answer", …)` renders and the `answer` field is empty
-- **THEN** the reveal control is disabled
-
-#### Scenario: Reveal sets state
-- **WHEN** the user writes an answer and taps reveal
-- **THEN** the children show and the state holds `revealed` = true
-
-### Requirement: Required parts for simple surfaces
-
-Every surface SHALL hold a DoneButton. An `insight` surface MUST also hold a
-Quote and at least one AskCoach. A `habit` surface MUST also hold a CheckIn. A
-`reflect` surface MUST also hold a TextArea named `entry`.
-
-#### Scenario: Habit without a check-in
-- **WHEN** a habit surface holds only a DoneButton
-- **THEN** validation fails with "missing CheckIn"
-
-### Requirement: Required parts for structured surfaces
-
-A `practice` surface SHALL hold a Checklist named `steps` with one entry per
-content step and a TextArea named `notes`. A `worksheet` surface SHALL hold one
-input per content field, named by the field id. A `question` surface SHALL hold
-a TextArea named `answer` and a Reveal that requires `answer` and holds a Quote.
-
-#### Scenario: Worksheet missing a field
-- **WHEN** a worksheet's content has fields `health`, `work`, and `play` and the surface has inputs only for `health` and `work`
-- **THEN** validation fails with "missing input for field play"
+#### Scenario: After the first comment
+- **WHEN** the user posts a comment on the question card
+- **THEN** the author's answer and the quote show, with no correctness mark
 
 ### Requirement: Theme tokens only
 

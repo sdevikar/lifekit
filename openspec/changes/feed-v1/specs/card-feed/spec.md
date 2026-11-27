@@ -2,40 +2,58 @@
 
 ## Purpose
 
-Show every active card of one book in reading order, let the user hide cards
-that are not useful, and open a card's activity in the side drawer.
+Show the active cards of one book in reading order, start where the user left
+off, and let the user like or dislike each card.
 
 ## ADDED Requirements
 
 ### Requirement: Feed contents
 
-The feed SHALL list the book's cards that are not retired and whose status is
-not `hidden` or `done`, sorted by position. A card with no state row MUST count
-as status `new`.
+The feed SHALL list the book's cards that are not retired and not disliked,
+sorted by position. A card with no state row MUST count as no reaction and
+never responded.
 
-#### Scenario: Done and hidden cards left out
-- **WHEN** a book has cards A, B, C, and D, B is `done`, and C is `hidden`
+#### Scenario: Disliked and retired cards left out
+- **WHEN** a book has cards A, B, C, and D, B is disliked, and C has `retired_at` set
 - **THEN** the feed lists A and D in position order
 
-#### Scenario: Retired card left out
-- **WHEN** a card has `retired_at` set
-- **THEN** the feed does not list it
+### Requirement: Start where you left off
 
-### Requirement: Paging
+With no cursor, the feed SHALL start at the active card with the highest
+position among the cards the user responded to. A response is a reaction or a
+comment. With no responses, the feed MUST start at the first active card.
 
-The feed endpoint SHALL return at most 20 cards per page and a `next_cursor`
-that is the last card's position, or null on the last page. A request with a
-cursor MUST return only cards with a greater position.
+#### Scenario: Start where you left off
+- **WHEN** the user responded to the cards at positions 3 and 12, and the client requests with no cursor
+- **THEN** the first card in the response is the card at position 12
+
+#### Scenario: Furthest, not latest
+- **WHEN** the user responded to position 12, then later commented on position 3
+- **THEN** the feed still starts at position 12
+
+#### Scenario: No responses yet
+- **WHEN** the user has no responses
+- **THEN** the first card in the response is the card with the lowest active position
+
+### Requirement: Paging both ways
+
+The feed SHALL return at most 20 cards per page. `next_cursor` MUST be the last
+returned position when more cards follow, else null. `prev_cursor` MUST be the
+first returned position when active cards come before it, else null.
 
 #### Scenario: Second page
-- **WHEN** a book has 45 active cards and the client requests with the cursor from the first page
-- **THEN** the response holds cards 21–40 and a non-null `next_cursor`
+- **WHEN** a book has 45 active cards, the user has no responses, and the client requests `after=20`
+- **THEN** the response holds positions 21–40 and `next_cursor` = 40
+
+#### Scenario: Earlier page
+- **WHEN** the client requests `before=30`
+- **THEN** the response holds positions 10–29 in ascending order and `prev_cursor` = 10
 
 ### Requirement: Default book
 
-With no `book_id`, the feed SHALL use the book whose cards were most recently
-generated. With no book that has cards, the response MUST hold an empty list
-and `book` = null.
+With no `book_id`, the feed SHALL use the book whose cards changed most
+recently. With no book that has cards, the response MUST hold `book` = null and
+an empty list. An unknown `book_id` MUST return HTTP 404.
 
 #### Scenario: No cards yet
 - **WHEN** the database has no cards
@@ -45,65 +63,68 @@ and `book` = null.
 - **WHEN** the client requests `book_id=nope`
 - **THEN** the endpoint returns HTTP 404
 
-### Requirement: Card response fields
+### Requirement: Entry shape
 
-Each feed entry SHALL hold `id`, `type`, `title`, `card_ui`, `status`, and
-`position`. It MUST NOT hold `surface_ui`, which the drawer loads only when it
-opens.
+Each feed entry SHALL hold `id`, `type`, `title`, `card_ui`, `position`,
+`reaction`, and `comment_hint`. The response SHALL hold `book` (`id`, `title`),
+`total` (active cards), `cards`, `prev_cursor`, and `next_cursor`.
 
 #### Scenario: Entry shape
-- **WHEN** the client reads a feed entry
-- **THEN** it has exactly the keys id, type, title, card_ui, status, and position
+- **WHEN** the feed returns a `habit` card with no reaction
+- **THEN** the entry has `reaction` = null and the `habit` comment hint from the type config
 
-### Requirement: Generated card rendering
+### Requirement: Card reactions
 
-The feed page SHALL render each entry's `card_ui` with the OpenUI renderer and
-the card library. The `OpenActivity` action MUST open the drawer for that card.
+`PUT /api/cards/<id>/reaction` SHALL accept `like`, `dislike`, or null. It MUST
+store the value, mark the card responded if it was not, and append a row to
+`card_events`. Any other value MUST return HTTP 400; an unknown card, HTTP 404.
 
-#### Scenario: Open from the feed
-- **WHEN** the user taps the Open button on a practice card
-- **THEN** the drawer opens and shows that card's surface
+#### Scenario: Dislike and undo
+- **WHEN** the user dislikes a card, then taps Undo
+- **THEN** the card shows "Marked not useful · Undo" after the first tap, the card returns after Undo, and `card_events` holds two rows for it
 
-### Requirement: Drawer surface
+#### Scenario: Bad reaction value
+- **WHEN** the client sends `{"value": "love"}`
+- **THEN** the endpoint returns HTTP 400 and stores nothing
 
-The drawer SHALL load the card's `surface_ui` and render it with the surface
-library. On screens narrower than 768 px, the drawer MUST fill the screen and
-show a back button that closes it.
+### Requirement: User state survives the pipeline
 
-#### Scenario: Phone view
-- **WHEN** the user opens a card on a 390 px wide screen
-- **THEN** the surface fills the screen and the back button returns to the same scroll position in the feed
+Reactions and the responded mark SHALL live outside the `cards` table, keyed by
+card id. A pipeline run MUST NOT change them.
 
-### Requirement: Not useful
+#### Scenario: Reaction survives re-ingest
+- **WHEN** the user likes a card and the cards stage runs again and makes the same card id
+- **THEN** the card still shows the like
 
-Every feed card SHALL have a "Not useful" control that the code draws, outside
-the generated program. Using it MUST set the card's status to `hidden`, log a
-`not_useful` event, remove the card from the feed, and show an Undo toast for 6
-seconds. Undo MUST restore the previous status and log a `not_useful_undone`
-event.
+### Requirement: Card rendering
 
-#### Scenario: Hide and undo
-- **WHEN** the user taps "Not useful" on an `opened` card and then taps Undo
-- **THEN** the card is back in the feed with status `opened`, and the event log holds `not_useful` then `not_useful_undone`
+The feed page SHALL render each card's `card_ui` with the OpenUI renderer and
+the card library. Code SHALL draw the reaction buttons outside the program.
+Pressed buttons MUST pair color with a filled icon and set `aria-pressed`.
 
-#### Scenario: Hidden card stays hidden after re-ingest
-- **WHEN** the user hides card X and the cards stage runs again and produces X
-- **THEN** X is still hidden
+#### Scenario: Reactions outside the program
+- **WHEN** a card renders
+- **THEN** the like and dislike buttons sit below the rendered program and are not part of `card_ui`
 
-### Requirement: Header count
+### Requirement: One column with a header
 
-The feed header SHALL show the book title and the plain count of active cards,
-such as "142 cards". It MUST NOT show streaks, scores, or progress bars.
+The feed page SHALL show one centered column at every screen width. The header
+SHALL show the book title and the active card count. A "Show earlier cards"
+button MUST appear at the top when `prev_cursor` is not null.
 
-#### Scenario: Header after a hide
-- **WHEN** the feed shows "142 cards" and the user hides one card
-- **THEN** the header shows "141 cards"
+#### Scenario: Header count
+- **WHEN** the book has 142 active cards
+- **THEN** the header shows "142 cards"
 
-### Requirement: Old briefing removed
+#### Scenario: Show earlier cards
+- **WHEN** the feed opens at position 12 and the user taps "Show earlier cards"
+- **THEN** positions 1–11 appear above, and the card at position 12 stays where it was on screen
 
-The endpoints `/api/briefing/today`, `/api/completions`, and `/api/idea-signals`
-SHALL no longer exist.
+### Requirement: Briefing removed
+
+The briefing endpoints and components SHALL be removed. The feed page MUST NOT
+render the free-chat composer.
 
 #### Scenario: Old endpoint
-- **WHEN** a client requests `/api/briefing/today`
+- **WHEN** the client requests `/api/briefing/today`
 - **THEN** the server returns HTTP 404

@@ -2,54 +2,50 @@
 
 ## Why
 
-The v1 goal is a feed for one book that shows useful content, "not random
-crap". Today `/feed` shows a daily briefing: one exercise, one resurfaced idea,
-and up to five "fading" ideas (`lifekit/serve/server.py`: `_briefing`,
-`_resurfaced_idea`, `_fading_ideas`). The ideas come out in `ORDER BY id`, the
-book id defaults to `"dyl"`, and the cards are fixed React components
-(`ExerciseCard.tsx`, `ResurfacedIdeaCard.tsx`, `FadingIdeasCard.tsx`).
+The v1 goal is a feed for one book that shows useful content. Today `/feed`
+shows a daily briefing: one exercise, one resurfaced idea, and up to five
+"fading" ideas (`lifekit/serve/server.py`: `_briefing`, `_resurfaced_idea`,
+`_fading_ideas`). The ideas come out in `ORDER BY id`, so the feed always shows
+the Dedication and Contents ideas. The book id defaults to `"dyl"`, and the
+cards are fixed React components (`ExerciseCard.tsx`, `ResurfacedIdeaCard.tsx`,
+`FadingIdeasCard.tsx`).
 
-Roadmap v2 parks spaced repetition and daily selection (intent.md → "PoC limits"
-and ASSUMPTIONS A29). So the feed becomes simple: every card of the book that
-the user has not hidden or finished, in reading order. The cards are the
-generated, validated programs from card-generation.
-
-The `feat/card-first-feed` branch already moves the feed to a card list with a
-side drawer (`ActivityDrawer.tsx`). This change keeps its layout and replaces
-its data source.
+v1 has one screen, the feed (ROADMAP D1). It shows every card of the book in
+reading order. The user responds to a card with a reaction or a comment. Cards
+have no done state, so the feed opens at the furthest card the user responded
+to (ROADMAP D9). This slice builds the feed and the reactions. card-comments
+adds the thread under each card.
 
 ## What Changes
 
-- New endpoint `GET /api/feed?book_id=&cursor=` returns the book and a page of
-  20 cards in position order. It leaves out hidden, done, and retired cards.
-  With no `book_id`, it uses the most recent book that has cards. The
-  hardcoded `"dyl"` default goes away.
-- New endpoints `POST /api/cards/<id>/hide` ("Not useful") and
-  `DELETE /api/cards/<id>/hide` (Undo). Both log an event, so the dogfood
-  review can count "Not useful" taps.
-- New tables `card_state` (status per card) and `card_events` (append-only log).
+- New endpoint `GET /api/feed?book_id=&after=&before=` returns the book, a page
+  of 20 cards in position order, and cursors for the pages before and after.
+  With no cursor, the page starts at the furthest card the user responded to.
+  It leaves out retired and disliked cards. With no `book_id`, it uses the most
+  recent book that has cards. The hardcoded `"dyl"` default goes away.
+- New endpoint `PUT /api/cards/<id>/reaction` sets like, dislike, or none, and
+  logs the change, so the dogfood review can count dislikes and active days.
+- New tables `card_state` (reaction and "responded" flag per card) and
+  `card_events` (append-only reaction log).
 - The feed page renders each card's `card_ui` with the OpenUI `Renderer` and the
-  card library. The `@OpenActivity()` action opens the side drawer.
-- The drawer renders the card's `surface_ui` with the surface library. This
-  slice does not save what the user types; card-activity-drawer adds that.
-- "Not useful" is a code-owned menu on each card, not part of the generated
-  program, so every card has it. Hiding shows an Undo toast.
-- Below 768 px wide, the drawer becomes a full-screen sheet with a back button.
+  card library, inside a `CardContext` provider (card-generation D4).
+- Code draws like and dislike under each card, outside the generated program. A
+  disliked card folds into one line, "Marked not useful · Undo".
+- One centered column at every screen width. A "Show earlier cards" button at
+  the top loads the page before; scrolling to the end loads the page after.
+- The header shows the book title, a plain card count, and the theme toggle.
 - **BREAKING (internal only):** delete `/api/briefing/today`,
   `/api/completions`, `/api/idea-signals`, the briefing helpers, the old feed
-  components, `useBriefing`, and their tests. The old tables stay in the
-  database, unused.
-- Take from `feat/card-first-feed`: the drawer layout in `feed/page.tsx` and
-  `layout.tsx`, `ActivityDrawer.tsx`, and the one-line fix in
-  `lifekit/serve/openui_prompt.py`. Leave out its `server.py` regex patch and
-  its three proposals (superseded, see KANBAN).
+  components, `useBriefing`, and their tests. Remove `MasterComposer` from the
+  feed page (retire-free-chat deletes it). The old tables stay in the database,
+  unused.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `card-feed`: which cards the feed shows, in what order and page size, how
-  the user hides a card and undoes that, and how a card opens its drawer.
+- `card-feed`: which cards the feed shows, in what order and page size, where
+  it starts, and how the user reacts to a card.
 
 ### Modified Capabilities
 
@@ -61,10 +57,12 @@ None. `openspec/specs/` holds no capabilities yet.
   new `lifekit/serve/feed.py`, `lifekit/db/schema.py` (two tables).
 - Frontend: `frontend/src/app/feed/page.tsx`, new
   `frontend/src/components/feed/FeedCardView.tsx`,
-  `frontend/src/components/ActivityDrawer.tsx` (from the branch, changed), new
+  `frontend/src/components/feed/ReactionBar.tsx`, new
   `frontend/src/hooks/useFeed.ts`; delete `ExerciseCard.tsx`,
   `ResurfacedIdeaCard.tsx`, `FadingIdeasCard.tsx`, `TodayHeader.tsx`,
   `useBriefing.ts`.
 - Tests: rewrite `tests/test_feed_api.py`; drop briefing cases in
   `tests/test_coach.py` and `tests/test_scheduler.py` that call removed code.
-- Depends on: card-generation (the `cards` table and both libraries).
+- Depends on: card-generation (the `cards` table and the card library),
+  card-types-v1 (`comment_hint`).
+- The `feat/card-first-feed` branch is not used (ROADMAP D1).
