@@ -1,3 +1,0 @@
-[   41312ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:3783/api/conversations/972d746d4e69/messages:1
-[   52115ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:3783/api/conversations:1
-[   52117ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:3783/api/conversations:1

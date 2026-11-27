@@ -37,7 +37,7 @@ The State column names the slice that removes or replaces a row.
 | Area | State |
 |------|-------|
 | Book pipeline (splitter → extraction → reduce → validation) | ✅ Shipped. Slices 2–4 replace it with `structure → items → cards`. |
-| Coach tools (`list` / `get` / `log completion` / `next` + search, due, ideas, progress) | ✅ Shipped in `lifekit/coach.py`; not yet wired into `lifekit/mcp/server.py` (H1) |
+| Coach tools (`list` / `get` / `log completion` / `next` + search, due, ideas, progress) | ✅ Shipped in `lifekit/coach.py` and registered as MCP tools in `lifekit/mcp/server.py` |
 | Multi-book registry | ✅ Shipped |
 | FSRS scheduling | ✅ Shipped |
 | LLM provider config (Ollama default + OpenRouter, `lifekit config` CLI) | ✅ Shipped |
@@ -112,7 +112,11 @@ silently — a fixed item keeps its row and gets a date.
 
 ### Defects
 
-- **D3 — Cross-chapter merged quotes can never validate — MEDIUM — OPEN.**
+- **D3 — Cross-chapter merged quotes can never validate — MEDIUM — FIXED 2026-09-18.**
+  Fixed in commit `13f9653`: `extra_quotes` now ground against the full book
+  text, and `source_quote` still needs its own chapter
+  (`tests/test_validator.py::test_validate_book_extra_quote_grounds_in_other_chapter`).
+  The original report:
   Dedupe merges a duplicate's `source_quote` into the kept exercise's
   `extra_quotes`, but `validate_book` checks all quotes against the **kept**
   chapter's text only. A quote merged from another chapter always fails as
@@ -184,7 +188,9 @@ silently — a fixed item keeps its row and gets a date.
 
 ### Spec-vs-reality notes (honesty, not defects)
 
-- **H1 — Coach functions are not exposed via MCP — OPEN.** `lifekit/coach.py`
+- **H1 — Coach functions are not exposed via MCP — FIXED 2026-09-18.** Commit
+  `4808e0d` registers the tools; `tests/test_mcp_server.py` covers them. The
+  original report: `lifekit/coach.py`
   implements `list_exercises`, `get_exercise`, `log_completion`, `next_exercise`
   (and search/due/ideas/progress) and `tests/test_coach.py` covers them, but
   `lifekit/mcp/server.py` does not register the tools. Resolved by Step 8 task

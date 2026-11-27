@@ -1,11 +1,11 @@
 ---
 branch: docs/roadmap-v2
-head: 4afee71
+head: 3294131
 base: main
 pr:
 status: done
 session: 4f5d21d7-2064-4192-90d9-00c50dd0f19f
-summary: v1 direction (feed with comments) on main as docs and seven draft proposals, slices 0-6; old proposals archived; no code changed
+summary: v1 direction (feed with comments) on main as docs and seven draft proposals, slices 0-6; old proposals archived; docs and root cleaned up
 ---
 
 # Handoff — v1 feed with comments: intent, roadmap, proposals (2026-11-27)
@@ -15,7 +15,7 @@ file comes right after it, and `main` fast-forwards to that commit.
 
 **Read first.** This is a personal project. The human is brainstorming and
 picks it up in personal time. **Do not write code** until the human asks for a
-slice by name. No code changed in this session.
+slice by name. No product code changed in this session. Only dead pre-PoC code was removed.
 
 To restore context on any machine:
 
@@ -136,8 +136,16 @@ The human approves each proposal when they pick it up, not before.
   (`docs/agents/domain.md`). `DESIGN.md` exists at the repo root.
 - The local `.venv` lacks deps: `uv run pytest --collect-only` fails with 7
   import errors (`flask`, `fsrs`, `mcp`, `pypdf`). Run `uv sync` first.
-- Tracked root folders that look stale, not touched: `agent/` (83 files),
-  `.playwright-mcp/` (32 files), `deeptutor-chat.png`, `kanban.yaml`
-  (`entries: []`), `core/`, `infra/`, `knowledge-store/`, `skills/`, `.hermes`.
-  Ask the human before removing any of them.
+- Third commit (doc cleanup, approved by the human):
+  - Removed tracked leftovers: `.playwright-mcp/` (now ignored),
+    `deeptutor-chat.png`, the empty root `kanban.yaml`, `.hermes/`,
+    `poetry.lock`, the pre-PoC code `core/`, `infra/`, `knowledge-store/`, the
+    old skill copies `agent/skills/` and `skills/`, and `.opencode/13b-todos.md`.
+    Live skills stay in `.agents/skills/` (`.claude/skills/` links to them) and
+    `.opencode/skills/`.
+  - KANBAN: H1 (coach tools in MCP) and D3 (cross-chapter quotes) marked fixed
+    on 2026-09-18; the code fixed them, the tracker did not say so.
+  - `docs/backend/BOOK_MODEL.md` archived as `docs/archive/book-model-2026-09.md`.
+  - `docs/arch/testing.md` counts, `docs/algorithms/README.md` (dedupe compares
+    titles, not embeddings), `frontend/README.md`, and `docs/index.md` updated.
 - `ponytail-review` was not available in this session.

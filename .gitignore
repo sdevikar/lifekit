@@ -11,10 +11,13 @@ dist/
 *.db-wal
 *.db-shm
 
-# Book files — place these in knowledge-store/books/ locally, never commit
-knowledge-store/books/*.pdf
-knowledge-store/books/*.epub
-knowledge-store/books/*.mobi
+# Book files — never commit
+*.pdf
+*.epub
+*.mobi
+
+# Playwright MCP browser logs
+.playwright-mcp/
 
 # OS
 .DS_Store

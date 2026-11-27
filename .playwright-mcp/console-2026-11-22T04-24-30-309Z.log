@@ -1,6 +1,0 @@
-[   18774ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:3783/chat/8191db2f2ee1?_rsc=s87S3P5E4v3xmyST:1
-[   18776ms] [ERROR] Failed to fetch RSC payload for http://127.0.0.1:3783/chat/8191db2f2ee1. Falling back to browser navigation. TypeError: Failed to fetch
-    at n (http://127.0.0.1:3783/_next/static/chunks/1mkwopt766dfz.js:2:34883)
-    at N (http://127.0.0.1:3783/_next/static/chunks/1mkwopt766dfz.js:1:23857)
-    at async S (http://127.0.0.1:3783/_next/static/chunks/1mkwopt766dfz.js:1:21816)
-    at async S (http://127.0.0.1:3783/_next/static/chunks/1mkwopt766dfz.js:2:39652) @ http://127.0.0.1:3783/_next/static/chunks/1mkwopt766dfz.js:1

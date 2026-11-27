@@ -55,7 +55,7 @@ Use the `skill` tool when a task matches. The ones that matter here:
 **Python entrypoint:** `lifekit = lifekit.__main__:main` (subcommands `ui`,
 `config`); other tools run as `python -m lifekit.<submodule>`. The codebase is
 one monolith package under `lifekit/` — no separate installs per pillar.
-Package manager is `uv` (`uv.lock`); `poetry.lock` is vestigial.
+Package manager is `uv` (`uv.lock`).
 
 ## Verification
 

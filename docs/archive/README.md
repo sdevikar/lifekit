@@ -6,6 +6,7 @@ standing vision is `.agents/intent.md`, and current project state is
 
 | File | Why archived |
 |------|--------------|
+| `book-model-2026-09.md` | The 2026-09-20 book-model draft (structure tree, typed items, relations), never approved. Replaced by the `book-model-v1` and `item-extraction-v2` proposals (2026-11-27). |
 | `intent-2026-09-20.md` | Standing product contract superseded by `.agents/intent.md` (2026-09-26). Contained quiz/grade framing (Feynman teach-back grading → FSRS ratings) that contradicts the no-quiz/no-grade stance. |
 | `pitch-early.md` | Early pitch from the OpenWebUI-pipes era ("Active AI Thought Partner", invite-to-coach). Superseded by the accountability-partner vision. |
 | `plan-early.md` | Early phased plan (P0/P1/P2 around OpenWebUI pipes, interviewer, momentum tracker). Superseded by the staged plan in `.agents/intent.md`. |

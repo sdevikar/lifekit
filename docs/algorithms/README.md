@@ -12,8 +12,10 @@ borrow rationale lives in
   and drop the flashcard test framing. The user never sees retention
   percentages, grades, or Again/Hard/Good/Easy — they just get one well-timed
   old idea in the daily briefing.
-- **Embedding dedupe (Step 3):** merges duplicate exercises across chapters
-  so the same practice doesn't appear twice.
+- **Title dedupe (Step 3):** merges exercises whose normalized titles match,
+  so the same practice does not appear twice. It compares titles only, so
+  many repeats get through (KANBAN → v1 problem). `item-extraction-v2`
+  replaces it with per-chapter consolidation.
 - **Chunking:** Chonkie `RecursiveChunker` splits oversized chapters before
   extraction; sentence-boundary chunking at ingest.
 

@@ -1,11 +1,12 @@
 # Backend
 
 How LifeKit turns a book PDF into a coaching surface. Built in Steps 1–7 (all
-done); see [the tracker](../product/KANBAN.md) for the step table and status.
+done); see [the tracker](../product/KANBAN.md) for status. The v1 slices 2–4
+(`openspec/changes/book-model-v1`, `item-extraction-v2`, `card-generation`)
+replace this pipeline with `structure → items → cards`.
 
 ## Key docs
 
-- [`BOOK_MODEL.md`](BOOK_MODEL.md) — the book-model proposal: structure tree + typed items + relations + quote grounding, minimal v1 SQLite schema (awaiting review)
 - [`../product/ASSUMPTIONS.md`](../product/ASSUMPTIONS.md) — every consequential assumption with ID, status, and revisit trigger
 - [`../product/KANBAN.md`](../product/KANBAN.md) — known defects, spec-vs-reality notes, and feature ideas
 - [`../integrations/README.md`](../integrations/README.md) — model providers (Ollama/OpenRouter) and config resolution

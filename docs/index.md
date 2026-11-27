@@ -10,6 +10,8 @@ Map of the documentation, organized by domain. Start here.
 | [arch/](arch/) | Architecture: pillar blocks, connections, and the daily-loop data flow |
 | [algorithms/](algorithms/) | The math that picks what resurfaces: FSRS adaptation, dedupe, chunking |
 | [integrations/](integrations/) | Model providers (Ollama/OpenRouter) and what's deliberately not integrated |
+| [`../requirements/user-stories.md`](../requirements/user-stories.md) | The v1 user stories with acceptance criteria |
+| [`../evals/`](../evals/) | Real-model eval results (the quality gate the tests do not cover) |
 | [research/](research/) | Landscape surveys and borrow reports (tutor-mcp, DeepTutor) that informed the design |
 | [archive/](archive/) | Superseded docs, history only: the old requirements set, UX direction, and sidebar and chat plans |
 
@@ -18,7 +20,7 @@ Change mechanics (not docs, but adjacent):
 - [`.agents/intent.md`](../.agents/intent.md) — the standing vision. Read this
   first; on any conflict with other docs, it wins. (`.claude/intent.md`
   symlinks to it.)
-- [`openspec/`](../openspec/) — `changes/<step-slug>/` holds proposal → tasks → implement; finished work moves to `archives/`.
+- [`openspec/`](../openspec/) — `changes/<step-slug>/` holds proposal → tasks → implement; finished or retired work moves to `archives/` ([index](../openspec/archives/README.md)).
 - [`.devflow/handoffs/`](../.devflow/handoffs/) — session handoffs. Read the newest one to pick up work.
 
 **Docs stay true:** whoever merges a change updates `product/KANBAN.md` (and `product/ASSUMPTIONS.md` when its log changes) in the same commit.
