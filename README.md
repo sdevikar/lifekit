@@ -1,14 +1,14 @@
 # LifeKit — accountability partner for what you read
 
-**Every day, LifeKit gives you one exercise to do and one idea to remember.**
+**LifeKit turns a book you care about into a feed of cards, and you respond to
+each card with a comment.**
 
-LifeKit is a personal-coach app: an intelligent layer on top of book
-knowledge and a venue where you do the work. It understands books
-structurally (the *book model*), surfaces the right exercise or idea at the
-right time (deterministic runtime + FSRS resurfacing), and gives you a local
-feed + conversations UI to practice and talk things through.
+A card holds one useful thing from the book: an idea, an exercise, a habit, a
+journal prompt, or a question. You write a comment: a thought, a journal
+entry, a check-in, or an answer. The coach replies, grounded in the book and
+in what you wrote.
 
-LifeKit is a **coach that checks what you did** — not a tutor that checks
+LifeKit is a **coach that checks in on what you did**, not a tutor that checks
 what you learned. No quizzes, no grades, no profiling. Local-first,
 single-user, localhost only.
 
@@ -17,10 +17,12 @@ symlinks to it.)
 
 ## Current state
 
-Stage 4 of 6 (see `.agents/intent.md`): the venue is shipped — Next.js feed +
-conversations UI, feed API, `lifekit ui` boots both on localhost. Now
-dogfooding the daily loop.
+Stage **v1** (see `docs/product/ROADMAP.md`): one book as a feed of cards, with
+comments, coach replies, and reactions. The seven v1 slices are proposed in
+`openspec/changes/`. What runs today is the PoC: the pipeline, a daily-briefing
+feed, and a free chat, which v1 replaces.
 
+- Stages and the reason for each decision: `docs/product/ROADMAP.md`
 - Current state + what's next: `docs/product/KANBAN.md`
 - User stories: `requirements/user-stories.md`
 - Docs map: `docs/index.md`
@@ -30,7 +32,7 @@ dogfooding the daily loop.
 ```bash
 # one-time: ingest a book into the product DB, then
 lifekit ui
-# feed → http://localhost:3000, feed API → http://localhost:8765
+# feed → http://127.0.0.1:3783, feed API → http://127.0.0.1:8765
 ```
 
 Long model runs (extraction, evals) go to the home workstation's Ollama over
@@ -39,6 +41,6 @@ Tailscale — never run them on a small VM. Never commit secrets.
 ## How we build
 
 Spec-first: OpenSpec proposals before code, one independently testable slice
-per proposal. The human writes the code and makes product decisions; the
-agent is product owner / project manager / chief of staff. See
+per proposal. The human makes every product decision and approves every
+proposal; agents draft proposals and write code against approved ones. See
 [`AGENTS.md`](AGENTS.md) for the full workflow.

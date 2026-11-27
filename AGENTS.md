@@ -121,11 +121,11 @@ Package manager is `uv` (`uv.lock`); `poetry.lock` is vestigial.
   consolidated commit per unit of work, and verify the remote tree after pushing.
 - **Review after each commit:** run `ponytail-review` on the commit diff; apply
   worthwhile simplifications in a follow-up commit.
-- **Design source is DeepTutor.** The local checkout at
-  `/home/swapnil/workspace/projects/DeepTutor` is the UI reference (layout,
-  sidebar, chat/workbench patterns); copy what fits, read it with
-  `reverse-engineer-anything`. Do not copy its quiz/mastery features (intent
-  never-build).
+- **UI design source is `docs/product/ROADMAP.md`.** D1 (one feed column, no
+  sidebar or drawer) and D15 (design rules borrowed from Meta's Astryx) set the
+  look. DeepTutor (`/home/swapnil/workspace/projects/DeepTutor`) inspires the
+  runtime only, not the layout; read it with `reverse-engineer-anything`. Do
+  not copy its quiz/mastery features (intent never-build).
 - **Hooks (recommended):** add a local `post-commit` hook to remind about
   ponytail-review. `.git/hooks/` is local, so document it as a practice.
 

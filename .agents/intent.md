@@ -1,146 +1,147 @@
 # LifeKit — Project Intent
 
-**Read this first.** This is the standing vision for LifeKit: what it is,
-what it will never become, and how we get from proof-of-concept to a product.
-If anything else in the repo contradicts this file, this file wins — surface
-the conflict instead of working around it.
+**Read this first.** This file says what LifeKit is, what it will never become,
+and how we build it. If anything else in the repo contradicts this file, this
+file wins. Surface the conflict instead of working around it.
 
-## The vision
+The stages, and the reason behind each product decision, live in
+[`docs/product/ROADMAP.md`](../docs/product/ROADMAP.md).
 
-**LifeKit turns the books you care about into things to do, ideas to keep,
-and prompts to write — and gives you one place to do that work.**
+## What LifeKit is
 
-LifeKit is a personal-coach app — an accountability partner for turning what
-you read into what you do. It sits on top of your books, shows you cards
-made from them, and gives you a place to do the work each card asks for and
-talk it through.
+**LifeKit turns a book you care about into a feed of cards, and you respond to
+each card with a comment.**
 
-LifeKit is **not** a learning platform. The distinction is deliberate:
+A card holds one useful thing from the book: an idea, an exercise, a habit, a
+journal prompt, or a question. You read the card. You write a comment: a
+thought, a journal entry, a check-in, an answer. The coach replies below your
+comment. That is the whole app.
 
-- **DeepTutor is a tutor that checks what you learned. LifeKit is a coach
-  that checks what you did.**
-- LifeKit can ask you a question about an idea, but it never marks the
-  answer. It shows the author's answer next to yours, and that is all. No
-  grades, no scores, no retention percentages, no mastery gates. Completion
-  is self-declared.
+LifeKit is a personal coach: an accountability partner that helps you turn what
+you read into what you do. It is **not** a learning platform.
 
-LifeKit is an off-the-shelf app. It is never an Agent Skill, a harness
-extension, or a feature of something else.
+- **A tutor checks what you learned. LifeKit checks in on what you did.**
+- LifeKit can ask you a question about an idea, but it never marks the answer.
+  It shows the author's answer next to yours, and that is all.
 
-**Inspiration.** LifeKit is inspired by DeepTutor (`HKUDS/DeepTutor`; local
-checkout `/home/swapnil/workspace/projects/DeepTutor`) — a tutor with a
-deterministic learning runtime and a workbench UI. LifeKit takes that shape and
-points it at **books**. Borrow/reject decisions are recorded in `docs/research/`.
+LifeKit is a standalone app. It is never an Agent Skill, a plugin, or a feature
+of another product.
 
 ## How it works
 
-Three parts, in this order:
+1. **Understand the book.** A book (PDF or EPUB) becomes a tree of sections and
+   passages. The pipeline then finds typed items in it, each one tied to a
+   verbatim quote. This runs offline, once per book.
+2. **Turn items into cards.** Each useful item becomes a card with a type. Code
+   stores each card as an OpenUI program. Nothing is generated while you look at
+   the feed.
+3. **Respond with comments.** The feed shows the cards in reading order. Under
+   each card is a comment thread. You comment. The coach replies, grounded in
+   the book and in what you wrote. You can like or dislike a card or a coach
+   reply.
 
-1. **Understand the book** — the *book model*. A book (PDF or EPUB) becomes
-   a tree of sections and passages, then a set of typed items (activities
-   and ideas), each grounded in a verbatim quote. Think of it as a code
-   index for books. This is where the modeling investment goes.
-2. **Turn items into cards** — each useful item becomes a *card* with a
-   type (insight, practice, habit, reflect, worksheet, question). The model
-   writes the card's content and its UI once, offline; code validates both
-   and stores them. Nothing is generated while you look at the feed.
-3. **Be the place where the user does the work** — the *venue*: a feed of
-   cards. Tapping a card opens a side drawer with the surface for that card
-   type (a checklist, a journal, a form, a question) plus a grounded
-   conversation about it. Everything you do in the drawer stays attached to
-   that card.
+## The interaction model
 
-Supporting pieces: retrieval (RAG) exists for grounding, citations, and deep
-dives — it is substrate, not the differentiator.
+- **One screen: the feed.** No sidebar, no tabs, no drawers, no separate chat.
+  The phone and the desktop show the same single column.
+- **One way to act: comment.** A journal entry, a check-in, a note on an
+  exercise, and an answer to a question are all comments. The comment box
+  accepts markdown.
+- **One signal: reactions.** Like or dislike a card or a coach reply. A
+  disliked card leaves the feed.
+- **The coach always answers.** Every comment gets a reply. The reply fits the
+  comment: a few warm words for a journal entry, a real answer for a question.
+- **Everything the app or the model shows is OpenUI.** Cards and coach replies
+  render through one OpenUI renderer. What the user types stays the user's own
+  markdown.
 
-## Principles (durable)
+## Principles
 
 These hold for the life of the product.
 
+- **Simple beats complete.** LifeKit does not have to do everything. Add a
+  control only when a comment cannot do the job.
 - **Grounded in the book.** Every card points to an exact passage. What the
-  author says, what the author tells you to do, and what LifeKit derived
-  stay distinguishable — never silently merged.
-- **Deterministic runtime, generative surface.** Code decides which cards
-  exist, their order, and their state. The model writes card content, card
-  UI, surface UI, and conversation prose. Generated UI is validated before
-  it is stored.
-- **Doing over browsing (venue, not menu).** Every card leads to an action.
-  The feed and its drawer are the product; no dashboards.
-- **No scores, ever.** No grades, visible retention, mastery gates, or
-  streak gamification beyond a plain count. Questions are self-checks.
-- **UI is a first-class investment.** The venue must feel like a place, not
-  a demo.
+  author says, what the author tells you to do, and what LifeKit derived stay
+  visibly separate.
+- **Deterministic runtime, generative surface.** Code decides which cards exist,
+  their order, and their state. The model writes coach replies and, from v3,
+  card layouts. Generated UI is checked before anyone sees it.
+- **Doing over browsing.** Every card asks for a response. No dashboards.
+- **No scores, ever.** No grades, no visible retention, no mastery gates, no
+  streaks. Questions are self-checks. A reaction rates the card, not the user.
+- **The user's words are never lost.** A failed coach reply never deletes or
+  hides what the user wrote.
+- **Beautiful is a feature.** People return to things that feel good to use.
+  Spend design effort on the card and the thread, because they are the whole
+  product.
 - **Local-first, single user.** Localhost only. No auth, no cloud, no sync.
-- **No psychological profiling.** When LifeKit remembers things about you,
-  it remembers facts (what you read, did, wrote, said you want) — never an
-  inferred persona.
-- **Minimal code.** Do not write a line that isn't necessary. Smallest diff
-  that satisfies the spec.
-- **Plain English first.** Explain like a person, not a spec sheet.
-- **Never build:** BKT/IRT/KST or other mastery machinery, social features,
-  manual scheduling UI, Agent Skills export, reflective work placed in todo
-  lists or calendars.
+  Nothing leaves the machine unless the user explicitly sends it.
+- **No psychological profiling.** When LifeKit remembers things about you, it
+  remembers facts (what you read, did, and wrote), never an inferred persona.
+- **Minimal code.** Write only what the spec needs. One path, no fallbacks kept
+  "just in case".
+- **Plain English.** Explain like a person, not a spec sheet.
 
-## PoC limits (temporary)
+## Never build
 
-These limits exist to keep momentum, not because the ideas are wrong. Each
-one has a trigger for when to revisit it.
+- Mastery machinery: BKT, IRT, KST, grades, or scores of any kind.
+- Social features: other people, followers, public posts, or shared feeds. The
+  comment thread is between the user and the coach only.
+- Manual scheduling UI, or reflective work placed in todo lists or calendars.
+- Agent Skills export, or LifeKit as a plugin inside another tool.
 
-| Limit | Why now | Revisit when |
-|-------|---------|--------------|
-| One book in the feed | Prove card quality on one book first. The book model stays multi-book ready. | v1 dogfood passes |
-| No spaced repetition or daily selection — the feed shows every useful card in reading order | Brute force is enough to learn what "useful" means | The feed feels too long in dogfood |
-| No tags or search | One book does not need them | v2 planning |
-| No long-term user memory | The card history is the only memory in v1 | v2 planning |
-| No knowledge graph or concept layer — only "same item" identity during extraction | No v1 feature reads a graph | Tags and semantic search are designed |
-| No notifications or nudges | The core loop is not proven yet | v1 dogfood passes |
-| No external-app dependencies (Anki bridges etc.), no managed memory services | Keep the stack small | A concrete need appears |
+## Stages
 
-## Roadmap
+| Stage | One line |
+|-------|----------|
+| 0. PoC | Pipeline, coach tools, and a first feed and chat. Done 2026-10. |
+| 1. v1 | One book as a feed of cards, with comments, coach replies, and reactions. **Current.** |
+| Dogfood | Daily real use of v1 before anything new is designed. |
+| 2. v2 | A "+" button for posts not tied to a card, and a worksheet card type. |
+| 3. v3 | The model writes richer card layouts in OpenUI, such as animations. |
+| 4. v4 | Share a card and its context to an external chat app. |
 
-| Stage | What | Status |
-|-------|------|--------|
-| 0. PoC pipeline + venue | PDF → exercises + key ideas (eval-gated); coach tools; FSRS; Next.js feed + chat. | Done 2026-10 |
-| 1. v1 — card feed for one book | Book model v1 (PDF + EPUB), item extraction v2 with a usefulness gate, card types, generated card + surface UI, feed of cards, card drawer with persisted work and one conversation per card. | **Current** |
-| 2. Dogfood v1 | Daily real use. Exit criterion in `docs/product/KANBAN.md` → Open questions. | Next |
-| 3. v2 candidates | Spaced repetition / daily selection, tags + semantic search, long-term user memory, multi-book feed, program layer (coaching sessions, momentum), notifications. | Parked — not designed until stage 2 is done |
-
-The proposals for each stage live in `docs/product/KANBAN.md` → Roadmap.
+Parked ideas, the reason for each stage, and the full decision log are in
+[`docs/product/ROADMAP.md`](../docs/product/ROADMAP.md). The slices of the
+current stage are in [`docs/product/KANBAN.md`](../docs/product/KANBAN.md).
 
 ## How we build
 
-- **Spec-first.** OpenSpec proposals before code; tests and done criteria
-  defined before implementation. One independently testable slice per
-  proposal — never hand the coding harness a whole stage at once.
-- **The human writes the code** and makes all product decisions. Atlas
-  (the agent) is product owner, project manager, and chief of staff:
-  refining ideas, writing specs and designs, monitoring progress, keeping
-  the project aligned with this file.
-- **Docs stay true.** Whoever merges a change updates
-  `docs/product/KANBAN.md` (and `docs/product/ASSUMPTIONS.md` when its log
-  changes) in the same commit.
+- **Spec first.** An OpenSpec proposal comes before code. Tests and done
+  criteria are part of the proposal. One proposal is one slice that can be
+  tested on its own.
+- **Roles.** The human makes every product decision and approves every
+  proposal. Agents draft proposals, write code against approved proposals, and
+  keep the docs true. An agent never approves its own work.
+- **Docs stay true.** The commit that merges a slice also updates
+  `docs/product/KANBAN.md`, and `docs/product/ASSUMPTIONS.md` when an assumption
+  changes.
 - **Local-first execution.** Long model runs go to the home workstation's
   Ollama over Tailscale, never the sandbox. Never commit secrets.
 
-Coding-agent mechanics — commands, verification, trace usage, git/push
-discipline — live in `AGENTS.md`.
+Coding-agent mechanics (commands, verification, code search, git) live in
+`AGENTS.md`.
 
 ## Where things live
 
-- **User stories** (what the user does, acceptance criteria):
-  `requirements/user-stories.md`
-- **Current state, roadmap, known issues:** `docs/product/KANBAN.md`
-- **Assumptions log (IDs + revisit triggers):** `docs/product/ASSUMPTIONS.md`
-- **Surveys + borrow/reject decisions:** `docs/research/`
-- **Architecture:** `docs/arch/` (`README.md` for the pipeline diagram,
-  `testing.md` for the test map)
-- **Proposals:** `openspec/changes/<slug>/` (pending) →
-  `openspec/archives/<slug>/` (done)
-- **Superseded docs:** `docs/archive/` (history only, not binding)
-- **Inspiration** Deeptutor lives on this machine at `/home/swapnil/workspace/projects/DeepTutor` and on github at `https://github.com/HKUDS/DeepTutor`
+| What | Where |
+|------|-------|
+| Stages, decisions, and their reasons | `docs/product/ROADMAP.md` |
+| Current state, slices, known issues | `docs/product/KANBAN.md` |
+| Assumptions (IDs and revisit triggers) | `docs/product/ASSUMPTIONS.md` |
+| User stories | `requirements/user-stories.md` |
+| Proposals | `openspec/changes/<slug>/` (pending) → `openspec/archives/<slug>/` (done) |
+| Architecture | `docs/arch/` |
+| Research and borrow/reject notes | `docs/research/` |
+| Superseded docs (history only) | `docs/archive/` |
+
+**Inspiration.** DeepTutor (`HKUDS/DeepTutor`; local checkout
+`/home/swapnil/workspace/projects/DeepTutor`) inspired the deterministic runtime
+behind a generative surface. Its tutor features (quizzes, mastery) are never
+copied.
 
 ## Changing this file
 
-This file changes only on the human's explicit approval — propose the exact
-diff and wait; never amend it unilaterally or silently drift. If work reveals
-it is stale, flag it and propose the update.
+This file changes only with the human's explicit approval. Propose the exact
+diff and wait. If work shows the file is stale, flag it and propose the update.

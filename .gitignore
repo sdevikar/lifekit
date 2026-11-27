@@ -24,3 +24,6 @@ Thumbs.db
 .serena
 .hermes
 skills-lock.json
+
+# Session handoffs (local only)
+docs/handoffs/

@@ -2,8 +2,9 @@
 
 The single living tracker for the product: what exists, what's in flight, what's
 broken, what's next. Whoever merges a change updates this file in the same
-commit. The binding vision is [`.agents/intent.md`](../../.agents/intent.md);
-the assumption log (IDs + revisit triggers) is
+commit. The binding vision is [`.agents/intent.md`](../../.agents/intent.md).
+The stages and the reason for each decision are in [`ROADMAP.md`](ROADMAP.md).
+The assumption log (IDs + revisit triggers) is
 [`ASSUMPTIONS.md`](ASSUMPTIONS.md).
 
 ## How to use this file
@@ -13,7 +14,8 @@ the assumption log (IDs + revisit triggers) is
 | Current state | The capability view — one row per area, its status today (shipped / placeholder / proposed). No history. |
 | Now / In progress | Work actively being done this cycle. |
 | Upcoming | Approved or awaiting-approval proposals, ordered by dependency then value. |
-| Deferred / Future | Known but not scheduled (including superseded proposals). |
+| Superseded | Old proposals that the v1 slices replace. |
+| Deferred / Future | Known but not scheduled. Parked stage items live in `ROADMAP.md`. |
 | Known issues | Defects and spec-vs-reality notes, stable IDs (`D…`, `H…`, `P…`). |
 | Future ideas | Unapproved feature ideas (`F…`). |
 | Done | Shipped slices, newest first, with the archive link. |
@@ -25,11 +27,12 @@ retired items move to their section with a reason and date.
 
 ## Current state
 
-Roadmap v2 (2026-11-27). Stage 1 of `.agents/intent.md` → Roadmap: **v1 — a
-card feed for one book.** The PoC pipeline and venue below are shipped. The
-feed itself is not useful yet: it shows the same front-matter ideas every day,
-875 ideas is too many, and the exercises contain duplicates (see the v1
-problem statement under Upcoming).
+Stage **v1** (`ROADMAP.md`): one book as a feed of cards, with a comment
+thread under each card, coach replies, and reactions. The table below shows
+what exists today, before any v1 slice lands. The feed is not useful yet: it
+shows the same front-matter ideas every day, 875 ideas is too many, and the
+exercises contain duplicates (see the v1 problem statement under Upcoming).
+v1 removes the chat, the sidebar, and the journal placeholder.
 
 | Area | State |
 |------|-------|
@@ -56,12 +59,12 @@ problem statement under Upcoming).
 
 ## Now / In progress
 
-Roadmap v2 and the six v1 proposals are drafted on branch `docs/roadmap-v2`.
-Awaiting the human's approval.
+The intent rewrite, `ROADMAP.md`, and the seven v1 proposals are drafted on
+branch `docs/roadmap-v2`. They wait for the human's approval.
 
 ## Upcoming
 
-### v1 — card feed for one book (roadmap v2, 2026-11-27)
+### v1 — card feed for one book
 
 **Problem.** The dogfood feed for `dyl` is not useful:
 
@@ -75,66 +78,50 @@ Awaiting the human's approval.
   dedupe compares titles only.
 - Some "exercises" come from anecdotes, not from instructions.
 
-**v1 goal.** One book. Every card in the feed is useful, has a type, and opens
-the right surface in a side drawer. Work done in the drawer persists on the
-card.
+**v1 goal.** One book. Every card in the feed is useful and has a type. The
+user responds to a card with a comment or a reaction. The coach replies to
+every comment. The reasons are in `ROADMAP.md` (D1–D15).
 
-Build order — each slice is independently testable:
+Build order. Each slice can be tested on its own:
 
 | # | Slice | Proposal | Depends on | Status |
 |---|-------|----------|------------|--------|
-| 1 | Card types — the six types, their fields, surfaces, and "done" rules | `card-types-v1/` | — | Proposed |
-| 2 | Book model v1 — PDF + EPUB → sections tree (front/body/back) + passages with offsets; `lifekit ingest` | `book-model-v1/` | — | Proposed |
-| 3 | Item extraction v2 — typed items with stance, per-chapter consolidation, passage anchors, usefulness gate + golden set | `item-extraction-v2/` | 1, 2 | Proposed |
-| 4 | Card generation — item → card; model writes `card_ui` + `surface_ui` in OpenUI Lang; parser-validated; stable UUIDs | `card-generation/` | 1, 3 | Proposed |
-| 5 | Feed v1 — list stored cards in reading order; render `card_ui`; "Open" and "Not useful" actions | `feed-v1/` | 4 | Proposed |
-| 6 | Card activity drawer — per-type surface from `surface_ui`; persisted surface state; one conversation per card | `card-activity-drawer/` | 5 | Proposed |
+| 1 | Card types: five types, their fields, the comment hint and coach instruction per type | `card-types-v1/` | — | Proposed |
+| 2 | Book model: PDF and EPUB become sections (front, body, back) and passages with offsets; `lifekit ingest` | `book-model-v1/` | — | Proposed |
+| 3 | Item extraction: typed items with stance, per-chapter consolidation, passage anchors, usefulness check, golden set | `item-extraction-v2/` | 1, 2 | Proposed |
+| 4 | Card generation: one card per item; code builds the OpenUI program; stable ids; question cards | `card-generation/` | 1, 3 | Proposed |
+| 5 | Feed: cards in reading order, like and dislike, start where you left off | `feed-v1/` | 4 | Proposed |
+| 6 | Card comments: a thread per card, a coach reply to every comment, reactions on replies | `card-comments/` | 5 | Proposed |
+| 7 | Retire free chat: remove the chat pages, the sidebar, and the journal page | `retire-free-chat/` | 6 | Proposed |
 
 Slices 1 and 2 can run in parallel.
 
-### Superseded by roadmap v2 (2026-11-27)
+## Superseded
 
-Each of these is replaced by the v1 slices above. The folders stay for
-history; do not apply them.
+The v1 slices replace these proposals. The folders stay for history. Do not
+apply them.
 
 | Proposal | Replaced by | Reason |
 |----------|-------------|--------|
-| `exercise-type-system/` | `card-types-v1/` | Typed cards cover exercises and ideas together. A2UI is replaced by OpenUI (already in the chat). |
-| `exercise-surface-routing/` | `feed-v1/`, `card-activity-drawer/` | The drawer on `feat/card-first-feed` replaces the master-detail route. |
-| `exercise-surface-journal/` | `card-activity-drawer/` (reflect) | One drawer, one surface per card type. |
-| `exercise-surface-tracking/` | `card-activity-drawer/` (habit) | Same. |
-| `exercise-surface-questionnaire/` | `card-activity-drawer/` (worksheet) | Same. |
-| `exercise-surface-concept-check/` | `card-activity-drawer/` (question) | Same; unscored. |
-| `exercise-surface-worksheet/` | `card-activity-drawer/` (worksheet) | Same. |
-| `openui-exercise-surfaces/` | `card-generation/` | Surfaces are generated offline and validated, not at view time. |
-| `card-associated-activity/`, `card-discovery/` (on `feat/card-first-feed`) | `card-activity-drawer/`, `feed-v1/` | Folded into the v1 slices. |
-
-## Parked (roadmap v2, 2026-11-27)
-
-Parked means "not designed until v1 dogfood passes". Each item has a reason.
-
-| Item | Reason |
-|------|--------|
-| Spaced repetition, daily selection, learning loop (FSRS on cards) | Brute force first: the feed shows every useful card. FSRS code stays but the feed stops reading it. |
-| Tags + semantic search (by book, topic, hashtag) | One book does not need search. Needs embeddings — L3 of the book model. |
-| Long-term user memory (what the user read, did, wants) | v1 card history is the only memory. Design after dogfood. |
-| Rich card history (recents, journal destination of all entries) | v1 persists work per card; browsing across cards comes later. |
-| Multi-book feed | The book model is multi-book ready; the feed shows one book in v1. |
-| Program layer — `step-8-coaching-sessions/` … `step-11-invite-to-coach/` | Unchanged: after the core loop is proven. |
-| Journal slices (`journal-tab*`, `journal-tile-layout/`) | The reflect card surface covers journaling in v1. Revisit as a destination later. |
-| AKBF as a public format / export (JSON-LD, Web Annotation) | SQLite is the only source of truth in v1. An export is a view, add it when a consumer exists. |
-| Knowledge graph / concept layer | Moved from never-build to PoC limit (intent.md). Revisit with tags + search. |
-| Notifications / nudges | After the core loop is proven. |
-| RAG quality upgrade (F9) | After dogfood. Passages from the book model are the base for it. |
-| Old content tables (`exercises`, `key_ideas`, `fsrs_cards`, `completions`, `idea_signals`) and the scheduler | Frozen in v1: no new reads from the feed. A cleanup proposal decides deletion after v1. |
+| `exercise-type-system/` | `card-types-v1/` | Typed cards cover exercises and ideas together. OpenUI replaces A2UI. |
+| `exercise-surface-routing/` | `feed-v1/` | One screen, the feed (ROADMAP D1). |
+| `exercise-surface-journal/`, `exercise-surface-tracking/`, `exercise-surface-questionnaire/`, `exercise-surface-concept-check/`, `exercise-surface-worksheet/` | `card-comments/` | A comment is the only way to act on a card (ROADMAP D2). Worksheet waits for v2 (D7). |
+| `openui-exercise-surfaces/` | `card-generation/` | No per-type surfaces. Code builds card programs offline (D6). |
+| `openui-hybrid-chat/`, `openui-system-prompt/` | `card-comments/`, `retire-free-chat/` | Shipped in part (commit `6c61732`). Coach replies keep the OpenUI renderer; the free chat goes away (D10). |
+| `chat-surface/`, `chat-surface-b-composer-open/`, `chat-surface-c-entry-points/` | `retire-free-chat/` | Free chat is retired (D10). |
+| `journal-tab/`, `journal-tab-a-storage-api/`, `journal-tab-b-editor/`, `journal-tab-c-toc-navigation/`, `journal-tile-layout/` | `card-comments/` | A journal entry is a comment on a reflect card (D2). Posts without a card are v2 (D13). |
+| `combine-product-tracking-docs/` | — | Done: KANBAN is the one tracker. `ROADMAP.md` now holds stages and decision reasons only. |
+| `card-activity-drawer/` (renamed) | `card-comments/` | The drawer is dropped (D1). |
+| `card-associated-activity/`, `card-discovery/` (on `feat/card-first-feed`) | `feed-v1/`, `card-comments/` | The branch is abandoned, not merged. |
 
 ## Deferred / Future
+
+Stage items that wait for dogfood (spaced repetition, search, memory, multi-book,
+the program layer `step-8…step-11`, and more) are in `ROADMAP.md` → Parked.
 
 | Item | Reason |
 |------|--------|
 | Books tab | Single-book dogfood, no switching need yet. Add when book #2 exists. |
-| LLM-generated journal titles | Cheap tasking model later; first-line truncation for now. |
-| Journal TipTap vs textarea | Deliberate dependency decision, carried in `journal-tab-b-editor`. |
 
 ## Known issues
 
@@ -316,7 +303,7 @@ channels, and Langfuse observability were deliberately excluded.
 
 | Slice | Shipped | Notes |
 |-------|---------|-------|
-| Chat token streaming (SSE) | 2026-11-22 | Commit `072297a`. Moved from Deferred by roadmap v2. |
+| Chat token streaming (SSE) | 2026-11-22 | Commit `072297a`. card-comments reuses the SSE events. |
 | Chat layout — DeepTutor-style single-column + sidebar Recent | 2026-10-15 | `/chat` single-column, sidebar collapsible "Recent" with recency grouping, rename/delete, "New chat"; `/chat/<id>` deep links, `/c/<id>` redirects. Fixed `TabContext` route sync. Spec archived at `../../openspec/archives/chat-layout-deeptutor-recent/`. |
 | Chat placeholder title | 2026-10-15 | Sentinel "New conversation"; replaced by the first 60 chars of the first user message (once). Spec at `../../openspec/changes/chat-placeholder-title/`. |
 | Chat Surface **b** — open conversation + composer | 2026-10-07 | `ChatView` composes `MessageList` + `ChatInput` + title header; `MasterComposer` → `POST /api/conversations`. |
@@ -343,9 +330,9 @@ Journal follows the same pattern (`/journal`).
 
 1. Learning runtime: evolve `lifekit/mcp/server.py` in place, or a second server
    beside it? (Parked with the program layer.)
-2. v1 dogfood exit criterion. Proposed (needs the human's approval): use the
-   feed on at least 10 of 14 days, and mark "Not useful" on at most 20% of the
-   cards opened.
+2. Dogfood exit check (`ROADMAP.md` → Dogfood exit check). Proposed, needs the
+   human's approval: use the feed on at least 10 of 14 days; at most 20% of
+   reacted cards disliked; at most 20% of coach replies disliked.
 3. Usefulness precision target for item extraction v2. Proposed: at least 80%
    of cards in the golden set labelled useful by the human
    (`item-extraction-v2/`).
@@ -355,7 +342,7 @@ Journal follows the same pattern (`/journal`).
 Step 0 (locked 2026-09-14) — canonical text. One-liners with IDs live in
 [`ASSUMPTIONS.md`](ASSUMPTIONS.md).
 
-- PDF and EPUB (EPUB added by roadmap v2, 2026-11-27 — same PyMuPDF splitter).
+- PDF and EPUB (EPUB added 2026-11-27 by `book-model-v1` — same PyMuPDF splitter).
   No audio, YouTube.
 - Text-layer PDFs only: scanned/image PDFs refused with a clear error, never
   silently ingested.

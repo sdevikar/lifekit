@@ -4,7 +4,7 @@ Map of the documentation, organized by domain. Start here.
 
 | Domain | What's in it |
 |--------|--------------|
-| [product/](product/) | Planning and standing truth: `KANBAN.md` (state, board, known issues, ideas) + `ASSUMPTIONS.md` |
+| [product/](product/) | Planning and standing truth: `ROADMAP.md` (stages and the reason for each decision), `KANBAN.md` (state, board, known issues, ideas), `ASSUMPTIONS.md` |
 | [ux/](ux/) | UI direction: the feed + conversations interface |
 | [backend/](backend/) | Pipeline, storage, and serving: extraction → book model → coach tools → scheduling |
 | [arch/](arch/) | Architecture: pillar blocks, connections, and the daily-loop data flow |

@@ -2,7 +2,7 @@
 
 Superseded documents, kept for history. Nothing here is binding — the
 standing vision is `.agents/intent.md`, and current project state is
-`docs/product/STATUS.md`.
+`docs/product/KANBAN.md`.
 
 | File | Why archived |
 |------|--------------|
@@ -13,3 +13,4 @@ standing vision is `.agents/intent.md`, and current project state is
 | `user-manual-2026-09.md` | Testing guide for the pre-venue flow (plan forge, OpenWebUI). Stale after Step 13 shipped the Next.js feed + conversations UI. Needs a rewrite against `lifekit ui`; do not follow it. |
 | `user-stories-2026-09.md` | User stories from the OpenWebUI era (interviewer, Feynman grading, momentum scores, dashboards). Contradict the current vision; replaced by `requirements/user-stories.md`. |
 | `step-12-agent-skills-export/` | Proposal rejected: "Agent Skills export" is on the never-build list. Kept to record the decision. |
+| `user-stories-2026-10.md` | Stories for the daily briefing, free chat, and journal page. Replaced by the v1 card-feed stories in `requirements/user-stories.md` (2026-11-27). |
