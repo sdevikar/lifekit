@@ -6,7 +6,8 @@ roles, non-negotiables, stages, and the workflow that governs them live in
 restate them.
 
 > **Start here.** Read `.agents/intent.md`, then `docs/product/KANBAN.md` for
-> current state, then this file's Quick reference.
+> current state, then the newest handoff in `.devflow/handoffs/`, then this
+> file's Quick reference. Read `DESIGN.md` before any UI work.
 
 ## Workflow (the rules live in intent.md → "How we build")
 
@@ -121,11 +122,16 @@ Package manager is `uv` (`uv.lock`); `poetry.lock` is vestigial.
   consolidated commit per unit of work, and verify the remote tree after pushing.
 - **Review after each commit:** run `ponytail-review` on the commit diff; apply
   worthwhile simplifications in a follow-up commit.
-- **UI design source is `docs/product/ROADMAP.md`.** D1 (one feed column, no
-  sidebar or drawer) and D15 (design rules borrowed from Meta's Astryx) set the
-  look. DeepTutor (`/home/swapnil/workspace/projects/DeepTutor`) inspires the
+- **UI design source is `DESIGN.md`.** It applies ROADMAP D1 (one feed
+  column, no sidebar or drawer) and D15 (design rules borrowed from Meta's
+  Astryx), and names the Astryx record behind each rule. DeepTutor (`/home/swapnil/workspace/projects/DeepTutor`) inspires the
   runtime only, not the layout; read it with `reverse-engineer-anything`. Do
   not copy its quiz/mastery features (intent never-build).
+- **Session files go in `.devflow/`** (devflow layout: `handoffs/`, `plans/`,
+  `reviews/`, `research/`, `analysis/`, `artifacts/`). Git tracks only
+  `handoffs/` there (`.devflow/.gitignore`), so the next session on any machine
+  finds them. Research that shapes a decision goes in `docs/research/`
+  (intent.md → "Where things live").
 - **Hooks (recommended):** add a local `post-commit` hook to remind about
   ponytail-review. `.git/hooks/` is local, so document it as a practice.
 

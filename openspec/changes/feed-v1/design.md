@@ -6,7 +6,8 @@
   (built by `_briefing`, `_today_exercise`, `_resurfaced_idea`,
   `_fading_ideas`), `/api/completions`, and `/api/idea-signals`. The page
   `frontend/src/app/feed/page.tsx` calls `useBriefing` and renders three fixed
-  card components plus `MasterComposer`.
+  card components under `TodayHeader`. feed-only-ui (slice 0) already removed
+  the sidebar, the chat pages, and the "Talk about this" buttons.
 - card-generation provides `cards(id, book_id, type, title, card_ui, position,
   retired_at, …)` with dense positions per book, and the card library with
   `CardContext`.
@@ -130,11 +131,7 @@ flowchart LR
 
 Delete in `server.py`: the three routes and `_today_exercise`,
 `_exercise_dict`, `_resurfaced_idea`, `_fading_ideas`, `_briefing`. Keep
-`_book_info`, `_retrieve_passages`, `_search_chapters`, and `_coach_messages`
-(the chat still needs them until card-comments). Delete the four feed
-components and `useBriefing.ts`. Remove the `MasterComposer` render from
-`feed/page.tsx`; the component stays until retire-free-chat because `/chat`
-uses it. The tables `completions`, `idea_signals`, `fsrs_cards`, `exercises`,
+`_book_info`. Delete the four feed components and `useBriefing.ts`. The tables `completions`, `idea_signals`, `fsrs_cards`, `exercises`,
 and `key_ideas` stay in the schema with no readers; a later cleanup drops them
 after dogfood.
 

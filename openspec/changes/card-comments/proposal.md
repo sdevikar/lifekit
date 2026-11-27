@@ -7,7 +7,8 @@ entry, a habit check-in, a note on an exercise, and an answer to a question are
 all comments. The coach replies to every comment (ROADMAP D4). After feed-v1,
 the feed shows cards and reactions, but nothing the user writes is kept.
 
-Today's chat code has three problems that this slice must not carry over:
+The old chat code had three problems that this slice must not carry over.
+feed-only-ui (slice 0) deletes that code; it stays in git history:
 - `post_message` deletes the user's message when the model call fails
   (`lifekit/serve/server.py`, `post_message` → `generate`). intent.md says the
   user's words are never lost.
@@ -16,9 +17,9 @@ Today's chat code has three problems that this slice must not carry over:
 - `_coach_messages` reads the thread history after the user's message is
   stored, then appends that message again. The model sees it twice.
 
-Grounding also searches `book_chunks`, then falls back to whole chapters with
-term counting (`_retrieve_passages`, `_search_chapters`). book-model-v1 adds
-`passages` and `passages_fts`, which are the better source.
+The old grounding searched `book_chunks`, then fell back to whole chapters
+with term counting. book-model-v1 adds `passages` and `passages_fts`, which are
+the better source.
 
 ## What Changes
 
@@ -47,9 +48,8 @@ term counting (`_retrieve_passages`, `_search_chapters`). book-model-v1 adds
   (ROADMAP D8).
 - The feed entry gains `comment_count` and the last 2 messages, so the feed
   needs no extra request per card.
-- Remove `_retrieve_passages`, `_search_chapters`, and the
-  `python -m lifekit.store` ingest path. The `book_chunks` and `chapters`
-  tables stay, frozen.
+- Remove the `python -m lifekit.store` ingest path. The `book_chunks` and
+  `chapters` tables stay, frozen.
 
 ## Capabilities
 
@@ -70,13 +70,12 @@ gains two entry fields; the delta is listed in design.md D5.
   `lifekit/serve/feed.py` (entry fields), `lifekit/serve/server.py` (routes),
   `lifekit/db/schema.py` (migration: two columns, one index).
 - Removed: `lifekit/store/__main__.py` ingest entry and its `book_chunks`
-  writer, the Makefile `ingest` target's old command, `_retrieve_passages`,
-  `_search_chapters`.
+  writer, and the Makefile `ingest` target's old command.
 - Frontend: new `frontend/src/components/feed/CommentThread.tsx`,
   `CommentBox.tsx`, `frontend/src/hooks/useComments.ts`; `FeedCardView.tsx`
   (thread slot, `CardContext.answered`).
 - Depends on: feed-v1, card-generation (cards, chat library `Quote`),
   book-model-v1 (`passages`, `passages_fts`), card-types-v1
   (`comment_hint`, `coach_instruction`).
-- The `/api/conversations*` routes and the chat pages stay until
-  retire-free-chat.
+- feed-only-ui (slice 0) already removed the `/api/conversations*` routes, the
+  chat pages, and `MessageList.tsx`.

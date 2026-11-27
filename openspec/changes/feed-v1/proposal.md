@@ -36,9 +36,8 @@ adds the thread under each card.
 - The header shows the book title, a plain card count, and the theme toggle.
 - **BREAKING (internal only):** delete `/api/briefing/today`,
   `/api/completions`, `/api/idea-signals`, the briefing helpers, the old feed
-  components, `useBriefing`, and their tests. Remove `MasterComposer` from the
-  feed page (retire-free-chat deletes it). The old tables stay in the database,
-  unused.
+  components, `useBriefing`, and their tests. The old tables stay in the
+  database, unused.
 
 ## Capabilities
 
@@ -63,6 +62,6 @@ None. `openspec/specs/` holds no capabilities yet.
   `useBriefing.ts`.
 - Tests: rewrite `tests/test_feed_api.py`; drop briefing cases in
   `tests/test_coach.py` and `tests/test_scheduler.py` that call removed code.
-- Depends on: card-generation (the `cards` table and the card library),
+- Depends on: feed-only-ui (no sidebar), card-generation (the `cards` table and the card library),
   card-types-v1 (`comment_hint`).
 - The `feat/card-first-feed` branch is not used (ROADMAP D1).

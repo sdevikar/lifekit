@@ -5,12 +5,13 @@ Map of the documentation, organized by domain. Start here.
 | Domain | What's in it |
 |--------|--------------|
 | [product/](product/) | Planning and standing truth: `ROADMAP.md` (stages and the reason for each decision), `KANBAN.md` (state, board, known issues, ideas), `ASSUMPTIONS.md` |
-| [ux/](ux/) | UI direction: the feed + conversations interface |
+| [`../DESIGN.md`](../DESIGN.md) | UI design language: the one-column layout (ROADMAP D1) and the Astryx-based rules (D15) |
 | [backend/](backend/) | Pipeline, storage, and serving: extraction → book model → coach tools → scheduling |
 | [arch/](arch/) | Architecture: pillar blocks, connections, and the daily-loop data flow |
 | [algorithms/](algorithms/) | The math that picks what resurfaces: FSRS adaptation, dedupe, chunking |
 | [integrations/](integrations/) | Model providers (Ollama/OpenRouter) and what's deliberately not integrated |
 | [research/](research/) | Landscape surveys and borrow reports (tutor-mcp, DeepTutor) that informed the design |
+| [archive/](archive/) | Superseded docs, history only: the old requirements set, UX direction, and sidebar and chat plans |
 
 Change mechanics (not docs, but adjacent):
 
@@ -18,5 +19,6 @@ Change mechanics (not docs, but adjacent):
   first; on any conflict with other docs, it wins. (`.claude/intent.md`
   symlinks to it.)
 - [`openspec/`](../openspec/) — `changes/<step-slug>/` holds proposal → tasks → implement; finished work moves to `archives/`.
+- [`.devflow/handoffs/`](../.devflow/handoffs/) — session handoffs. Read the newest one to pick up work.
 
 **Docs stay true:** whoever merges a change updates `product/KANBAN.md` (and `product/ASSUMPTIONS.md` when its log changes) in the same commit.

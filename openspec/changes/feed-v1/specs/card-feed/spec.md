@@ -122,8 +122,7 @@ button MUST appear at the top when `prev_cursor` is not null.
 
 ### Requirement: Briefing removed
 
-The briefing endpoints and components SHALL be removed. The feed page MUST NOT
-render the free-chat composer.
+The briefing endpoints and components SHALL be removed.
 
 #### Scenario: Old endpoint
 - **WHEN** the client requests `/api/briefing/today`

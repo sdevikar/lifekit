@@ -1,9 +1,9 @@
-# Spec — free-chat-removal
+# Spec — feed-only-ui
 
 ## Purpose
 
-Remove the free chat, the sidebar, and the journal placeholder, so the feed is
-the only screen and a card comment is the only way to talk to the coach.
+Make the feed the only screen. Remove the sidebar, the free chat, and the
+journal placeholder, so that later slices build on a feed-only layout.
 
 ## ADDED Requirements
 
@@ -29,6 +29,14 @@ recent-conversations list.
 - **WHEN** the feed loads on a desktop browser
 - **THEN** the page shows only the feed column and its header
 
+### Requirement: No chat buttons on the feed
+
+The feed MUST NOT show a control that opens a chat page.
+
+#### Scenario: No chat buttons
+- **WHEN** the feed shows today's exercise, the resurfaced idea, and the fading ideas
+- **THEN** no card shows a "Talk about" button
+
 ### Requirement: Free-chat API removed
 
 The routes under `/api/conversations` SHALL be removed. A request to any of
@@ -38,11 +46,10 @@ them MUST return HTTP 404.
 - **WHEN** the client sends `GET /api/conversations`
 - **THEN** the server returns HTTP 404
 
-### Requirement: Card threads kept
+### Requirement: Tables kept
 
-The `conversations` and `messages` tables and their rows SHALL stay. Card
-threads MUST keep working.
+The `conversations` and `messages` tables and their rows SHALL stay.
 
-#### Scenario: Card threads kept
-- **WHEN** a card has a thread with 4 messages before the change
-- **THEN** the feed shows "View all 4 comments" under that card after the change
+#### Scenario: Tables kept
+- **WHEN** a database has 12 rows in `conversations` and 80 rows in `messages` before the change
+- **THEN** it has the same rows after the server starts and runs `init_db()`

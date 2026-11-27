@@ -9,7 +9,7 @@
 
 ## 2. Frontend
 
-- [ ] 2.1 Write `useFeed.ts`, `FeedCardView.tsx`, and `ReactionBar.tsx` (D4) and switch `feed/page.tsx` to them, without `MasterComposer`; verify `npx next build` and `npx eslint src` pass.
+- [ ] 2.1 Write `useFeed.ts`, `FeedCardView.tsx`, and `ReactionBar.tsx` (D4) and switch `feed/page.tsx` to them; verify `npx next build` and `npx eslint src` pass.
 - [ ] 2.2 Delete `ExerciseCard.tsx`, `ResurfacedIdeaCard.tsx`, `FadingIdeasCard.tsx`, `TodayHeader.tsx`, and `useBriefing.ts`; verify `grep -rn "useBriefing\|briefing/today" frontend/src` finds nothing and the build passes.
 - [ ] 2.3 Run `lifekit ui` on a DB with generated `dyl` cards and ask the human to check "Start where you left off", "Dislike and undo", "Header count", "Show earlier cards", the phone view over Tailscale, and the empty state on a fresh DB.
 

@@ -12,7 +12,7 @@
 
 - [ ] 2.1 Write `useComments.ts`, `CommentThread.tsx`, and `CommentBox.tsx` (D6) and fill the `FeedCardView` thread slot; verify `npx next build` and `npx eslint src` pass.
 - [ ] 2.2 Set `CardContext.answered` from the thread; verify "Author's answer after the first comment" in the browser.
-- [ ] 2.3 Write a `node --experimental-strip-types` test like the `useConversation` one; verify one post against a running `lifekit ui` yields exactly one user bubble and one coach bubble.
+- [ ] 2.3 Write a `node --experimental-strip-types` test for `useComments` (the old `useConversation` test in git history shows the pattern); verify one post against a running `lifekit ui` yields exactly one user bubble and one coach bubble.
 - [ ] 2.4 Run `lifekit ui` and ask the human to check: a journal entry on a reflect card, a check-in on a habit card, a question card reveal, "View all N comments", Retry with Ollama stopped, markdown in a comment, and the phone view.
 
 ## 3. Docs

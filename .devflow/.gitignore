@@ -1,0 +1,6 @@
+*
+!.gitignore
+!kanban.yaml
+# LifeKit tracks handoffs too, so the next session on any machine finds them.
+!handoffs/
+!handoffs/*.md

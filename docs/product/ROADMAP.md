@@ -70,15 +70,18 @@ The app is one column of cards. The phone and the desktop look the same.
 
 | # | Slice | Proposal |
 |---|-------|----------|
+| 0 | Feed-only UI: remove the sidebar, the chat pages, the journal page, and the free-chat API | `openspec/changes/feed-only-ui/` |
 | 1 | Card types: the five types, their fields, and what a comment means on each | `openspec/changes/card-types-v1/` |
 | 2 | Book model: PDF and EPUB become sections and passages; `lifekit ingest` | `openspec/changes/book-model-v1/` |
 | 3 | Item extraction: typed, grounded, de-duplicated items with a usefulness check | `openspec/changes/item-extraction-v2/` |
 | 4 | Card generation: items become stored cards with stable ids and code-built OpenUI | `openspec/changes/card-generation/` |
 | 5 | Feed: the cards in reading order, reactions, and "start where you left off" | `openspec/changes/feed-v1/` |
 | 6 | Card comments: a thread per card, coach replies, reactions on replies | `openspec/changes/card-comments/` |
-| 7 | Retire free chat: remove the chat pages, the sidebar, and the journal page | `openspec/changes/retire-free-chat/` |
 
-Slices 1 and 2 can run in parallel. Each later slice needs the one before it.
+Slice 0 comes first, so every later slice builds on a feed-only layout.
+Slices 1 and 2 can then run in parallel. Each later slice needs the one
+before it. From slice 0 until slice 6, the app has no way to talk to the
+coach. That gap is accepted for one dogfood user.
 
 ## Decisions and their reasons
 
@@ -242,9 +245,9 @@ Each decision has four parts:
 ### D10. Free chat is retired
 
 - **Decision:**
-  - v1 removes the chat pages (`/chat`, `/c/<id>`), the composer at the
-    bottom of the feed, the sidebar with recent conversations, and the
-    `/journal` placeholder.
+  - v1 removes the chat pages (`/chat`, `/c/<id>`), the free-chat composer,
+    the sidebar with recent conversations, and the `/journal` placeholder.
+    Slice 0 (`feed-only-ui`) does this first.
   - Old conversations stay in the database. Nothing reads them.
 - **Why:**
   - Two ways to talk to the coach split the user's history.

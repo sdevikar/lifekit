@@ -14,3 +14,6 @@ standing vision is `.agents/intent.md`, and current project state is
 | `user-stories-2026-09.md` | User stories from the OpenWebUI era (interviewer, Feynman grading, momentum scores, dashboards). Contradict the current vision; replaced by `requirements/user-stories.md`. |
 | `step-12-agent-skills-export/` | Proposal rejected: "Agent Skills export" is on the never-build list. Kept to record the decision. |
 | `user-stories-2026-10.md` | Stories for the daily briefing, free chat, and journal page. Replaced by the v1 card-feed stories in `requirements/user-stories.md` (2026-11-27). |
+| `requirements-2026-09/` | The 2026-09-27 requirements set (vision, decisions, UI-UX, API, data model, architecture). It describes the briefing feed and free chat. Replaced by `.agents/intent.md`, `docs/product/ROADMAP.md`, and the v1 proposals (2026-11-27). |
+| `ux-2026-10/` | The old UX direction (feed + conversations) and the design-token extraction from platform.claude.com. Replaced by `DESIGN.md` (2026-11-27). The live tokens are in `frontend/src/app/globals.css`. |
+| `plans-2026-10/` | The sidebar-layout plan and the DeepTutor-style chat-layout plan. Both are shipped and then retired by ROADMAP D1 and D10. |

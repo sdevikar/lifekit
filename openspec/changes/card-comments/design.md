@@ -130,7 +130,7 @@ last 2 messages per thread.
   `react(messageId, value)` work the same way.
 - `CommentThread`: shows `recent`; "View all N comments" expands in place.
   User comments render with `react-markdown`, `remark-gfm`, and the `lk-prose`
-  class, as `MessageList.tsx` does today. Coach replies render with the OpenUI
+  class, as the old `MessageList.tsx` did. Coach replies render with the OpenUI
   `Renderer` and the chat library. A streaming reply shows "Coach is writing…"
   until the first delta. A failed reply shows "The coach could not reply." and
   a Retry button. Each coach reply has like and dislike, the same
@@ -149,10 +149,8 @@ A test covers it (tasks 2.3).
 
 ### D7. Removals
 
-Remove `_retrieve_passages`, `_search_chapters`, and `_coach_messages` from
-`server.py`; the chat routes call `coach.build_messages` with no card until
-retire-free-chat deletes them. Remove the `python -m lifekit.store` ingest
-path and its `book_chunks` writer; point the Makefile `ingest` target at
+feed-only-ui already removed the chat routes and their grounding helpers.
+Remove the `python -m lifekit.store` ingest path and its `book_chunks` writer; point the Makefile `ingest` target at
 `lifekit ingest`.
 
 ## Risks / Trade-offs
@@ -162,6 +160,13 @@ path and its `book_chunks` writer; point the Makefile `ingest` target at
 - [A short "Done!" check-in gets a long reply] → The coach rules ask the reply
   to match the comment. Tune the rules in dogfood; no code change.
 - [The home GPU is off] → Comments still save; replies fail with Retry.
+- [The local model writes `Card(children=[...])`, which the OpenUI renderer
+  does not draw] → Seen on the abandoned branch `feat/card-first-feed`
+  (commit `aa4d3f3`). That fix hand-edited the generated
+  `lifekit/serve/openui_prompt.py` and added a regex in `server.py`. Here, put
+  the rule "arguments are positional: `Card([...])`" in the generator
+  `frontend/scripts/gen_openui_prompt.ts`, so a regeneration keeps it. Add a
+  test that a reply with `children=` still renders, or fails in a visible way.
 - [The context block grows with long threads] → The 6,000-character cap
   applies to the context, not the history. Revisit if threads get long.
 

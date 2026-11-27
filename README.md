@@ -18,8 +18,8 @@ symlinks to it.)
 ## Current state
 
 Stage **v1** (see `docs/product/ROADMAP.md`): one book as a feed of cards, with
-comments, coach replies, and reactions. The seven v1 slices are proposed in
-`openspec/changes/`. What runs today is the PoC: the pipeline, a daily-briefing
+comments, coach replies, and reactions. The seven v1 slices (0–6) are proposed
+in `openspec/changes/`. Slice 0 makes the app feed-only. What runs today is the PoC: the pipeline, a daily-briefing
 feed, and a free chat, which v1 replaces.
 
 - Stages and the reason for each decision: `docs/product/ROADMAP.md`

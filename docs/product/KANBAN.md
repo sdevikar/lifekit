@@ -32,7 +32,8 @@ thread under each card, coach replies, and reactions. The table below shows
 what exists today, before any v1 slice lands. The feed is not useful yet: it
 shows the same front-matter ideas every day, 875 ideas is too many, and the
 exercises contain duplicates (see the v1 problem statement under Upcoming).
-v1 removes the chat, the sidebar, and the journal placeholder.
+Slice 0 (`feed-only-ui`) removes the chat, the sidebar, and the journal
+placeholder.
 
 | Area | State |
 |------|-------|
@@ -59,8 +60,9 @@ v1 removes the chat, the sidebar, and the journal placeholder.
 
 ## Now / In progress
 
-The intent rewrite, `ROADMAP.md`, and the seven v1 proposals are drafted on
-branch `docs/roadmap-v2`. They wait for the human's approval.
+The intent rewrite, `ROADMAP.md`, and the seven v1 proposals (slices 0–6) are
+merged to `main` as drafts. They wait for the human's approval. Slice 0 comes
+first.
 
 ## Upcoming
 
@@ -86,15 +88,16 @@ Build order. Each slice can be tested on its own:
 
 | # | Slice | Proposal | Depends on | Status |
 |---|-------|----------|------------|--------|
-| 1 | Card types: five types, their fields, the comment hint and coach instruction per type | `card-types-v1/` | — | Proposed |
-| 2 | Book model: PDF and EPUB become sections (front, body, back) and passages with offsets; `lifekit ingest` | `book-model-v1/` | — | Proposed |
+| 0 | Feed-only UI: remove the sidebar, the chat pages, the journal page, and the free-chat API | `feed-only-ui/` | — | Proposed (do first) |
+| 1 | Card types: five types, their fields, the comment hint and coach instruction per type | `card-types-v1/` | 0 | Proposed |
+| 2 | Book model: PDF and EPUB become sections (front, body, back) and passages with offsets; `lifekit ingest` | `book-model-v1/` | 0 | Proposed |
 | 3 | Item extraction: typed items with stance, per-chapter consolidation, passage anchors, usefulness check, golden set | `item-extraction-v2/` | 1, 2 | Proposed |
 | 4 | Card generation: one card per item; code builds the OpenUI program; stable ids; question cards | `card-generation/` | 1, 3 | Proposed |
 | 5 | Feed: cards in reading order, like and dislike, start where you left off | `feed-v1/` | 4 | Proposed |
 | 6 | Card comments: a thread per card, a coach reply to every comment, reactions on replies | `card-comments/` | 5 | Proposed |
-| 7 | Retire free chat: remove the chat pages, the sidebar, and the journal page | `retire-free-chat/` | 6 | Proposed |
 
-Slices 1 and 2 can run in parallel.
+Slice 0 comes first. Slices 1 and 2 can then run in parallel. From slice 0
+until slice 6, the app has no way to talk to the coach.
 
 ## Superseded
 
@@ -107,8 +110,8 @@ apply them.
 | `exercise-surface-routing/` | `feed-v1/` | One screen, the feed (ROADMAP D1). |
 | `exercise-surface-journal/`, `exercise-surface-tracking/`, `exercise-surface-questionnaire/`, `exercise-surface-concept-check/`, `exercise-surface-worksheet/` | `card-comments/` | A comment is the only way to act on a card (ROADMAP D2). Worksheet waits for v2 (D7). |
 | `openui-exercise-surfaces/` | `card-generation/` | No per-type surfaces. Code builds card programs offline (D6). |
-| `openui-hybrid-chat/`, `openui-system-prompt/` | `card-comments/`, `retire-free-chat/` | Shipped in part (commit `6c61732`). Coach replies keep the OpenUI renderer; the free chat goes away (D10). |
-| `chat-surface/`, `chat-surface-b-composer-open/`, `chat-surface-c-entry-points/` | `retire-free-chat/` | Free chat is retired (D10). |
+| `openui-hybrid-chat/`, `openui-system-prompt/` | `card-comments/`, `feed-only-ui/` | Shipped in part (commit `6c61732`). Coach replies keep the OpenUI renderer; the free chat goes away (D10). |
+| `chat-surface/`, `chat-surface-b-composer-open/`, `chat-surface-c-entry-points/` | `feed-only-ui/` | Free chat is retired (D10). |
 | `journal-tab/`, `journal-tab-a-storage-api/`, `journal-tab-b-editor/`, `journal-tab-c-toc-navigation/`, `journal-tile-layout/` | `card-comments/` | A journal entry is a comment on a reflect card (D2). Posts without a card are v2 (D13). |
 | `combine-product-tracking-docs/` | — | Done: KANBAN is the one tracker. `ROADMAP.md` now holds stages and decision reasons only. |
 | `card-activity-drawer/` (renamed) | `card-comments/` | The drawer is dropped (D1). |

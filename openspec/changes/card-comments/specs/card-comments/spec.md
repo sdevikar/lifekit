@@ -157,10 +157,9 @@ right or wrong.
 
 ### Requirement: Old grounding removed
 
-`_retrieve_passages`, `_search_chapters`, and the `python -m lifekit.store`
-ingest path SHALL be removed. Coach grounding MUST read only `passages` and
-`passages_fts`.
+The `python -m lifekit.store` ingest path SHALL be removed. Coach grounding
+MUST read only `passages` and `passages_fts`.
 
 #### Scenario: No old search
-- **WHEN** the code base is searched for `_search_chapters`
+- **WHEN** `lifekit/serve/coach.py` is searched for `book_chunks` and `chapters`
 - **THEN** no match is found
