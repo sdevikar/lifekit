@@ -491,6 +491,10 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
                     yield "data: " + json.dumps({"error": f"Coach unavailable: {e}"}) + "\n\n"
                     return
 
+                import re as _re
+
+                accumulated = _re.sub(r"\bCard\s*\(\s*children\s*=\s*", "Card(", accumulated)
+
                 c2 = _conn(app.config["db_path"])
                 try:
                     c2.execute(
