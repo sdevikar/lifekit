@@ -151,9 +151,9 @@ export function ChatView({ convId, initialMessage }: ChatViewProps) {
         <MessageList
           messages={messages}
           pending={
-            sending ||
-            (messages.length > 0 &&
-              messages[messages.length - 1].role === "user")
+            sending &&
+            messages.length > 0 &&
+            messages[messages.length - 1].role === "user"
           }
         />
       </div>
