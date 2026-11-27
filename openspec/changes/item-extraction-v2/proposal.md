@@ -50,6 +50,27 @@ that says how many of them are useful.
   extract/reduce/validate commands stay as they are, frozen. Nothing new reads
   or writes them.
 
+## After this slice
+
+What you will see in the app: nothing new. The app looks the same as after
+slice 0.
+
+What you can do on the command line:
+- Run `lifekit ingest --book <book_id> --from items` on the home workstation. It
+  extracts typed items from the body chapters, merges duplicates, and judges
+  usefulness. This is a long model run.
+- Run `lifekit eval usefulness label <book_id>` to mark a sample of items
+  useful or not useful, one by one.
+- Run `lifekit eval usefulness report <book_id>` to see how well the judge
+  agrees with you (precision and recall).
+
+Decide when you pick up this slice:
+- The precision target. The draft says at least 0.8.
+
+What is not there yet (expected, not a bug):
+- Items are not cards yet, and the feed does not show them. Slices 4 and 5 do
+  that.
+
 ## Capabilities
 
 ### New Capabilities

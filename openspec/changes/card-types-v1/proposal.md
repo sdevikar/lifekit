@@ -43,6 +43,20 @@ a surface, a done action, or a status.
   load it through one Python module. Extraction, generation, the feed API, and
   the coach prompt read it from there.
 
+## After this slice
+
+What you will see in the app: nothing new. The app looks the same as after
+slice 0.
+
+What exists after this slice:
+- `lifekit/cards/card_types.toml` lists the five card types, with the comment
+  hint and the coach instruction for each type.
+- One Python module loads that file. Tests check it.
+
+What is not there yet (expected, not a bug):
+- Nothing in the app reads the card types yet. Extraction (slice 3), card
+  generation (slice 4), the feed (slice 5), and the coach (slice 6) use them.
+
 ## Capabilities
 
 ### New Capabilities

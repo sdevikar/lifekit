@@ -51,6 +51,30 @@ the better source.
 - Remove the `python -m lifekit.store` ingest path. The `book_chunks` and
   `chapters` tables stay, frozen.
 
+## After this slice
+
+What you will see in the app (v1 is complete):
+- A comment box under each card. The hint fits the card type, for example
+  "Write your entry…" on a reflect card.
+- The coach replies to every comment. The reply streams in after "Coach is
+  writing…".
+- If the model is off, your comment stays, and the reply slot shows "The coach
+  could not reply." with a Retry button.
+- Like and dislike on each coach reply.
+- Each card shows its last 2 messages and "View all N comments".
+- A question card shows the author's answer after your first comment.
+
+Removed:
+- The old `python -m lifekit.store` ingest. Use `lifekit ingest`.
+
+Not in v1 (expected, not a bug):
+- Posts without a card (the "+" button) and worksheet cards come in v2.
+- Sharing a card comes in v4. Spaced repetition is parked.
+
+Decide when this slice is done:
+- The dogfood exit check (ROADMAP → Dogfood exit check), before the 14 days of
+  dogfood start.
+
 ## Capabilities
 
 ### New Capabilities

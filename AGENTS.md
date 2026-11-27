@@ -45,12 +45,12 @@ Use the `skill` tool when a task matches. The ones that matter here:
 |-------|---------|-------|
 | Run the app | `lifekit ui` | Feed API `127.0.0.1:8765` + Next.js `127.0.0.1:3783`, localhost only. Always rebuilds Next.js. |
 | Run the app (alt) | `./deploy_local.sh` / `--stop` / `--dev` | Feed `:8765`, web `:3000` (`NEXT_PORT`). Auto-copies dogfood DB if missing. |
-| Ingest a book | `python -m lifekit.store --pdf <path>` | Or `make ingest PDF=<path>`. |
+| Ingest a book | `python -m lifekit.store --pdf <path>` | Or `make ingest PDF=<path>`. Slice 2 adds `lifekit ingest <file>`; slice 6 removes this path. |
 | MCP server | `python -m lifekit.mcp.server` | FastMCP stdio. Or `make serve`. |
 | Plan forge | `python -m lifekit.plan_forge.forge --intent "..."` | Or `make forge INTENT="..."`. |
 | Init DB | `python -m lifekit.db.schema` or `init_db()` | `~/.lifekit/lifekit.db` (`$LIFEKIT_DB`). Idempotent + migrates. |
 | LLM provider config | `lifekit config` | Ollama default + OpenRouter. Never stores keys. Order: CLI > env > `~/.lifekit/config.json` > defaults. |
-| Tests | `uv run pytest tests/ -v` | Or `make test`. 117 tests, 1 pre-existing fail (`test_split_dyl_pdf`). See Verification. |
+| Tests | `uv run pytest tests/ -v` | Or `make test`. 1 known failure (`test_split_dyl_pdf`). See Verification. |
 
 **Python entrypoint:** `lifekit = lifekit.__main__:main` (subcommands `ui`,
 `config`); other tools run as `python -m lifekit.<submodule>`. The codebase is
@@ -60,9 +60,10 @@ Package manager is `uv` (`uv.lock`); `poetry.lock` is vestigial.
 ## Verification
 
 - **Tests:** `uv run pytest tests/ -v` (or `make test` = `python -m pytest
-  tests/ -v`). **117 tests, 1 pre-existing failure** (`test_split_dyl_pdf`,
-  hardcoded VM path — KANBAN P2). Run a single file with
-  `uv run pytest tests/test_coach.py -v`.
+  tests/ -v`). **1 known failure** (`test_split_dyl_pdf`, hardcoded VM path —
+  KANBAN P2). Run a single file with `uv run pytest tests/test_coach.py -v`.
+  If collection fails with `No module named 'flask'` (or `fsrs`, `mcp`,
+  `pypdf`), the local `.venv` is out of date: run `uv sync` first.
 - **No conftest.py.** Tests skip gracefully when fixtures are absent.
 - **Zero tests hit a real LLM** — all model calls are stubbed/mocked. The
   suite proves the pipeline is *plumbed*, not that it *extracts*. The real-
@@ -72,9 +73,23 @@ Package manager is `uv` (`uv.lock`); `poetry.lock` is vestigial.
   **no ruff/black/typecheck** configured — don't invent them.
 - **Frontend:** `cd frontend && npx next build` / `npx eslint`. The
   `useConversation` regression test runs via `node --experimental-strip-types`
-  against `:3783` (override with `LIFEKIT_UI`).
+  against `:3783` (override with `LIFEKIT_UI`). Slice 0 deletes it; slice 6
+  adds a `useComments` test the same way.
 
 ## Architecture at a glance
+
+This section describes the code on `main` today, which is still the PoC. The
+v1 slices change it (`docs/product/ROADMAP.md` → "v1 slices"):
+
+| Slice | What changes here |
+|-------|-------------------|
+| 0 `feed-only-ui` | The sidebar, the chat pages, and the conversations API go. |
+| 2 `book-model-v1` | `lifekit ingest` and the `sections` and `passages` tables arrive. |
+| 3, 4 | The pipeline becomes `structure → items → cards`. |
+| 5 `feed-v1` | `/api/feed` and card reactions replace the briefing. |
+| 6 `card-comments` | Card comments and coach replies; grounding moves to `lifekit/serve/coach.py`. |
+
+Update the bullets below in the same commit that lands each slice.
 
 - **Store is the hub:** SQLite at `~/.lifekit/lifekit.db` (or `$LIFEKIT_DB`).
   Every pillar (pipeline, scheduler, coach tools, feed API, chat) reads/writes
@@ -173,3 +188,6 @@ Issues live as GitHub issues in sdevikar/lifekit; operations use the `gh` CLI. S
 ### Domain docs
 
 Single-context: one `GLOSSARY.md` at the repo root plus `docs/adr/`. See `docs/agents/domain.md`.
+The `/domain-modeling` skill creates both when a term or a decision is first
+resolved, so they do not exist yet. Until then, the decision record is
+`docs/product/ROADMAP.md` (D1–D15).

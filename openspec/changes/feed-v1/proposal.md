@@ -39,6 +39,28 @@ adds the thread under each card.
   components, `useBriefing`, and their tests. The old tables stay in the
   database, unused.
 
+## After this slice
+
+What you will see in the app:
+- The feed shows the book's cards in reading order, 20 at a time. More cards
+  load when you scroll to the end.
+- The header shows the book title, the card count, and the theme toggle.
+- Like and dislike under each card. A disliked card folds into one line,
+  "Marked not useful · Undo".
+- When you open the feed again, it starts at the furthest card you reacted to.
+  "Show earlier cards" loads the cards before it.
+- The old briefing is gone: today's exercise, "Mark done", and "still with
+  me?".
+
+What is not there yet (expected, not a bug):
+- No comment box. You cannot write anything on a card, and the coach does not
+  reply. Slice 6 adds both.
+- Question cards keep the author's answer hidden. Only a comment opens it, in
+  slice 6.
+- If the database has no cards, the feed says "No cards yet. Run `lifekit
+  ingest <file>`." Run the ingest stages from slices 2 to 4 on the home
+  workstation first.
+
 ## Capabilities
 
 ### New Capabilities

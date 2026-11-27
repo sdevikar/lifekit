@@ -45,6 +45,23 @@ This change gives every later slice a stable, deterministic model of the book.
 - Add `lifekit book sections <book_id>` (print the tree) and
   `lifekit book set-kind <book_id> <section_idx> <kind>` (correct a kind).
 
+## After this slice
+
+What you will see in the app: nothing new. The app looks the same as after
+slice 0.
+
+What you can do on the command line:
+- Run `lifekit ingest <file>` on a PDF or an EPUB. It runs only the first
+  stage, `structure`: it stores the sections and the passages.
+- Run `lifekit book sections <book_id>` to see the section tree, with each
+  section marked front, body, or back.
+- Run `lifekit book set-kind <book_id> <section_idx> <kind>` to fix a wrong
+  kind.
+
+What is not there yet (expected, not a bug):
+- `lifekit ingest` makes no items or cards. Slices 3 and 4 add those stages.
+- The old `python -m lifekit.store` ingest still exists. Slice 6 removes it.
+
 ## Capabilities
 
 ### New Capabilities

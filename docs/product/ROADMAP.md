@@ -328,7 +328,7 @@ Each decision has four parts:
 
 ## Dogfood exit check
 
-Proposed. **This needs the human's approval.**
+Draft. Decide it when card-comments (slice 6) is done, before dogfood starts.
 
 - The user opens the feed on at least 10 of 14 days.
 - At most 20% of the cards the user reacted to get a dislike.

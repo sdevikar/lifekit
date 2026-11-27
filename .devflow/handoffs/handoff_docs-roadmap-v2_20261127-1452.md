@@ -1,17 +1,17 @@
 ---
 branch: docs/roadmap-v2
-head: a373dda26fd73d50cf422066a241e0cd003fe249
+head: 4afee71
 base: main
 pr:
 status: done
 session: 4f5d21d7-2064-4192-90d9-00c50dd0f19f
-summary: v1 direction (feed with comments) merged to main as docs and seven draft proposals, slices 0-6; no code changed
+summary: v1 direction (feed with comments) on main as docs and seven draft proposals, slices 0-6; old proposals archived; no code changed
 ---
 
 # Handoff — v1 feed with comments: intent, roadmap, proposals (2026-11-27)
 
-`head` is the commit this session built on. The commit that adds this file
-comes right after it, and `main` fast-forwards to that commit.
+`head` is the last commit before this update. The commit that updates this
+file comes right after it, and `main` fast-forwards to that commit.
 
 **Read first.** This is a personal project. The human is brainstorming and
 picks it up in personal time. **Do not write code** until the human asks for a
@@ -39,19 +39,21 @@ To restore context on any machine:
 | 9 | Follow the Astryx design language (rules only, not the library). | `DESIGN.md`, ROADMAP D15 |
 | 10 | This direction is final. Merge the docs and proposals to `main`. | — |
 
-## The v1 slices (all proposed, none approved)
+## The v1 slices (all drafts; the human approves each one at pickup)
 
 | # | Proposal | Depends on |
 |---|----------|------------|
 | 0 | `feed-only-ui`: remove the sidebar, the chat pages, `/journal`, the "Talk about this" buttons, and `/api/conversations*`. Old URLs redirect to `/feed`. | — |
-| 1 | `card-types-v1` | 0 |
-| 2 | `book-model-v1` | 0 |
+| 1 | `card-types-v1` | — |
+| 2 | `book-model-v1` | — |
 | 3 | `item-extraction-v2` | 1, 2 |
 | 4 | `card-generation` | 1, 3 |
 | 5 | `feed-v1` | 0, 4 |
 | 6 | `card-comments` | 5 |
 
-All seven pass `openspec validate --strict`. `feed-only-ui` replaces the
+Slice 0 comes first by choice, not because slices 1 and 2 need its code.
+All seven pass `openspec validate --strict`. Each has an "After this slice"
+section that says what works after it lands and what is not there yet. `feed-only-ui` replaces the
 earlier `retire-free-chat` proposal (it was slice 7). It moved to the front
 because `main` still shows the PoC sidebar with Feed, Journal, and Chat.
 
@@ -70,6 +72,18 @@ because `main` still shows the PoC sidebar with Feed, Journal, and Chat.
 - Archived to `docs/archive/`: `requirements-2026-09/` (old requirements set),
   `ux-2026-10/` (old UX direction and token extraction), `plans-2026-10/`
   (sidebar and chat-layout plans).
+- Second commit (this update):
+  - 19 superseded proposals moved from `openspec/changes/` to
+    `openspec/archives/`. `openspec/archives/README.md` gives the reason for
+    each. `.scratch/openui-hybrid` moved to
+    `openspec/archives/openui-hybrid-chat/scratch/`.
+  - `openspec/changes/` now holds only the seven v1 drafts and the parked
+    program-layer drafts `step-8` to `step-11` (ROADMAP → Parked).
+  - KANBAN cleaned up: no Superseded section, the chat rows collapsed into one
+    row that names the slice that removes it, test count 123, open questions
+    say when to decide.
+  - AGENTS.md: test count, the `uv sync` hint, a slice → architecture map, and
+    a note that `GLOSSARY.md` and `docs/adr/` are created on first use.
 - `.devflow/`: devflow's layout. `.devflow/.gitignore` ignores everything
   except `handoffs/`, so handoffs are tracked. The old `docs/handoffs/` ignore
   rule is gone.
@@ -88,17 +102,20 @@ because `main` still shows the PoC sidebar with Feed, Journal, and Chat.
   proposals accept this gap.
 - `TodayHeader.tsx` holds `ThemeToggle`; feed-v1 moves it to the new header.
 
-## Waiting on the human
+## Decide at pickup (not now)
 
-1. Approve the seven proposals (or ask for changes).
-2. Approve the dogfood exit check: 10 of 14 days; ≤20% of reacted cards
-   disliked; ≤20% of coach replies disliked.
-3. Approve the 80% golden-set precision target for item extraction.
-4. Decide whether to delete the remote branches listed under Notes.
+The human approves each proposal when they pick it up, not before.
+
+1. Each v1 proposal: approve or change it when you start that slice.
+2. The 80% golden-set precision target: decide when you pick up
+   `item-extraction-v2`.
+3. The dogfood exit check (10 of 14 days; ≤20% of reacted cards disliked;
+   ≤20% of coach replies disliked): decide when `card-comments` is done.
 
 ## Next steps for an agent
 
-1. After approval, implement slice 0 (`feed-only-ui`). Then slices 1 and 2 in
+1. When the human picks up slice 0 (`feed-only-ui`) and approves it,
+   implement it. Then slices 1 and 2 in
    parallel, then 3 → 6 in order.
 2. Long model runs (extraction, question cards) go to the home workstation.
 3. Update `docs/arch/` and `AGENTS.md` Architecture only when a slice lands.
@@ -110,12 +127,17 @@ because `main` still shows the PoC sidebar with Feed, Journal, and Chat.
   `Card(children=[...])`, which does not render. card-comments now records the
   fix to make (a rule in `frontend/scripts/gen_openui_prompt.ts`).
 - `origin/feat/ui-design-language-overhaul-2441092854256426498` is fully merged
-  into `main`. It is safe to delete.
+  into `main`. The human chose to keep both remote branches. Do not delete them.
 - The local ref `origin/docs/roadmap-v2` can look stale. Pushes go by URL to
   `git@github-personal:sdevikar/lifekit.git`. Run `git fetch` with that URL to
   refresh it.
-- Old proposals in `openspec/changes/` (exercise-surface-*, journal-tab*,
-  chat-surface*, openui-*, step-8…11) fail `openspec validate` because they
-  have no specs. They are history; KANBAN lists them as superseded or parked.
-- `AGENTS.md` names `GLOSSARY.md` and `docs/adr/`, which do not exist yet.
+- `GLOSSARY.md` and `docs/adr/` do not exist on purpose. The `/domain-modeling`
+  skill creates them when the first term or decision is resolved
+  (`docs/agents/domain.md`). `DESIGN.md` exists at the repo root.
+- The local `.venv` lacks deps: `uv run pytest --collect-only` fails with 7
+  import errors (`flask`, `fsrs`, `mcp`, `pypdf`). Run `uv sync` first.
+- Tracked root folders that look stale, not touched: `agent/` (83 files),
+  `.playwright-mcp/` (32 files), `deeptutor-chat.png`, `kanban.yaml`
+  (`entries: []`), `core/`, `infra/`, `knowledge-store/`, `skills/`, `.hermes`.
+  Ask the human before removing any of them.
 - `ponytail-review` was not available in this session.

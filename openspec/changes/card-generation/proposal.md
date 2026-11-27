@@ -41,6 +41,21 @@ checked before anyone sees it."
 - A test parses every layout's output with the real OpenUI parser, through a
   small Node script. Node is needed only for tests, not at ingest.
 
+## After this slice
+
+What you will see in the app: nothing new. The app looks the same as after
+slice 0.
+
+What exists after this slice:
+- `lifekit ingest --book <book_id> --from cards` fills the `cards` table: one card per
+  useful item, plus about one question card per chapter.
+- Each card has a stable id. A re-run keeps the ids, so comments and reactions
+  stay attached later.
+- Tests parse every card layout with the real OpenUI parser.
+
+What is not there yet (expected, not a bug):
+- No page shows the cards. The feed shows them in slice 5.
+
 ## Capabilities
 
 ### New Capabilities

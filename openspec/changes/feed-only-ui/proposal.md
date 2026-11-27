@@ -35,6 +35,21 @@ has to work around the old chat.
   generator, and `lifekit/serve/openui_prompt.py`. card-generation and
   card-comments build on them.
 
+## After this slice
+
+What you will see in the app:
+- The feed page alone, with no left sidebar.
+- Old links (`/chat`, `/chat/<id>`, `/c/<id>`, `/journal`) open the feed.
+- The same old feed as before: today's exercise, a resurfaced idea, and the
+  fading ideas. "Mark done" and the "still with me?" buttons still work.
+
+What is not there yet (expected, not a bug):
+- You cannot talk to the coach. The "Talk about this" buttons are gone. Card
+  comments bring the coach back in slice 6.
+- The feed still shows the same front-matter ideas every day. Slice 5 replaces
+  the feed with real cards.
+- Old chats stay in the database, but no page shows them.
+
 ## Capabilities
 
 ### New Capabilities

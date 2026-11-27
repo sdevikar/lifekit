@@ -13,8 +13,7 @@ The assumption log (IDs + revisit triggers) is
 |---------|----------|
 | Current state | The capability view — one row per area, its status today (shipped / placeholder / proposed). No history. |
 | Now / In progress | Work actively being done this cycle. |
-| Upcoming | Approved or awaiting-approval proposals, ordered by dependency then value. |
-| Superseded | Old proposals that the v1 slices replace. |
+| Upcoming | Draft proposals in build order. The human approves each one when they pick it up. |
 | Deferred / Future | Known but not scheduled. Parked stage items live in `ROADMAP.md`. |
 | Known issues | Defects and spec-vs-reality notes, stable IDs (`D…`, `H…`, `P…`). |
 | Future ideas | Unapproved feature ideas (`F…`). |
@@ -22,8 +21,9 @@ The assumption log (IDs + revisit triggers) is
 | Open questions | Undecided design questions. |
 | Locked assumptions | Step 0 canonical text (also summarised in `ASSUMPTIONS.md`). |
 
-The human approves; Atlas never self-approves. Nothing is silently dropped —
-retired items move to their section with a reason and date.
+The human approves; the agent never self-approves. Nothing is silently
+dropped: a retired proposal moves to `openspec/archives/` with a reason and a
+date in [`openspec/archives/README.md`](../../openspec/archives/README.md).
 
 ## Current state
 
@@ -32,37 +32,31 @@ thread under each card, coach replies, and reactions. The table below shows
 what exists today, before any v1 slice lands. The feed is not useful yet: it
 shows the same front-matter ideas every day, 875 ideas is too many, and the
 exercises contain duplicates (see the v1 problem statement under Upcoming).
-Slice 0 (`feed-only-ui`) removes the chat, the sidebar, and the journal
-placeholder.
+The State column names the slice that removes or replaces a row.
 
 | Area | State |
 |------|-------|
-| Book pipeline (splitter → extraction → reduce → validation) | ✅ Shipped — 49/49 tests green |
+| Book pipeline (splitter → extraction → reduce → validation) | ✅ Shipped. Slices 2–4 replace it with `structure → items → cards`. |
 | Coach tools (`list` / `get` / `log completion` / `next` + search, due, ideas, progress) | ✅ Shipped in `lifekit/coach.py`; not yet wired into `lifekit/mcp/server.py` (H1) |
 | Multi-book registry | ✅ Shipped |
 | FSRS scheduling | ✅ Shipped |
 | LLM provider config (Ollama default + OpenRouter, `lifekit config` CLI) | ✅ Shipped |
-| Feed API (`lifekit.serve.server`, Flask, localhost `:8765`) | ✅ Shipped — briefing, completions, idea-signals, conversations CRUD, grounded chat |
-| Feed UI (Next.js, `frontend/`) | ✅ Shipped — feed cards + conversation view, `/api/*` rewrites, `experimental.proxyTimeout` raised for slow local models |
+| Feed API (`lifekit.serve.server`, Flask, localhost `:8765`) | ✅ Shipped — briefing, completions, idea-signals, conversations CRUD, grounded chat. Slice 0 removes the conversation routes; slice 5 replaces the briefing with `/api/feed`. |
+| Feed UI (Next.js, `frontend/`) | ✅ Shipped — briefing cards + conversation view, `/api/*` rewrites, `experimental.proxyTimeout` raised for slow local models. Slice 5 replaces the briefing cards. |
 | Dark theme | ✅ Shipped 2026-09-29 — `light-dark()` tokens, `ThemeToggle`, pre-paint script |
-| Sidebar (shell + refinements + nav model) | ✅ Shipped — single column, icon strip + panel, Chat/Journal destination rows, `localStorage` persistence |
-| UI design language overhaul | ✅ Shipped 2026-09-30 — every component on the `--lk-*` tokens, no colour literals |
-| Chat Surface | ✅ Shipped 2026-10-15 — `/chat` single-column, sidebar "Recent" (rename/delete), no new-chat button (start by typing), deep links, coach replies rendered as Markdown |
-| Chat pending feedback | ✅ Shipped 2026-10-01 — optimistic user message + dashed "Thinking…" row |
-| Chat placeholder title | ✅ Shipped 2026-10-15 — sentinel "New conversation", replaced by the first 60 chars of the first user message |
-| Journal Surface | 📋 Placeholder — `/journal` route only; functionality pending the journal slices |
-| Settings tab | 📋 Placeholder — gear row opens a "Coming soon." page |
+| Sidebar, chat, and journal placeholder | ✅ Shipped 2026-09-30 to 2026-11-22 (Done lists each one). Slice 0 removes the sidebar, `/chat`, `/c/<id>`, and `/journal`. Slice 6 brings the coach back as card comments. |
+| UI design language overhaul | ✅ Shipped 2026-09-30 — every component on the `--lk-*` tokens, no colour literals. `DESIGN.md` now holds the rules. |
+| Settings tab | 📋 Placeholder — gear row opens a "Coming soon." page. Slice 0 removes it with the sidebar. |
 | `lifekit ui` serve command | ✅ Shipped — boots feed API + Next.js production, localhost only; always rebuilds the frontend |
 | Full-book extraction eval (20-exercise ground truth) | ✅ Done — `qwen3.8:27b-q8_0` on home Ollama, 17/17 chapters, recall 19/20 (95%), conditional pass; `evals/step2-recall-qwen3.8-27b-q8_0/` |
 | DYL product ingest (dogfood data) | ✅ Done — book `dyl`: 144 exercises, 875 key ideas, 142/144 grounded, 0 hallucinations |
 | Phone access (workstation) | 📋 Updating — `uv sync`, copy `dogfood/lifekit.db` → `~/.lifekit/lifekit.db`, then `lifekit ui`; phone opens the workstation's tailnet IP on port **3783** |
-| Test suite | ✅ 117 tests, 1 pre-existing fail (`test_split_dyl_pdf`); see [`../arch/testing.md`](../arch/testing.md) |
+| Test suite | ✅ 123 test functions (2026-11-27), 1 known fail (`test_split_dyl_pdf`, P2). If imports fail, run `uv sync`. See [`../arch/testing.md`](../arch/testing.md) |
 
 ## Now / In progress
 
-The intent rewrite, `ROADMAP.md`, and the seven v1 proposals (slices 0–6) are
-merged to `main` as drafts. They wait for the human's approval. Slice 0 comes
-first.
+Nothing is in progress. The seven v1 proposals (slices 0–6) are drafts on
+`main`. The human approves each one when they pick it up. Slice 0 comes first.
 
 ## Upcoming
 
@@ -84,38 +78,23 @@ first.
 user responds to a card with a comment or a reaction. The coach replies to
 every comment. The reasons are in `ROADMAP.md` (D1–D15).
 
-Build order. Each slice can be tested on its own:
+Build order. Each slice can be tested on its own. Each proposal has an "After this slice"
+section that says what works and what is not there yet:
 
 | # | Slice | Proposal | Depends on | Status |
 |---|-------|----------|------------|--------|
-| 0 | Feed-only UI: remove the sidebar, the chat pages, the journal page, and the free-chat API | `feed-only-ui/` | — | Proposed (do first) |
-| 1 | Card types: five types, their fields, the comment hint and coach instruction per type | `card-types-v1/` | 0 | Proposed |
-| 2 | Book model: PDF and EPUB become sections (front, body, back) and passages with offsets; `lifekit ingest` | `book-model-v1/` | 0 | Proposed |
-| 3 | Item extraction: typed items with stance, per-chapter consolidation, passage anchors, usefulness check, golden set | `item-extraction-v2/` | 1, 2 | Proposed |
-| 4 | Card generation: one card per item; code builds the OpenUI program; stable ids; question cards | `card-generation/` | 1, 3 | Proposed |
-| 5 | Feed: cards in reading order, like and dislike, start where you left off | `feed-v1/` | 4 | Proposed |
-| 6 | Card comments: a thread per card, a coach reply to every comment, reactions on replies | `card-comments/` | 5 | Proposed |
+| 0 | Feed-only UI: remove the sidebar, the chat pages, the journal page, and the free-chat API | `feed-only-ui/` | — | Draft (do first) |
+| 1 | Card types: five types, their fields, the comment hint and coach instruction per type | `card-types-v1/` | — | Draft |
+| 2 | Book model: PDF and EPUB become sections (front, body, back) and passages with offsets; `lifekit ingest` | `book-model-v1/` | — | Draft |
+| 3 | Item extraction: typed items with stance, per-chapter consolidation, passage anchors, usefulness check, golden set | `item-extraction-v2/` | 1, 2 | Draft |
+| 4 | Card generation: one card per item; code builds the OpenUI program; stable ids; question cards | `card-generation/` | 1, 3 | Draft |
+| 5 | Feed: cards in reading order, like and dislike, start where you left off | `feed-v1/` | 0, 4 | Draft |
+| 6 | Card comments: a thread per card, a coach reply to every comment, reactions on replies | `card-comments/` | 5 | Draft |
 
-Slice 0 comes first. Slices 1 and 2 can then run in parallel. From slice 0
+Slice 0 comes first by choice: slices 1 and 2 do not need its code, but the
+app should be feed-only before anything else lands. Slices 1 and 2 can then
+run in parallel. From slice 0
 until slice 6, the app has no way to talk to the coach.
-
-## Superseded
-
-The v1 slices replace these proposals. The folders stay for history. Do not
-apply them.
-
-| Proposal | Replaced by | Reason |
-|----------|-------------|--------|
-| `exercise-type-system/` | `card-types-v1/` | Typed cards cover exercises and ideas together. OpenUI replaces A2UI. |
-| `exercise-surface-routing/` | `feed-v1/` | One screen, the feed (ROADMAP D1). |
-| `exercise-surface-journal/`, `exercise-surface-tracking/`, `exercise-surface-questionnaire/`, `exercise-surface-concept-check/`, `exercise-surface-worksheet/` | `card-comments/` | A comment is the only way to act on a card (ROADMAP D2). Worksheet waits for v2 (D7). |
-| `openui-exercise-surfaces/` | `card-generation/` | No per-type surfaces. Code builds card programs offline (D6). |
-| `openui-hybrid-chat/`, `openui-system-prompt/` | `card-comments/`, `feed-only-ui/` | Shipped in part (commit `6c61732`). Coach replies keep the OpenUI renderer; the free chat goes away (D10). |
-| `chat-surface/`, `chat-surface-b-composer-open/`, `chat-surface-c-entry-points/` | `feed-only-ui/` | Free chat is retired (D10). |
-| `journal-tab/`, `journal-tab-a-storage-api/`, `journal-tab-b-editor/`, `journal-tab-c-toc-navigation/`, `journal-tile-layout/` | `card-comments/` | A journal entry is a comment on a reflect card (D2). Posts without a card are v2 (D13). |
-| `combine-product-tracking-docs/` | — | Done: KANBAN is the one tracker. `ROADMAP.md` now holds stages and decision reasons only. |
-| `card-activity-drawer/` (renamed) | `card-comments/` | The drawer is dropped (D1). |
-| `card-associated-activity/`, `card-discovery/` (on `feat/card-first-feed`) | `feed-v1/`, `card-comments/` | The branch is abandoned, not merged. |
 
 ## Deferred / Future
 
@@ -254,15 +233,18 @@ review of `virgiliojr94/book-to-skill`, filtered to the product vision: LifeKit
 is an off-the-shelf app, not an agent skill/harness add-on — borrow backend, UX,
 and how-to-content ideas only, never vision-changing ones.
 
-- **F1 — Decision-rule extraction.** New extraction type: conditional guidance
+- **F1 — Decision-rule extraction.** *Covered in v1: the `rule` item kind
+  (`item-extraction-v2`).* New extraction type: conditional guidance
   ("when *situation*, do *action*"), e.g. DYL's "when stuck → mind-map, talk to
   people, or prototype". More situational than a key idea, lighter than an
   exercise; feeds the daily "one idea to remember" slot and situational chat
   answers.
-- **F2 — Anti-patterns as first-class extraction.** Named mistakes with why to
+- **F2 — Anti-patterns as first-class extraction.** *Covered in v1: the
+  `pitfall` item kind.* Named mistakes with why to
   avoid them, e.g. DYL's dysfunctional beliefs. Guardrails complementing
   exercises; strong "one idea to remember" candidates.
-- **F3 — Per-book glossary with chapter refs.** Named vocabulary per book (DYL:
+- **F3 — Per-book glossary with chapter refs.** *Covered in v1: the `term`
+  item kind.* Named vocabulary per book (DYL:
   Grok, AEIOU, Odyssey Planning...). Powers chat ("what does X mean?") and the
   revisit-lessons vertical.
 - **F4 — "Preserve the author's precision" in Step 3 dedupe.** Explicit rule +
@@ -273,7 +255,7 @@ and how-to-content ideas only, never vision-changing ones.
   token/time cost, then ask to proceed.
 - **F6 — Per-book content-type profile.** An analyze pass detects which content
   types a book actually contains; extraction runs only the relevant extractors;
-  everything is stored with a `kind` field so Today/Chat/Library surface all
+  everything is stored with a `kind` field so the feed and the Library surface all
   kinds uniformly. (Subsumes F5's analyze pass.)
 - **F7 — Update/fold-in for companion sources.** Merge a related source (e.g.
   the DYL workbook) into an existing book record instead of a fresh ingest.
@@ -287,11 +269,12 @@ and how-to-content ideas only, never vision-changing ones.
   the natural fix for D4.
 - **F11 — Adaptive chunking granularity.** Different chunking per content type
   instead of one setting per book. Pairs with F6.
-- **F12 — FAQ-shaped storage for rules/anti-patterns.** F1/F2 items are
+- **F12 — FAQ-shaped storage for rules/anti-patterns.** *Covered in v1: every
+  item kind is a typed card (`card-types-v1`).* F1/F2 items are
   FAQ-shaped; store them as such rather than forcing them into the
   exercise/key-idea schema.
-- **F13 — Citation popovers in Chat.** Surface quote grounding in the Chat UI:
-  every answer shows which exercise/chapter it came from, tap to inspect.
+- **F13 — Citation popovers in coach replies.** Free chat is retired (D10).
+  A coach reply shows which passage grounds it; tap to inspect.
 - **F14 — Auto-tag extracted items by theme.** Tag exercises/ideas/rules by
   theme to give the Library filters and feed F6 content profiles.
 - **F15 — Interlinked concept pages for the Library.** Auto-generated,
@@ -308,7 +291,7 @@ channels, and Langfuse observability were deliberately excluded.
 |-------|---------|-------|
 | Chat token streaming (SSE) | 2026-11-22 | Commit `072297a`. card-comments reuses the SSE events. |
 | Chat layout — DeepTutor-style single-column + sidebar Recent | 2026-10-15 | `/chat` single-column, sidebar collapsible "Recent" with recency grouping, rename/delete, "New chat"; `/chat/<id>` deep links, `/c/<id>` redirects. Fixed `TabContext` route sync. Spec archived at `../../openspec/archives/chat-layout-deeptutor-recent/`. |
-| Chat placeholder title | 2026-10-15 | Sentinel "New conversation"; replaced by the first 60 chars of the first user message (once). Spec at `../../openspec/changes/chat-placeholder-title/`. |
+| Chat placeholder title | 2026-10-15 | Sentinel "New conversation"; replaced by the first 60 chars of the first user message (once). Spec archived at `../../openspec/archives/chat-placeholder-title/`. |
 | Chat Surface **b** — open conversation + composer | 2026-10-07 | `ChatView` composes `MessageList` + `ChatInput` + title header; `MasterComposer` → `POST /api/conversations`. |
 | Journal Surface — `/journal` route | 2026-10-07 | Placeholder page; sidebar row navigates via `router.push`. |
 | Chat Surface **a** — `/chat` route + conversation list | 2026-10-07 | `useConversations` fetches `GET /api/conversations`; `ConversationsList` repurposed. |
@@ -323,20 +306,15 @@ channels, and Langfuse observability were deliberately excluded.
 | Step 13 — UI: feed + conversations (4 slices) | 2026-09-24 | 13a feed API, 13b feed screen, 13c conversation view, 13d serve command. `lifekit ui` boots both. Archived at `../../openspec/archives/step-13-ui-feed-conversations/`. |
 | Steps 1–7 — pipeline, coach tools, multi-book, scheduling | 2026-09-15 | Chapter splitter → extraction → reduce → validation harness; coach MCP tools; multi-book registry; FSRS-style scheduling. Archived under `../../openspec/archives/step-1…step-7*/`. |
 
-**Design decisions (2026-10-07).** Chat is a *destination*, not a tab: the
-sidebar Chat row navigates to `/chat`, a single-column surface with the
-conversation (or composer) full-width; conversations live in a collapsible
-"Recent" section; no `+` button — starting a chat means typing in the composer.
-Journal follows the same pattern (`/journal`).
-
 ## Open questions
 
 1. Learning runtime: evolve `lifekit/mcp/server.py` in place, or a second server
    beside it? (Parked with the program layer.)
-2. Dogfood exit check (`ROADMAP.md` → Dogfood exit check). Proposed, needs the
-   human's approval: use the feed on at least 10 of 14 days; at most 20% of
+2. Dogfood exit check (`ROADMAP.md` → Dogfood exit check). Decide when
+   card-comments (slice 6) is done, before dogfood starts. Draft: use the feed on at least 10 of 14 days; at most 20% of
    reacted cards disliked; at most 20% of coach replies disliked.
-3. Usefulness precision target for item extraction v2. Proposed: at least 80%
+3. Usefulness precision target for item extraction v2. Decide when you pick
+   up `item-extraction-v2`. Draft: at least 80%
    of cards in the golden set labelled useful by the human
    (`item-extraction-v2/`).
 
