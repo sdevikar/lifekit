@@ -59,13 +59,15 @@ export function useConversation(convId: string) {
     };
     setMessages((prev) => [...prev, optimistic]);
 
-    // Streaming coach reply: read SSE deltas and append a live coach message.
-    const streamingMsg: Message = {
+    // The coach bubble is created lazily on the first delta so the pending
+    // "thinking" indicator shows alone until text starts streaming — avoids
+    // a duplicate empty coach bubble next to the balls.
+    const coachMsg: Message = {
       role: "coach",
       text: "",
       created_at: new Date().toISOString(),
     };
-    setMessages((prev) => [...prev, streamingMsg]);
+    const coachMsgRef = { current: coachMsg };
 
     try {
       const res = await fetch(`/api/conversations/${convId}/messages`, {
@@ -100,11 +102,13 @@ export function useConversation(convId: string) {
           if (payload.delta) {
             setMessages((prev) => {
               const next = [...prev];
-              const idx = next.lastIndexOf(streamingMsg);
-              // fall back to last coach message
-              const target = idx >= 0 ? idx : next.length - 1;
-              if (target >= 0 && next[target]?.role === "coach") {
-                next[target] = { ...next[target], text: next[target].text + payload.delta! };
+              const last = next[next.length - 1];
+              if (last && last.role === "coach") {
+                next[next.length - 1] = { ...last, text: last.text + payload.delta! };
+              } else {
+                const created = { ...coachMsg, text: payload.delta! };
+                coachMsgRef.current = created;
+                next.push(created);
               }
               return next;
             });
@@ -114,13 +118,14 @@ export function useConversation(convId: string) {
           }
         }
       }
-      // Replace streaming message with final parsed reply.
+      // Replace the streaming coach message with the final parsed reply.
       setMessages((prev) => {
         const next = [...prev];
-        const idx = next.findIndex((m) => m === streamingMsg);
-        const target = idx >= 0 ? idx : next.length - 1;
-        if (target >= 0 && next[target]?.role === "coach") {
-          next[target] = { ...next[target], text: finalReply || next[target].text };
+        const last = next[next.length - 1];
+        if (last && last.role === "coach") {
+          next[next.length - 1] = { ...last, text: finalReply || last.text };
+        } else if (finalReply) {
+          next.push({ ...coachMsg, text: finalReply });
         }
         return next;
       });
@@ -133,7 +138,7 @@ export function useConversation(convId: string) {
       }
       // The server replies before it persists, so a failure means nothing was
       // stored. Drop the optimistic message — the transcript must match the DB.
-      setMessages((prev) => prev.filter((m) => m !== optimistic && m !== streamingMsg));
+      setMessages((prev) => prev.filter((m) => m !== optimistic && m !== coachMsgRef.current));
       setError(err instanceof Error ? err.message : "Failed to send message");
       throw err;
     } finally {
