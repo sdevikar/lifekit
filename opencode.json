@@ -13,7 +13,7 @@
           "--open-web-dashboard",
           "False"
         ],
-        "disabled": true
+        "disabled": false
       },
       "playwright": {
         "type": "local",
@@ -29,7 +29,24 @@
           "/home/swapnil/.trace/bin/trace",
           "serve"
         ]
+      },
+      "rea": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "rea-agents@6.4.0",
+          "mcp"
+        ],
+        "environment": {
+          "HOPPER_LAUNCHER_PATH": "/opt/hopper/bin/Hopper"
+        }
       }
     }
-  }
+  },
+  "plugins": [
+    "superpowers@git+https://github.com/obra/superpowers.git",
+    "@dietrichgebert/ponytail",
+    "git+file:///home/swapnil/workspace/projects/sdlc-tools"
+  ]
 }
