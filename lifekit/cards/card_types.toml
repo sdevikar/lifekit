@@ -1,0 +1,28 @@
+# Card types for LifeKit v1 feed.
+# Single source of truth: extraction, generation, feed API, and coach prompt
+# read this file via lifekit.cards.types.
+
+[insight]
+purpose = "An idea, rule of thumb, pitfall, or term worth keeping"
+comment_hint = "What do you make of this?"
+coach_instruction = "Discuss the idea; answer questions about it."
+
+[practice]
+purpose = "A one-off exercise, or a form the author gives, as steps"
+comment_hint = "How did it go?"
+coach_instruction = "Coach through doing it; ask for results."
+
+[habit]
+purpose = "A recurring behavior the author tells the reader to repeat"
+comment_hint = "How did it go today?"
+coach_instruction = "Support the check-in; notice patterns."
+
+[reflect]
+purpose = "A journal prompt"
+comment_hint = "Write your entry…"
+coach_instruction = "Reflect with the user; do not grade."
+
+[question]
+purpose = "A self-check question about an idea"
+comment_hint = "Your answer…"
+coach_instruction = "Reveal the author's answer after the user's first comment; never grade."
