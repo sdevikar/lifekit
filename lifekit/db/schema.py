@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS books (
     title TEXT NOT NULL,
     author TEXT,
     file_path TEXT NOT NULL UNIQUE,
+    format TEXT,
+    content_hash TEXT,
     chunk_count INTEGER DEFAULT 0,
     ingested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -57,6 +59,68 @@ CREATE TABLE IF NOT EXISTS chapters (
     content TEXT NOT NULL,
     UNIQUE(book_id, idx)
 );
+
+CREATE TABLE IF NOT EXISTS sections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id TEXT NOT NULL REFERENCES books(id),
+    idx INTEGER NOT NULL,
+    parent_idx INTEGER,
+    depth INTEGER NOT NULL DEFAULT 0,
+    title TEXT NOT NULL,
+    page_start INTEGER,
+    page_end INTEGER,
+    kind TEXT NOT NULL DEFAULT 'body',
+    UNIQUE(book_id, idx)
+);
+
+CREATE TABLE IF NOT EXISTS passages (
+    id TEXT PRIMARY KEY,
+    book_id TEXT NOT NULL REFERENCES books(id),
+    section_idx INTEGER NOT NULL,
+    n INTEGER NOT NULL,
+    text TEXT NOT NULL,
+    char_start INTEGER,
+    char_end INTEGER,
+    UNIQUE(book_id, section_idx, n)
+);
+
+CREATE VIRTUAL TABLE IF NOT EXISTS passages_fts USING fts5(
+    text,
+    content_rowid=id
+);
+
+CREATE TABLE IF NOT EXISTS section_kind_overrides (
+    book_id TEXT NOT NULL,
+    section_idx INTEGER NOT NULL,
+    kind TEXT NOT NULL,
+    PRIMARY KEY (book_id, section_idx)
+);
+
+CREATE TABLE IF NOT EXISTS runs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id TEXT NOT NULL REFERENCES books(id),
+    stage TEXT NOT NULL,
+    model TEXT,
+    prompt_hash TEXT,
+    params TEXT,
+    status TEXT NOT NULL DEFAULT 'ok',
+    counts TEXT,
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    finished_at TIMESTAMP
+);
+
+CREATE TRIGGER IF NOT EXISTS passages_ai AFTER INSERT ON passages BEGIN
+    INSERT INTO passages_fts(rowid, text) VALUES (new.rowid, new.text);
+END;
+
+CREATE TRIGGER IF NOT EXISTS passages_ad AFTER DELETE ON passages BEGIN
+    INSERT INTO passages_fts(passages_fts, rowid, text) VALUES('delete', old.rowid, old.text);
+END;
+
+CREATE TRIGGER IF NOT EXISTS passages_au AFTER UPDATE ON passages BEGIN
+    INSERT INTO passages_fts(passages_fts, rowid, text) VALUES('delete', old.rowid, old.text);
+    INSERT INTO passages_fts(rowid, text) VALUES (new.rowid, new.text);
+END;
 
 CREATE TABLE IF NOT EXISTS plans (
     id TEXT PRIMARY KEY,

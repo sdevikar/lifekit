@@ -35,6 +35,42 @@ def main() -> int:
         sys.argv = ["lifekit config"] + args[1:]
         return run_config()
 
+    if cmd == "ingest":
+        from lifekit.ingest import main as run_ingest
+        sys.argv = ["lifekit ingest"] + args[1:]
+        return run_ingest() or 0
+
+    if cmd == "book":
+        sub = args[1] if len(args) > 1 else ""
+        if sub == "sections":
+            bid = args[2]
+            import sqlite3
+            from pathlib import Path
+            db = str(Path.home() / ".lifekit" / "lifekit.db")
+            conn = sqlite3.connect(db)
+            for r in conn.execute(
+                "SELECT idx, parent_idx, depth, title, kind, page_start, page_end FROM sections WHERE book_id=? ORDER BY idx",
+                (bid,),
+            ):
+                print(r)
+            return 0
+        if sub == "set-kind":
+            bid, idx, kind = args[2], int(args[3]), args[4]
+            import sqlite3
+            from pathlib import Path
+            db = str(Path.home() / ".lifekit" / "lifekit.db")
+            conn = sqlite3.connect(db)
+            conn.execute(
+                "INSERT INTO section_kind_overrides (book_id, section_idx, kind) VALUES (?,?,?) "
+                "ON CONFLICT(book_id, section_idx) DO UPDATE SET kind=excluded.kind",
+                (bid, idx, kind),
+            )
+            conn.commit()
+            print(f"set {bid} section {idx} -> {kind}")
+            return 0
+        print("Usage: lifekit book {sections|set-kind}", file=sys.stderr)
+        return 1
+
     print(f"Unknown command: {cmd}", file=sys.stderr)
     return 1
 

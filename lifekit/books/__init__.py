@@ -1,1 +1,1 @@
-"""Step 6 multi-book package."""
+"""Book model helpers."""

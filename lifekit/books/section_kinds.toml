@@ -1,0 +1,9 @@
+# Title (lowercased) -> kind. Children inherit top-level parent's kind.
+[front]
+titles = ["dedication", "contents", "copyright", "title page", "half title", "acknowledgments", "preface", "foreword"]
+
+[back]
+titles = ["notes", "bibliography", "index", "appendix", "glossary"]
+
+[body]
+titles = []
