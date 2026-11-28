@@ -13,19 +13,13 @@ The LLM only writes prose; the endpoint owns turn structure and persistence.
 """
 from __future__ import annotations
 
-import json
-import re
 import sqlite3
-import uuid
 from datetime import datetime
 from pathlib import Path
 
 from flask import Flask, jsonify, request
 
 from lifekit.db.schema import init_db
-from lifekit.llm import get_provider
-from lifekit.llm.config import resolve_config
-from lifekit.serve.openui_prompt import OPENUI_SYSTEM_PROMPT
 
 HOST = "127.0.0.1"
 PORT = 8765
@@ -39,17 +33,6 @@ def _conn(db_path: str):
     c.row_factory = sqlite3.Row
     c.execute("PRAGMA foreign_keys = ON")
     return c
-
-
-def _generate_title(seed_ref: str | None, seed_kind: str) -> str:
-    """Generate a conversation title from the seed reference (card content)."""
-    if seed_ref:
-        # seed_ref is the exercise/idea text — use it as the title
-        title = seed_ref.strip()
-        if len(title) > 60:
-            title = title[:57] + "..."
-        return title
-    return "New conversation"
 
 
 def _book_info(c, book_id):
@@ -155,124 +138,6 @@ def _briefing(c, book_id, db_path):
     }
 
 
-def _fts_query(query: str) -> str:
-    """Turn free text into a safe FTS5 MATCH expression.
-
-    Users type sentences ("What is design thinking?"), but FTS5 treats
-    punctuation as query syntax and raises on it. Keep alphanumerics, drop
-    everything else, and quote each term so no term can be an operator.
-    Returns "" when nothing searchable is left.
-    """
-    terms = re.findall(r"[\w]+", query, flags=re.UNICODE)
-    return " OR ".join(f'"{t}"' for t in terms if len(t) > 1)
-
-
-def _retrieve_passages(c, book_id, query, limit=3):
-    """FTS5 keyword retrieval over book_chunks for grounding.
-
-    book_chunks_fts indexes only `content` (content_rowid=book_chunks.id),
-    so the book filter has to join back to book_chunks — querying a
-    `book_id` column on the FTS table raises OperationalError, which used
-    to be swallowed here and silently degrade to "first N chunks in
-    insertion order", ignoring the query entirely.
-    """
-    match = _fts_query(query)
-    rows = []
-    if match:
-        try:
-            rows = c.execute(
-                """SELECT bc.content
-                   FROM book_chunks_fts
-                   JOIN book_chunks bc ON bc.id = book_chunks_fts.rowid
-                   WHERE book_chunks_fts MATCH ?
-                   AND bc.book_id = ?
-                   ORDER BY rank
-                   LIMIT ?""",
-                (match, book_id, limit),
-            ).fetchall()
-        except sqlite3.OperationalError:
-            # Malformed MATCH expression — fall through to the text search.
-            rows = []
-    if rows:
-        return [r["content"] for r in rows]
-
-    # No chunk hit. Fall back to the chapter text, which is what the eval
-    # pipeline actually populates — the dogfood DB has 17 chapters of full
-    # text and zero chunks, so without this the coach has nothing to ground
-    # on and answers "I don't have any context".
-    passages = _search_chapters(c, book_id, query, limit)
-    if passages:
-        return passages
-
-    rows = c.execute(
-        "SELECT content FROM book_chunks WHERE book_id = ? LIMIT ?", (book_id, limit)
-    ).fetchall()
-    return [r["content"] for r in rows]
-
-
-def _search_chapters(c, book_id, query, limit=3, window=1200):
-    """Rank chapters by query-term overlap and return a window around each hit.
-
-    ponytail: naive term counting, no BM25/tfidf. Fine for 17 chapters; if
-    retrieval quality matters, build real chunks and index them instead.
-    """
-    terms = {t.lower() for t in re.findall(r"\w+", query) if len(t) > 2}
-    if not terms:
-        return []
-    rows = c.execute(
-        "SELECT idx, content FROM chapters WHERE book_id = ? ORDER BY idx", (book_id,)
-    ).fetchall()
-    scored = []
-    for r in rows:
-        content = r["content"]
-        low = content.lower()
-        hits = [(m.start(), t) for t in terms for m in re.finditer(re.escape(t), low)]
-        if not hits:
-            continue
-        hits.sort()
-        # Keep the densest region rather than the first hit, so a term that
-        # shows up in a table of contents doesn't drag in the wrong page.
-        best_start, best_count = hits[0][0], 0
-        for start, _ in hits:
-            count = sum(1 for s, _ in hits if start <= s < start + window)
-            if count > best_count:
-                best_count, best_start = count, start
-        start = max(0, best_start - window // 4)
-        scored.append((best_count, f"[{r['idx']}] " + content[start : start + window]))
-    scored.sort(key=lambda x: -x[0])
-    return [text for _, text in scored[:limit]]
-
-
-def _coach_messages(c, book_id, conv_id, message_text):
-    """Build the grounded chat message list for the LLM."""
-    passages = _retrieve_passages(c, book_id, message_text, limit=3)
-
-    context = "\n\n".join(passages) if passages else "No book context found."
-    system_msg = {
-        "role": "system",
-        "content": (
-            OPENUI_SYSTEM_PROMPT
-            + "\n\n"
-            + f"You are LifeKit's grounded coach for the book '{book_id}'. "
-            f"Answer the user's question using only the book context below. "
-            f"Keep replies concise and actionable. Emit only OpenUI Lang "
-            f"(root = Card(...))."
-            f"\n\nBook context:\n{context}"
-        ),
-    }
-
-    history = c.execute(
-        """SELECT role, text FROM messages
-           WHERE conversation_id = ? ORDER BY id""",
-        (conv_id,),
-    ).fetchall()
-    history_msgs = [
-        {"role": m["role"], "content": m["text"]} for m in history
-    ]
-
-    return [system_msg, *history_msgs, {"role": "user", "content": message_text}]
-
-
 class FeedAPI:
     """Localhost-only feed API server."""
 
@@ -341,169 +206,6 @@ def create_app(db_path: str | Path | None = None, book_id: str | None = None) ->
             )
             c.commit()
             return jsonify({"ok": True})
-        finally:
-            c.close()
-
-    @app.route("/api/conversations", methods=["GET"])
-    def list_conversations():
-        c = _conn(app.config["db_path"])
-        try:
-            rows = c.execute(
-                """SELECT id, title, updated_at FROM conversations
-                   WHERE book_id = ? ORDER BY updated_at DESC""",
-                (app.config["book_id"],),
-            ).fetchall()
-            return jsonify([dict(r) for r in rows])
-        finally:
-            c.close()
-
-    @app.route("/api/conversations", methods=["POST"])
-    def create_conversation():
-        data = request.get_json(silent=True) or {}
-        seed_kind = data.get("seed_kind")
-        if seed_kind not in ("card", "composer"):
-            return jsonify({"ok": False, "error": "seed_kind must be 'card' or 'composer'"}), 400
-        c = _conn(app.config["db_path"])
-        try:
-            conv_id = uuid.uuid4().hex[:12]
-            title = _generate_title(data.get("seed_ref", ""), seed_kind)
-            c.execute(
-                """INSERT INTO conversations
-                   (id, title, book_id, seed_kind, seed_ref)
-                   VALUES (?, ?, ?, ?, ?)""",
-                (conv_id, title, app.config["book_id"], seed_kind, data.get("seed_ref")),
-            )
-            c.commit()
-            return jsonify({"id": conv_id})
-        finally:
-            c.close()
-
-    @app.route("/api/conversations/<conv_id>")
-    def get_conversation(conv_id):
-        c = _conn(app.config["db_path"])
-        try:
-            conv = c.execute(
-                "SELECT * FROM conversations WHERE id = ?", (conv_id,)
-            ).fetchone()
-            if not conv:
-                return jsonify({"error": "not found"}), 404
-            msgs = c.execute(
-                """SELECT role, text, created_at FROM messages
-                   WHERE conversation_id = ? ORDER BY id""",
-                (conv_id,),
-            ).fetchall()
-            return jsonify({
-                "conversation": {
-                    "id": conv["id"],
-                    "title": conv["title"],
-                    "book_id": conv["book_id"],
-                    "seed_kind": conv["seed_kind"],
-                    "seed_ref": conv["seed_ref"],
-                },
-                "messages": [dict(m) for m in msgs],
-            })
-        finally:
-            c.close()
-
-    @app.route("/api/conversations/<conv_id>", methods=["DELETE"])
-    def delete_conversation(conv_id):
-        c = _conn(app.config["db_path"])
-        try:
-            conv = c.execute(
-                "SELECT id FROM conversations WHERE id = ?", (conv_id,)
-            ).fetchone()
-            if not conv:
-                return jsonify({"error": "not found"}), 404
-            c.execute("DELETE FROM messages WHERE conversation_id = ?", (conv_id,))
-            c.execute("DELETE FROM conversations WHERE id = ?", (conv_id,))
-            c.commit()
-            return jsonify({"ok": True})
-        finally:
-            c.close()
-
-    @app.route("/api/conversations/<conv_id>/messages", methods=["POST"])
-    def post_message(conv_id):
-        data = request.get_json(silent=True) or {}
-        text = data.get("text", "").strip() if isinstance(data.get("text"), str) else ""
-        if not text:
-            return jsonify({"ok": False, "error": "text required"}), 400
-
-        c = _conn(app.config["db_path"])
-        try:
-            conv = c.execute(
-                "SELECT id FROM conversations WHERE id = ?", (conv_id,)
-            ).fetchone()
-            if not conv:
-                return jsonify({"error": "conversation not found"}), 404
-
-            # Persist the user message first so it survives a tab switch /
-            # remount while the (slow) LLM call is still in flight. On failure
-            # we delete it so no dangling user message is left behind.
-            c.execute(
-                "INSERT INTO messages (conversation_id, role, text) VALUES (?, 'user', ?)",
-                (conv_id, text),
-            )
-            c.commit()
-
-            # On the first message, replace the sentinel title with a
-            # truncated version of the message text.
-            count = c.execute(
-                "SELECT COUNT(*) FROM messages WHERE conversation_id = ?",
-                (conv_id,),
-            ).fetchone()[0]
-            if count == 1:
-                new_title = text[:57] + "..." if len(text) > 60 else text
-                c.execute(
-                    "UPDATE conversations SET title = ? WHERE id = ?",
-                    (new_title, conv_id),
-                )
-                c.commit()
-
-            from flask import Response, stream_with_context
-
-            config = resolve_config()
-            provider = get_provider(config)
-            messages = _coach_messages(c, app.config["book_id"], conv_id, text)
-
-            def generate():
-                accumulated = ""
-                try:
-                    for chunk in provider.chat_stream(
-                        model=config.model, messages=messages, temperature=0.1
-                    ):
-                        accumulated += chunk
-                        yield "data: " + json.dumps({"delta": chunk}) + "\n\n"
-                except Exception as e:  # provider/network/model failure
-                    # Remove the just-persisted user message so the transcript
-                    # stays consistent (no dangling user turn with no coach reply).
-                    c2 = _conn(app.config["db_path"])
-                    try:
-                        c2.execute(
-                            "DELETE FROM messages WHERE conversation_id = ? AND role = 'user' "
-                            "AND text = ? AND id = (SELECT MAX(id) FROM messages "
-                            "WHERE conversation_id = ? AND role = 'user')",
-                            (conv_id, text, conv_id),
-                        )
-                        c2.commit()
-                    finally:
-                        c2.close()
-                    app.logger.exception("coach reply failed")
-                    yield "data: " + json.dumps({"error": f"Coach unavailable: {e}"}) + "\n\n"
-                    return
-
-                c2 = _conn(app.config["db_path"])
-                try:
-                    c2.execute(
-                        "INSERT INTO messages (conversation_id, role, text) VALUES (?, 'coach', ?)",
-                        (conv_id, accumulated),
-                    )
-                    c2.commit()
-                finally:
-                    c2.close()
-
-                yield "data: " + json.dumps({"done": True, "reply": accumulated}) + "\n\n"
-
-            return Response(stream_with_context(generate()), mimetype="text/event-stream")
         finally:
             c.close()
 

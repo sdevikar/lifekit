@@ -3,14 +3,12 @@ import { ResurfacedIdea } from "@/types/api";
 interface ResurfacedIdeaCardProps {
   idea: ResurfacedIdea;
   onStillWithMe: (remembered: boolean) => void;
-  onTalkAbout: () => void;
   signaling?: boolean;
 }
 
 export function ResurfacedIdeaCard({
   idea,
   onStillWithMe,
-  onTalkAbout,
   signaling = false,
 }: ResurfacedIdeaCardProps) {
   return (
@@ -36,12 +34,6 @@ export function ResurfacedIdeaCard({
           disabled={signaling}
         >
           Still with me
-        </button>
-        <button
-          className="lk-btn lk-btn-ghost lk-btn-sm"
-          onClick={onTalkAbout}
-        >
-          Talk about this
         </button>
       </div>
     </section>

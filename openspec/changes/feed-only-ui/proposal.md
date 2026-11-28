@@ -15,8 +15,7 @@ has to work around the old chat.
 ## What Changes
 
 - **BREAKING (internal only):** delete the pages `/chat`, `/chat/<id>`,
-  `/c/<id>`, and `/journal`. Each of these URLs redirects to `/feed`, so old
-  bookmarks still land somewhere.
+  `/c/<id>`, and `/journal`. No redirects; old URLs are gone.
 - Delete the sidebar, its recent-conversations list, the tab context, the chat
   view and its input, the message list, the free-chat composer, the
   conversation hooks, and the `useConversation` regression test.
@@ -39,7 +38,6 @@ has to work around the old chat.
 
 What you will see in the app:
 - The feed page alone, with no left sidebar.
-- Old links (`/chat`, `/chat/<id>`, `/c/<id>`, `/journal`) open the feed.
 - The same old feed as before: today's exercise, a resurfaced idea, and the
   fading ideas. "Mark done" and the "still with me?" buttons still work.
 
@@ -54,8 +52,7 @@ What is not there yet (expected, not a bug):
 
 ### New Capabilities
 
-- `feed-only-ui`: the feed is the only page, old URLs redirect to it, and the
-  free-chat API is gone.
+- `feed-only-ui`: the feed is the only page and the free-chat API is gone.
 
 ### Modified Capabilities
 
@@ -72,8 +69,7 @@ None. `openspec/specs/` holds no capabilities yet.
   remaining user), `hooks/useConversations.ts`, `hooks/useConversation.ts`,
   and `frontend/test_useConversation.mjs`. Edit `app/layout.tsx`,
   `app/feed/page.tsx`, `ExerciseCard.tsx`, `ResurfacedIdeaCard.tsx`,
-  `FadingIdeasCard.tsx`, `hooks/useBriefing.ts`, and `next.config.ts`
-  (redirects).
+  `FadingIdeasCard.tsx`, and `hooks/useBriefing.ts`.
 - Backend: `lifekit/serve/server.py` (routes and helpers removed),
   `tests/test_feed_api.py` (`TestConversations` and `TestConversationMessages`
   removed; the schema tests for the two tables stay).

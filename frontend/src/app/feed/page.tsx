@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { ExerciseCard } from "@/components/feed/ExerciseCard";
 import { FadingIdeasCard } from "@/components/feed/FadingIdeasCard";
 import { ResurfacedIdeaCard } from "@/components/feed/ResurfacedIdeaCard";
@@ -9,52 +7,13 @@ import { TodayHeader } from "@/components/feed/TodayHeader";
 import { useBriefing } from "@/hooks/useBriefing";
 
 export default function FeedPage() {
-  const router = useRouter();
   const {
     briefing,
     loading,
     error,
     markDone,
     signalIdea,
-    createConversation,
   } = useBriefing();
-
-  const [actionPending, setActionPending] = useState(false);
-
-  const handleTalkAboutExercise = async () => {
-    if (!briefing) return;
-    setActionPending(true);
-    try {
-      const convId = await createConversation("card", String(briefing.exercise.id));
-      router.push(`/c/${convId}`);
-    } finally {
-      setActionPending(false);
-    }
-  };
-
-  const handleTalkAboutIdea = async (ideaId: number) => {
-    setActionPending(true);
-    try {
-      const convId = await createConversation("card", String(ideaId));
-      router.push(`/c/${convId}`);
-    } finally {
-      setActionPending(false);
-    }
-  };
-
-  const handleTalkAboutResurfaced = async () => {
-    if (!briefing) return;
-    setActionPending(true);
-    try {
-      const convId = await createConversation(
-        "card",
-        String(briefing.resurfaced_idea.id),
-      );
-      router.push(`/c/${convId}`);
-    } finally {
-      setActionPending(false);
-    }
-  };
 
   const handleStillWithMe = async (remembered: boolean) => {
     if (!briefing) return;
@@ -113,22 +72,17 @@ export default function FeedPage() {
         onMarkDone={async () => {
           await markDone(briefing.exercise.id);
         }}
-        onTalkAbout={handleTalkAboutExercise}
-        markingDone={actionPending}
       />
 
       {/* 3. Resurfaced idea card */}
       <ResurfacedIdeaCard
         idea={briefing.resurfaced_idea}
         onStillWithMe={handleStillWithMe}
-        onTalkAbout={handleTalkAboutResurfaced}
-        signaling={actionPending}
       />
 
       {/* 4. Fading ideas card */}
       <FadingIdeasCard
         ideas={briefing.fading_ideas}
-        onTalkAbout={handleTalkAboutIdea}
       />
 
     </div>

@@ -3,14 +3,12 @@ import { ExerciseCard as ExerciseCardData } from "@/types/api";
 interface ExerciseCardProps {
   exercise: ExerciseCardData;
   onMarkDone: () => void;
-  onTalkAbout: () => void;
   markingDone?: boolean;
 }
 
 export function ExerciseCard({
   exercise,
   onMarkDone,
-  onTalkAbout,
   markingDone = false,
 }: ExerciseCardProps) {
   return (
@@ -36,12 +34,6 @@ export function ExerciseCard({
           disabled={markingDone}
         >
           {markingDone ? "Saving…" : "Mark done"}
-        </button>
-        <button
-          className="lk-btn lk-btn-ghost lk-btn-sm"
-          onClick={onTalkAbout}
-        >
-          Talk about this
         </button>
       </div>
     </section>

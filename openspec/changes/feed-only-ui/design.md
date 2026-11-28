@@ -23,7 +23,6 @@
 
 **Goals:**
 - The feed is the only page, and no code for free chat stays behind.
-- Old URLs land on the feed.
 
 **Non-Goals:**
 - No change to the briefing cards beyond removing the chat buttons. feed-v1
@@ -34,16 +33,7 @@
 
 ## Decisions
 
-### D1. Redirects in `next.config.ts`
-
-`redirects()` returns entries with `permanent: false` for `/chat`, `/chat/:id`,
-`/c/:id`, and `/journal`, each to `/feed`. A temporary redirect keeps the
-browser from caching it, in case a later stage reuses a path.
-
-Alternative: keep stub pages that call `redirect()`. Rejected: four files that
-exist only to redirect.
-
-### D2. Delete order
+### D1. Delete order
 
 1. Edit `app/layout.tsx` to render `children` inside `<main>` only. Keep the
    theme script and the metadata ("Daily coaching: one exercise, one idea.").

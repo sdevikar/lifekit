@@ -2,10 +2,9 @@ import { FadingIdea } from "@/types/api";
 
 interface FadingIdeasCardProps {
   ideas: FadingIdea[];
-  onTalkAbout: (id: number) => void;
 }
 
-export function FadingIdeasCard({ ideas, onTalkAbout }: FadingIdeasCardProps) {
+export function FadingIdeasCard({ ideas }: FadingIdeasCardProps) {
   if (!ideas.length) return null;
 
   return (
@@ -27,12 +26,6 @@ export function FadingIdeasCard({ ideas, onTalkAbout }: FadingIdeasCardProps) {
             className="pt-2 flex items-center justify-between gap-3"
           >
             <span className="text-sm text-lk-fg">{idea.text}</span>
-            <button
-              className="lk-btn lk-btn-sm lk-btn-ghost shrink-0"
-              onClick={() => onTalkAbout(idea.id)}
-            >
-              Talk about this
-            </button>
           </li>
         ))}
       </ul>

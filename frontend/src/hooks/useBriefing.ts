@@ -49,15 +49,6 @@ export function useBriefing() {
     return resp;
   };
 
-  const createConversation = async (seedKind: "card" | "composer", seedRef?: string, title?: string) => {
-    const resp = await apiPost<{ id: string }>("/api/conversations", {
-      seed_kind: seedKind,
-      seed_ref: seedRef,
-      title: title,
-    });
-    return resp.id;
-  };
-
   return {
     briefing: data,
     loading,
@@ -65,6 +56,5 @@ export function useBriefing() {
     refresh: loadData,
     markDone,
     signalIdea,
-    createConversation,
   };
 }
