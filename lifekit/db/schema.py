@@ -96,6 +96,41 @@ CREATE TABLE IF NOT EXISTS section_kind_overrides (
     PRIMARY KEY (book_id, section_idx)
 );
 
+CREATE TABLE IF NOT EXISTS cards (
+    id TEXT PRIMARY KEY,
+    book_id TEXT NOT NULL REFERENCES books(id),
+    item_id INTEGER REFERENCES items(id),
+    type TEXT NOT NULL,
+    title TEXT,
+    content TEXT NOT NULL,
+    stance TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    card_id TEXT NOT NULL REFERENCES cards(id),
+    role TEXT NOT NULL CHECK(role IN ('user', 'coach')),
+    text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id TEXT NOT NULL REFERENCES books(id),
+    section_idx INTEGER,
+    kind TEXT NOT NULL,
+    stance TEXT NOT NULL,
+    title TEXT NOT NULL,
+    quote TEXT NOT NULL,
+    passage_id TEXT,
+    content TEXT,
+    status TEXT NOT NULL DEFAULT 'candidate',
+    reason TEXT,
+    run_id INTEGER REFERENCES runs(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS runs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     book_id TEXT NOT NULL REFERENCES books(id),
